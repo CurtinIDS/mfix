@@ -28,6 +28,9 @@
       use run, only: NSTEP
       use run, only: TIME, TSTOP, DT
       use sendrecv
+! Include mfix.dat input vars that set printing frequency
+      use particle_filter, only: DT_DRAG_PRINT, &
+                & DT_CONTACT_PRINT, DT_VEL_PRINT
       IMPLICIT NONE
 
 ! Local variables
@@ -215,6 +218,24 @@
 
          IF(CALL_USR) CALL USR2_DES
 
+
+! Write Drag force, Particle #, velocity, Contact force
+! after every timestep. This routine only works for
+! OpenMP and serial code
+! Write only during the last iteration
+        IF (NN .EQ. FACTOR) THEN
+                TIMESTEP_CUST=TIMESTEP_CUST+1
+! Used for testing
+!              PRINT *,SIZE(DRG_FC),DT_DRAG_PRINT,DT_VEL_PRINT
+               CALL WRITE_CUST(TIMESTEP_CUST,DT_DRAG_PRINT,'DRAG',& 
+                        &PART_INFO,DRG_FC,SIZE(DRG_FC))
+               CALL WRITE_CUST(TIMESTEP_CUST,DT_CONTACT_PRINT,&
+                        &'CONTACT',PART_INFO,CONTACT_FC,&
+                        &SIZE(CONTACT_FC))
+               CALL WRITE_CUST(TIMESTEP_CUST,DT_VEL_PRINT,&
+                        &'VELOCITY',PART_INFO,PART_VEL,&
+                        & SIZE(PART_VEL))
+        END IF
       ENDDO ! end do NN = 1, FACTOR
 
 ! END DEM time loop

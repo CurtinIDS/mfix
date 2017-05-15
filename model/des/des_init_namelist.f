@@ -301,6 +301,12 @@
       DES_INTERP_MEAN_FIELDS = .FALSE.
 !</keyword>
 
+! Input mfix.dat variables to define file write timesteps for\
+! i) Velocity ii) Drag and iii) Contact 
+        DT_VEL_PRINT = 1
+        DT_DRAG_PRINT=1
+        DT_CONTACT_PRINT=1
+
 
 !<keyword category="Discrete Element Simulation" required="false" dem="true">
 !  <description>
