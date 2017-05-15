@@ -28,3 +28,38 @@
 !
       RETURN
       END SUBROUTINE WRITE_USR0
+
+      SUBROUTINE WRITE_CUST(TIMESTEP,DT_PRINT,field,particle_info,&
+                                &mydat,mydat_size)
+              IMPLICIT NONE
+              DOUBLE PRECISION, DIMENSION(mydat_size/3,3) :: mydat
+              INTEGER, DIMENSION(mydat_size/3,5) :: particle_info
+              CHARACTER(LEN=10) :: field
+              CHARACTER(LEN=100) :: FILENAME
+              INTEGER :: TIMESTEP,mydat_size,I,DT_PRINT
+              WRITE (FILENAME,'(I100)') &
+                      &(int((TIMESTEP-1)/DT_PRINT))
+              IF ((MOD(TIMESTEP-1,DT_PRINT).EQ.0).OR.(TIMESTEP.EQ.1)) THEN
+                      OPEN(unit=1, file=&
+                                &trim(field(1:3))//'.'//&
+                                &adjustl(trim(FILENAME)))
+              ELSE
+                      OPEN(unit=1, file=&
+                                &trim(field(1:3))//'.'//&
+                                &adjustl(trim(FILENAME)),&
+                                &position='append')
+
+              END IF
+              WRITE (1,*)'Timestep: ', TIMESTEP
+              WRITE (1,*)'PARTICLE #  X,Y,Z, CELL_X,CELL_Y,CELL_Z,PHASE'
+              DO I=1,mydat_size/3
+              IF (.NOT.particle_info(I,1).EQ.0) THEN
+              WRITE (1,*),particle_info(I,1),mydat(I,:),&
+                         & particle_info(I,2:4), &
+                         & particle_info(I,5)
+              END IF
+              ENDDO
+              WRITE (1,*),''
+              CLOSE(1)
+      END
+
