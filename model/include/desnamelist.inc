@@ -50,6 +50,9 @@
 ! DES Energy Equations: J.Musser
         DES_CONV_CORR, FLPC, DES_Em, DES_MIN_COND_DIST, &
 
+! Additional input variables to control print timestepping
+	DT_DRAG_PRINT, DT_CONTACT_PRINT, DT_VEL_PRINT, & 
+
 ! MP-PIC related flags
          MPPIC_SOLID_STRESS_SNIDER, PSFAC_FRIC_PIC,&
          FRIC_EXP_PIC, FRIC_NON_SING_FAC,&
