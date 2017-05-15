@@ -59,6 +59,10 @@
 ! avg_factor=0.250 (in 3D) or =0.50 (in 2D)
       DOUBLE PRECISION :: AVG_FACTOR
 
+! Temporary variables to count particles (MYCNT)
+! and Phase
+      INTEGER :: MYCNT, M 
+
 !Handan Liu added temporary variables on April 20 2012
           DOUBLE PRECISION, DIMENSION(2,2,2,3) :: gst_tmp,vst_tmp
           DOUBLE PRECISION, DIMENSION(2,2,2) :: weight_ft
@@ -81,6 +85,7 @@
 
 ! There is some issue associated to gstencil, vstencil which are
 ! allocatable variables
+        MYCNT=0
 
 !$omp parallel do default(none)                                         &
 !$omp shared(ijkstart3,ijkend3,pinc,i_of,j_of,k_of,no_k,interp_scheme,  &
@@ -154,6 +159,9 @@
             desposnew(:) = des_pos_new(np,:)
             call DRAG_INTERPOLATION(gst_tmp,vst_tmp,desposnew,velfp,weight_ft)
 
+! Compute phase of the particle
+            M=pijk(np,5)
+
 ! Calculate the particle centered drag coefficient (F_GP) using the
 ! particle velocity and the interpolated gas velocity.  Note F_GP
 ! obtained from des_drag_gp subroutine is given as:
@@ -163,7 +171,7 @@
 ! Therefore, the drag force = f_gp*(u_g - u_s)
             VEL_NEW(:) = DES_VEL_NEW(NP,:)
             CALL DES_DRAG_GP(NP, VEL_NEW, VELFP, EP_G(IJK))
-
+            MYCNT=MYCNT+1
 ! Calculate the gas-solids drag force on the particle
             IF(MPPIC .AND. MPPIC_PDRAG_IMPLICIT) THEN
 ! implicit treatment of the drag term for mppic
@@ -173,6 +181,13 @@
                D_FORCE(1:3) = F_GP(NP)*(VELFP-VEL_NEW)
             ENDIF
 
+! Assign Drag force, add particle information, and velocities
+            DRG_FC(MYCNT,:3)=D_FORCE
+            PART_INFO(MYCNT,1)=NP
+            PART_INFO(MYCNT,2:)=PCELL
+            PART_INFO(MYCNT,5)=M
+            PART_VEL(MYCNT,:3)=VEL_NEW
+
 ! Update the contact forces (FC) on the particle to include gas
 ! pressure and gas-solids drag
             FC(NP,:3) = FC(NP,:3) + D_FORCE(:3)
@@ -181,6 +196,9 @@
 ! P_force is evaluated as -dp/dx
                FC(NP,:3) = FC(NP,:3) + P_FORCE(:,IJK)*PVOL(NP)
             ENDIF
+
+! Assign Contact force
+            CONTACT_FC(MYCNT,:3)=FC(NP,:3)
          ENDDO       ! end do (nindx = 1,pinc(ijk))
 
       ENDDO   ! end do (ijk=ijkstart3,ijkend3)

@@ -374,9 +374,24 @@
       INTEGER :: DES_USR_VAR_SIZE
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: DES_USR_VAR  !(PARTICLES,3)
 
+
+
+
 ! Total force and torque on each particle
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: FC    !(3,PARTICLES)
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: TOW   !(3,PARTICLES)
+
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: FC
+! PART_INFO contains particle information -> #, grid it belongs
+! to, particle's phase. 
+! TIMESTEP_CUST -> contains timestep # for writing timesteps
+! CONTACT_FC -> Array of forces, DRG_FC -> drag forces array
+! PART_VEL -> Array of particle velocities
+      INTEGER, DIMENSION(:,:),ALLOCATABLE :: PART_INFO
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: CONTACT_FC,&
+                &DRG_FC,PART_VEL
+      INTEGER :: TIMESTEP_CUST=0
+
 
 !     particle can collide with at most COLLISION_ARRAY_MAX facets simultaneously
       INTEGER :: COLLISION_ARRAY_MAX = 8
