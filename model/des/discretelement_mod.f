@@ -381,7 +381,6 @@
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: FC    !(3,PARTICLES)
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: TOW   !(3,PARTICLES)
 
-      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: FC
 ! PART_INFO contains particle information -> #, grid it belongs
 ! to, particle's phase. 
 ! TIMESTEP_CUST -> contains timestep # for writing timesteps
