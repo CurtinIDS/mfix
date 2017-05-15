@@ -1,0 +1,147 @@
+!                                                                               
+!  Bubbling Fluidized Bed Simulation   (Crank Nicholson Time Stepping)
+!                                                                               
+!  bub01 - fluidized bed with a central jet                                      
+                           
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'BUB01'             
+  DESCRIPTION           = 'fluid bed with jet'          
+  RUN_TYPE              = 'new'             
+  UNITS                 = 'SI'
+  TIME                  = 0.0                           !start time
+  TSTOP                 = 2.0
+  DT                    = 1.0E-4                        !time step
+  ENERGY_EQ             = .FALSE.                       !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.            !do not solve species eq
+  CN_ON                 = .TRUE.                        !Crank-Nicholson Time Stepping
+
+                                                                               
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'cylindrical' 
+  XLENGTH               =   0.07                                !radius
+  IMAX                  =   7                           !cells in i direction
+  YLENGTH               = 1.0                           !height
+  JMAX                  = 100                           !cells in j direction
+  NO_K                  = .TRUE.                        !2D, no k direction
+
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-5                        !constant gas viscosity
+  RO_g0                 = 1.2                           !constant gas density
+
+ 
+! Solids-phase Section                                                          
+  
+  RO_s0                 = 2000.                         !solids density
+  D_p0                  = 0.04E-2                       !particle diameter     
+  e                     = 0.8                           !restitution coefficient
+  Phi                   =30.0                           !angle of internal friction
+  EP_star               = 0.42                          !void fraction at minimum
+                                                        !  fluidization
+
+  
+! Initial Conditions Section                                                    
+  
+    ! 1. bed                                      
+  IC_X_w(1)             =  0.0                          !lower half of the domain
+  IC_X_e(1)             =  0.07                         ! 0 < x < 7, 0 < y < 50
+  IC_Y_s(1)             =  0.0
+  IC_Y_n(1)             = 0.5 
+                                                        !initial values in the region
+  IC_EP_g(1)            =  0.42                         !void fraction  
+  IC_U_g(1)             =  0.0                          !radial gas velocity
+  IC_V_g(1)             = 0.617                         !axial gas velocity
+  IC_U_s(1,1)           =  0.0                          !radial solids velocity 
+  IC_V_s(1,1)           =  0.0                          !axial solids velocity
+
+
+    !  2. Freeboard                                       
+  IC_X_w(2)             =   0.0                         !upper half of the domain 
+  IC_X_e(2)             =   0.07                                ! 0 < x < 7, 50 < y < 100
+  IC_Y_s(2)             =  0.5
+  IC_Y_n(2)             = 1.0
+                                  
+  IC_EP_g(2)            =   1.0                                  
+  IC_U_g(2)             =   0.0
+  IC_V_g(2)             =  0.259                                 
+  IC_U_s(2,1)           =   0.0
+  IC_V_s(2,1)           =   0.0                                  
+                                                                                
+!  Boundary Conditions Section                                                  
+            
+       ! 1. Central jet                                       
+  BC_X_w(1)             =  0.0                          !central jet
+  BC_X_e(1)             =  0.01                         ! 0 < x < 1, y = 0
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0
+
+  BC_TYPE(1)            = 'MI'                          !specified mass inflow 
+
+  BC_EP_g(1)            =  1.0 
+  BC_U_g(1)             =  0.0 
+  BC_V_g(1)             =1.246 
+  BC_P_g(1)             =  0.0                  
+
+       ! 2. Distributor flow                                       
+  BC_X_w(2)             =  0.01                         !gas distributor plate
+  BC_X_e(2)             =  0.07                         ! 1 < x < 7, y = 0
+  BC_Y_s(2)             =  0.0 
+  BC_Y_n(2)             =  0.0
+
+  BC_TYPE(2)            = 'MI'                          !specified mass inflow 
+
+  BC_EP_g(2)            =  1.0 
+  BC_U_g(2)             =  0.0 
+  BC_V_g(2)             = 0.259 
+  BC_P_g(2)             =  0.0                  
+
+                                            
+       ! 3. Exit
+  BC_X_w(3)             =   0.0                         !top exit
+  BC_X_e(3)             =   0.07                                ! 0 < x < 7, y = 100
+  BC_Y_s(3)             =  1.0
+  BC_Y_n(3)             =  1.0
+
+  BC_TYPE(3)            =  'PO'                         !specified pressure outflow
+  BC_P_g(3)             =  0.0                                 
+                                                                                
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                           !write text file BUB01.OUT
+                                                        !  every 10 s
+  RES_DT                = 0.01                          !write binary restart file
+                                                        !  BUB01.RES every 0.01 s
+  NLOG                  = 25                            !write logfile BUB01.LOG 
+                                                        !every 25 time steps
+  FULL_LOG              = .TRUE.                        !display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written.  Here BUB01.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, BUB01.SP2, which contains
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 100.   100.0     100.        
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+!  Sweep Direction
+
+LEQ_SWEEP(1) = 'ISIS' 
+LEQ_SWEEP(2) = 'ISIS'  
+LEQ_SWEEP(3) = 'ISIS' 
+LEQ_SWEEP(4) = 'ISIS'  
+LEQ_SWEEP(5) = 'ISIS'  
+LEQ_SWEEP(6) = 'ISIS'  
+LEQ_SWEEP(7) = 'ISIS' 
+LEQ_SWEEP(8) = 'ISIS'  
+LEQ_SWEEP(9) = 'ISIS'
+

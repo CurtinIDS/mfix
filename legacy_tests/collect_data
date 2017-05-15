@@ -1,0 +1,29 @@
+#!/bin/tcsh 
+# Script to collect tun time for all the test cases in serial
+
+# set up test directory and model directory
+set `pwd` ; test_dir=$1
+
+# This scipts assumes that the tests were run with script run_serial
+# and that the file List_of_tests_to_run.txt exists.
+
+# For each test:
+#    go to the directory
+#    Search for "Total CPU time used" in run.log and display the run-time
+#    go back to home test directory
+
+set_count=0
+
+for test in `cat List_of_tests_to_run.txt`
+do
+
+   (( set_count = set_count + 1 ))
+   cd $test
+   echo "********************************************************************"
+   echo $set_count '  '  $test
+   grep "Total CPU time used" run.log
+   cd $test_dir
+
+done
+
+echo "********************************************************************"

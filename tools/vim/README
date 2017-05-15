@@ -1,0 +1,44 @@
+The files provided in this directory (/mfix/tools/vim) can be used for syntax highlight and keyword
+autocompletion of mfix.dat input file.
+
+ASSUMPTIONS: 
+MFIX is installed on the home directory.
+Adjust all paths if this is not the case.
+
+INSTALLATION:
+1) Copy the .vimrc file to your home folder:
+   cp ~/mfix/tools/vim/.vimrc ~
+   (Please see note below if you already have a .vimrc file)
+2) Create ~/.vim/syntax/ directory if it doesn't exist:
+   mkdir ~/.vim
+   mkdir ~/.vim/syntax
+3) Copy the mfix.vim file to ~/.vim/syntax:
+   cp ~/mfix/tools/vim/mfix.vim ~/.vim/syntax
+
+USAGE:
+Syntax highlight is automatic. Known MFIX keywords and other types of text 
+(comments, string of characters, etc) will be highlighted.
+
+Keyword auto-completion: In INSERT mode, type the firts letter(s) of a keyword
+and press "Ctrl+N" or "Ctrl+P" to trigger auto-completion and go through the
+list of proposed keywords from the shown menu. Press "Enter" to validate entry.
+
+
+
+
+
+Note: If you already have a .vimrc file
+_______________________________________
+
+Copy the following lines to you existing .vimrc file
+to enable syntax highlight and keyword auto-completion:
+
+" Syntax highlighting for mfix.dat                                                                                                                                         
+au BufRead,BufNewFile mfix.dat set filetype=mfix
+au! Syntax mfix source ~/.vim/syntax/mfix.vim
+syntax on
+ 
+" Auto-completion for mfix keywords
+set complete=k
+set dictionary+=~/mfix/tools/vim/mfixdictionary.txt
+

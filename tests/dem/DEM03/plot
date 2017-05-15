@@ -1,0 +1,311 @@
+# Data Index
+#                     A-B
+#  * En = 1.0    --  01
+#  * En = 0.9    --  02
+#  * En = 0.8    --  03
+#  * En = 0.7    --  04
+#  * En = 0.6    --  05
+#  * En = 0.5    --  06
+#                        
+
+# color definitions
+set border linewidth 1.5
+set style line 1 lt 1 lc rgb '#000000' lw 1 # black
+set style line 2 lt 1 lc rgb '#9400d3' lw 1 # purple
+set style line 3 lt 1 lc rgb '#ff4500' lw 1 # orange-1
+set style line 4 lt 1 lc rgb '#006400' lw 1 # green
+set style line 5 lt 1 lc rgb '#ffa500' lw 1 # yellow
+set style line 6 lt 1 lc rgb '#0000ff' lw 1 # blue
+set style line 7 lt 1 lc rgb '#800000' lw 1 # brown
+set style line 8 lt 1 lc rgb '#ff0000' lw 1 # orange-2
+
+set style line 11 lt 2 lc rgb '#000000' lw 1 # black
+set style line 12 lt 2 lc rgb '#9400d3' lw 1 # purple
+set style line 13 lt 2 lc rgb '#ff4500' lw 1 # orange-1
+set style line 14 lt 2 lc rgb '#006400' lw 1 # green
+set style line 15 lt 2 lc rgb '#ffa500' lw 1 # yellow
+set style line 16 lt 2 lc rgb '#0000ff' lw 1 # blue
+set style line 17 lt 2 lc rgb '#800000' lw 1 # brown
+set style line 18 lt 2 lc rgb '#ff0000' lw 1 # orange-2
+
+
+set xlabel "time * 10^3 (sec)"
+set xrange [0 : 1]
+set xtics nomirror 0,0.2,1.0
+
+scaled(x,val) = ( scld = x*val, scld)
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 1 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM03_en10.png"
+
+set multiplot layout 1,2 title "Particle center positions for e_n = 1.0"
+
+set ylabel "lower particle center height * 10^3 (m)"
+set yrange [0.40 : 0.5]
+set ytics 0.40,0.02,0.5
+
+set y2range [0.0 : 0.10]
+set y2label "abs relative error (%)"
+set y2tics 0.0,0.02,0.10
+
+set key reverse inside left top
+
+set title
+plot 'POST_POS1.dat' index 2 \
+        using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+        w lines ls 1 axis x1y1 notitle, \
+     'POST_POS1.dat' index 2 every 3 \
+        using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+        w points pointtype 6 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS1.dat' index 2 \
+        using (scaled(column(1),1000)):4  w lines ls 11 axis x1y2 notitle
+
+set ylabel "upper particle center height * 10^3 (m)"
+set yrange [1.3 : 1.4]
+set ytics 1.3,0.02,1.4
+
+set title
+plot 'POST_POS2.dat' index 2 \
+       using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+       w lines ls 1 notitle, \
+     'POST_POS2.dat' index 2 every 2 \
+       using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+       w points pointtype 8 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS2.dat' index 2 \
+       using (scaled(column(1),1000)):4 w lines ls 11 axis x1y2 notitle
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 2 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM03_en09.png"
+
+set multiplot layout 1,2 title "Particle center positions for e_n = 0.9"
+
+set ylabel "lower particle center height * 10^3 (m)"
+set yrange [0.40 : 0.5]
+set ytics 0.40,0.02,0.5
+
+set y2range [0.0 : 0.10]
+set y2label "abs relative error (%)"
+set y2tics 0.0,0.02,0.10
+
+set key reverse inside left top
+
+set title
+plot 'POST_POS1.dat' index 4 \
+        using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+        w lines ls 1 axis x1y1 notitle, \
+     'POST_POS1.dat' index 4 every 3 \
+        using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+        w points pointtype 6 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS1.dat' index 4 \
+        using (scaled(column(1),1000)):4  w lines ls 11 axis x1y2 notitle
+
+set ylabel "upper particle center height * 10^3 (m)"
+set yrange [1.3 : 1.4]
+set ytics 1.3,0.02,1.4
+
+set title
+plot 'POST_POS2.dat' index 4 \
+       using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+       w lines ls 1 notitle, \
+     'POST_POS2.dat' index 4 every 2 \
+       using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+       w points pointtype 8 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS2.dat' index 4 \
+       using (scaled(column(1),1000)):4 w lines ls 11 axis x1y2 notitle
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 3 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM03_en08.png"
+
+set multiplot layout 1,2 title "Particle center positions for e_n = 0.8"
+
+set ylabel "lower particle center height * 10^3 (m)"
+set yrange [0.40 : 0.5]
+set ytics 0.40,0.02,0.5
+
+set y2range [0.0 : 0.10]
+set y2label "abs relative error (%)"
+set y2tics 0.0,0.02,0.10
+
+set key reverse inside left top
+
+set title
+plot 'POST_POS1.dat' index 6 \
+        using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+        w lines ls 1 axis x1y1 notitle, \
+     'POST_POS1.dat' index 6 every 3 \
+        using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+        w points pointtype 6 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS1.dat' index 6 \
+        using (scaled(column(1),1000)):4  w lines ls 11 axis x1y2 notitle
+
+set ylabel "upper particle center height * 10^3 (m)"
+set yrange [1.3 : 1.4]
+set ytics 1.3,0.02,1.4
+
+set title
+plot 'POST_POS2.dat' index 6 \
+       using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+       w lines ls 1 notitle, \
+     'POST_POS2.dat' index 6 every 2 \
+       using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+       w points pointtype 8 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS2.dat' index 6 \
+       using (scaled(column(1),1000)):4 w lines ls 11 axis x1y2 notitle
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 4 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM03_en07.png"
+
+set multiplot layout 1,2 title "Particle center positions for e_n = 0.7"
+
+set ylabel "lower particle center height * 10^3 (m)"
+set yrange [0.40 : 0.5]
+set ytics 0.40,0.02,0.5
+
+set y2range [0.0 : 0.10]
+set y2label "abs relative error (%)"
+set y2tics 0.0,0.02,0.10
+
+set key reverse inside left top
+
+set title
+plot 'POST_POS1.dat' index 8 \
+        using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+        w lines ls 1 axis x1y1 notitle, \
+     'POST_POS1.dat' index 8 every 3 \
+        using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+        w points pointtype 6 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS1.dat' index 8 \
+        using (scaled(column(1),1000)):4  w lines ls 11 axis x1y2 notitle
+
+set ylabel "upper particle center height * 10^3 (m)"
+set yrange [1.3 : 1.4]
+set ytics 1.3,0.02,1.4
+
+set title
+plot 'POST_POS2.dat' index 8 \
+       using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+       w lines ls 1 notitle, \
+     'POST_POS2.dat' index 8 every 2 \
+       using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+       w points pointtype 8 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS2.dat' index 8 \
+       using (scaled(column(1),1000)):4 w lines ls 11 axis x1y2 notitle
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 5 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM03_en06.png"
+
+set multiplot layout 1,2 title "Particle center positions for e_n = 0.6"
+
+set ylabel "lower particle center height * 10^3 (m)"
+set yrange [0.40 : 0.5]
+set ytics 0.40,0.02,0.5
+
+set y2range [0.0 : 0.10]
+set y2label "abs relative error (%)"
+set y2tics 0.0,0.02,0.10
+
+set key reverse inside left top
+
+set title
+plot 'POST_POS1.dat' index 10 \
+        using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+        w lines ls 1 axis x1y1 notitle, \
+     'POST_POS1.dat' index 10 every 3 \
+        using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+        w points pointtype 6 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS1.dat' index 10 \
+        using (scaled(column(1),1000)):4  w lines ls 11 axis x1y2 notitle
+
+set ylabel "upper particle center height * 10^3 (m)"
+set yrange [1.3 : 1.4]
+set ytics 1.3,0.02,1.4
+
+set title
+plot 'POST_POS2.dat' index 10 \
+       using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+       w lines ls 1 notitle, \
+     'POST_POS2.dat' index 10 every 2 \
+       using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+       w points pointtype 8 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS2.dat' index 10 \
+       using (scaled(column(1),1000)):4 w lines ls 11 axis x1y2 notitle
+
+unset multiplot
+
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 6 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM03_en05.png"
+
+set multiplot layout 1,2 title "Particle center positions for e_n = 0.5"
+
+set ylabel "lower particle center height * 10^3 (m)"
+set yrange [0.40 : 0.5]
+set ytics 0.40,0.02,0.5
+
+set y2range [0.0 : 0.10]
+set y2label "abs relative error (%)"
+set y2tics 0.0,0.02,0.10
+
+set key reverse inside left top
+
+set title
+plot 'POST_POS1.dat' index 12 \
+        using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+        w lines ls 1 axis x1y1 notitle, \
+     'POST_POS1.dat' index 12 every 3 \
+        using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+        w points pointtype 6 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS1.dat' index 12 \
+        using (scaled(column(1),1000)):4  w lines ls 11 axis x1y2 notitle
+
+set ylabel "upper particle center height * 10^3 (m)"
+set yrange [1.3 : 1.4]
+set ytics 1.3,0.02,1.4
+
+set title
+plot 'POST_POS2.dat' index 12 \
+       using (scaled(column(1),1000)):(scaled(column(2),1000)) \
+       w lines ls 1 notitle, \
+     'POST_POS2.dat' index 12 every 2 \
+       using (scaled(column(1),1000)):(scaled(column(3),1000)) \
+       w points pointtype 8 lc rgb '#000000' axis x1y1  notitle,  \
+     'POST_POS2.dat' index 12 \
+       using (scaled(column(1),1000)):4 w lines ls 11 axis x1y2 notitle
+
+unset multiplot

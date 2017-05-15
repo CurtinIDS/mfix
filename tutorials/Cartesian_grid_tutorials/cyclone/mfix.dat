@@ -1,0 +1,271 @@
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'CYCLONE'
+  DESCRIPTION           = 'Cyclone'
+  RUN_TYPE              = 'NEW'              
+  UNITS                 = 'SI'
+  TIME                  = 0.0                  !start time
+  TSTOP                 = 0.2                  !increase to 2.0 sec for actual run
+  DT                    = 5.0E-3               !time step
+  ENERGY_EQ             = .FALSE.              !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.   !do not solve species eq
+
+  DT_MIN                = 1.0E-7
+
+  DT_MAX                = 1.0E-2
+
+  NORM_G = 1.0
+  NORM_S = 1.0
+ 
+!===============================================================================
+! Cartesian Grid - Quadric definition:
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+!
+! Predefined quadrics: set QUADRIC_FORM to on eof the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!===============================================================================
+
+! Note: When dispalying the cut cell boundaries from CYCLONE_boundary.vtk
+! faces located along z = 0 plane near the inlet will not be shown,
+! because these are not cut cells. They are treated as the usual default
+! boundary condition.
+
+  CARTESIAN_GRID = .TRUE.
+  N_QUADRIC = 12
+  TOL_F     = 1.0D-7
+
+  FAC_DIM_MAX_CUT_CELL  = 0.5
+
+  ITERMAX_INT = 5000
+
+  QUADRIC_FORM(1) = 'Y_CYL_INT'  'Y_CYL_EXT'  'Y_CYL_INT'   'Y_CONE'    
+  RADIUS(1)       =   0.1          0.0525        0.0375 
+  HALF_ANGLE(4)   =                                           7.125
+
+  t_x(1)          = 0.2            0.2           0.2          0.2
+  t_y(1)          = 0.0            0.0           0.0          0.5
+  t_z(1)          = 0.1            0.1           0.1          0.1
+ 
+  piece_ymin(1) = 1.3
+  piece_ymax(4) = 1.3
+
+  piece_ymin(4) = 0.8
+  piece_ymax(3) = 0.8
+
+
+!Planes 
+  quadric_form(5) = 6*'PLANE'
+
+  n_x(5) =  0.0     0.0      0.0     1.0     0.0     0.0 
+  n_y(5) =  0.0     1.0      1.0     0.0    -1.0     1.0
+  n_z(5) =  1.0     0.0      0.0     0.0     0.0     0.0
+
+  t_x(8)  =                          0.2
+  t_y(5)  = 0.0     1.599   1.498    0.0    1.498    0.302
+  t_z(5)  = 0.0425
+
+
+  QUADRIC_FORM(11) = 'Y_CYL_INT'  'Y_CYL_INT'
+  RADIUS(11)       =   0.1          0.0375    
+
+  t_x(11)      = 0.2           0.2        
+  t_y(11)      = 0.0           0.0        
+  t_z(11)      = 0.1           0.1        
+
+
+  N_GROUP = 6
+
+  GROUP_SIZE(1) = 3     ! Inlet (rectangular region)
+  GROUP_Q(1,1) = 5
+  GROUP_Q(1,2) = 8
+  GROUP_Q(1,3) = 9
+  GROUP_RELATION(1) = 'AND'
+
+
+  GROUP_SIZE(2) = 3    ! Cylinder-cone_cylinder
+  GROUP_Q(2,1) = 1
+  GROUP_Q(2,2) = 4
+  GROUP_Q(2,3) = 3
+  GROUP_RELATION(2) = 'PIECEWISE'
+  RELATION_WITH_PREVIOUS(2) = 'OR'
+
+
+  GROUP_SIZE(3) = 2    ! Remove cylindrical region
+  GROUP_Q(3,1) = 2
+  GROUP_Q(3,2) = 7
+  GROUP_RELATION(3) = 'OR'
+  RELATION_WITH_PREVIOUS(3) = 'AND'
+
+  GROUP_SIZE(4) = 2    ! Add cylinder at bottom
+  GROUP_Q(4,1) = 10
+  GROUP_Q(4,2) = 11
+  GROUP_RELATION(4) = 'AND'
+  RELATION_WITH_PREVIOUS(4) = 'OR'
+
+  GROUP_SIZE(5) = 1   ! Trim top
+  GROUP_Q(5,1) = 6
+  RELATION_WITH_PREVIOUS(5) = 'AND'
+
+  GROUP_SIZE(6) = 1   ! Add outlet 
+  GROUP_Q(6,1) = 12
+  RELATION_WITH_PREVIOUS(6) = 'OR'
+
+  BC_ID_Q(1) = 12*4
+
+  TOL_SNAP = 0.00
+  TOL_DELH = 0.0
+
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.05
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+
+  VTK_VAR = 1 2 3 4 101
+
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'cartesian' 
+
+  XLENGTH               = 0.3
+  YLENGTH               = 1.8
+  ZLENGTH               = 0.2
+
+!GRID A
+  IMAX                  =   30                 ! cells in i direction
+  JMAX                  =  180                 ! cells in j direction
+  KMAX                  =   20                 ! cells in k direction
+
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-5               !constant gas viscosity
+  MW_avg                = 29.0
+ 
+! Solids-phase Section                                                          
+
+  MMAX = 1  
+
+  RO_s0                 = 2730.0               !solids density
+  D_p0                  = 20.0E-6              !particle diameter     
+  e                     = 0.8                  !restitution coefficient
+  Phi                   = 30.0                 !angle of internal friction
+  EP_star               = 0.43                 !void fraction at minimum
+  ur_fac(2)             =  0.4                 !solids pr.
+
+
+  
+! Initial Conditions Section                                                    
+  
+  IC_X_w(1)             =  0.0
+  IC_X_e(1)             =  0.3
+  IC_Y_s(1)             =  0.0
+  IC_Y_n(1)             =  1.8
+  IC_Z_b(1)             =  0.0
+  IC_Z_t(1)             =  0.2
+                                               !initial values in the region
+  IC_EP_g(1)            =  1.0                  
+  IC_U_g(1)             =  0.0                
+  IC_V_g(1)             =  0.0                
+  IC_W_g(1)             =  0.0
+  IC_U_s(1,1)           =  0.0                 
+  IC_V_s(1,1)           =  0.0                
+  IC_W_s(1,1)           =  0.0
+  IC_T_g(1)             =  294.0
+
+                                                                                
+!  Boundary Conditions Section                                                  
+            
+     !       air inlet                                   
+  BC_X_w(1)             =  0.0 
+  BC_X_e(1)             =  0.0
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  1.8
+  BC_Z_b(1)             =  0.0 
+  BC_Z_t(1)             =  0.2
+
+  BC_TYPE(1)            = 'MI'                 !specified mass inflow 
+
+  BC_EP_g(1)            =  0.98 
+  BC_U_g(1)             =  1.0 
+  BC_V_g(1)             =  0.0
+  BC_W_g(1)             =  0.0
+  BC_U_s(1,1)           =  1.0 
+  BC_V_s(1,1)           =  0.0
+  BC_W_s(1,1)           =  0.0
+  BC_P_g(1)             =  1.013E6
+  BC_T_g(1)             =  294.0
+
+
+     !       Pressure Outflow 
+  BC_X_w(2)             =  0.0 
+  BC_X_e(2)             =  0.3
+  BC_Y_s(2)             =  1.8 
+  BC_Y_n(2)             =  1.8
+  BC_Z_b(2)             =  0.0 
+  BC_Z_t(2)             =  0.2
+
+  BC_TYPE(2)            = 'PO'                 !Pressure Outflow
+
+  BC_P_g(2)             =  1.013E6
+  BC_T_g(2)             =  294.0
+
+
+
+                    
+! cut-cell boundary condition
+  BC_TYPE(4)           = 'CG_NSW'
+
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                  !write text file CYCLONE.OUT
+                                               !  every 10 s
+  RES_DT                = 0.01                 !write binary restart file
+                                               !  CYCLONE.RES every 0.01 s
+  NLOG                  = 25                   !write logfile CYCLONE.LOG 
+                                               !every 25 time steps
+  FULL_LOG              = .TRUE.               !display residuals on screen
+
+  Resid_string    = "P0", "P1", "U0", "U1","V0", "V1", "W0", "W1"
+
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+SPX_DT = 0.05  0.05     0.05  0.05  100.  100. 100.    100.   100.        
+                                                                                
+# DMP control
+  
+NODESI = 1 NODESJ = 1 NODESK = 1
+
+
+! # Maximum iterations for linear solve
+
+  LEQ_IT = 9*50
+

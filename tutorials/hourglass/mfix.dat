@@ -1,0 +1,275 @@
+! Run-control section                                                           
+
+  RUN_NAME              = 'HG'
+  DESCRIPTION           = '2D hourglass - No Slip Wall'
+  RUN_TYPE              = 'NEW'             
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                  !start time
+  TSTOP                 = 1.0
+  DT                    = 1.0E-3               !time step
+  ENERGY_EQ             = .FALSE.              !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.   !do not solve species eq
+  DT_MIN = 1.0E-8
+
+  DT_MAX = 2.0E-3
+
+  GRANULAR_ENERGY       = .FALSE.  
+  BLENDING_STRESS       = .FALSE.
+  MAX_NIT               = 1000
+
+  TOL_RESID             = 1.0E-4
+
+  NORM_g = 1.0
+  NORM_s = 1.0
+
+!===============================================================================
+! Cartesian Grid - Quadric definition:
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+!
+! Predefined quadrics: set QUADRIC_FORM to on eof the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!===============================================================================
+  CARTESIAN_GRID = .TRUE.
+
+  N_QUADRIC = 3
+
+! First Quadric: hyperboloid of one sheet
+
+  lambda_x(1) =  0.16
+  lambda_y(1) =  -0.15
+  lambda_z(1) =  0.0
+  dquadric(1) = -1.0
+
+  t_x(1) = 10.0                 ! Translation in x direction
+  t_y(1) = 20.0                 ! Translation in y direction
+  t_z(1) = 0.50                 ! Translation in z direction
+
+  piece_ymin(1) =  12.8158
+  piece_ymax(1) =  27.1842 
+
+! Second Quadric: circle of radius 10.0
+
+  lambda_x(2) =  0.01
+  lambda_y(2) =  0.01
+  lambda_z(2) =  0.00
+  dquadric(2) = -1.0
+
+  t_x(2) = 10.0                 ! Translation in x direction
+  t_y(2) = 33.9194              ! Translation in y direction
+  t_z(2) = 0.50                 ! Translation in z direction
+
+  piece_ymin(2) =  27.1842
+
+! Third Quadric: circle of radius 10.0
+
+  lambda_x(3) =  0.01
+  lambda_y(3) =  0.01
+  lambda_z(3) =  0.00
+  dquadric(3) = -1.0
+
+  t_x(3) = 10.0                 ! Translation in x direction
+  t_y(3) = 6.0806               ! Translation in y direction
+  t_z(3) = 0.50                 ! Translation in z direction
+
+  piece_ymax(3) =  12.8158
+
+
+  N_GROUP = 1
+
+  GROUP_SIZE(1) = 3
+  GROUP_Q(1,1) = 1
+  GROUP_Q(1,2) = 2
+  GROUP_Q(1,3) = 3
+  GROUP_RELATION(1) = 'PIECEWISE'
+
+  BC_ID_Q(1) = 3 3 3 
+
+  WRITE_DASHBOARD = .TRUE.
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.01
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3 4 
+
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'cartesian' 
+
+  XLENGTH               = 20.0
+  YLENGTH               = 40.0
+  ZLENGTH               = 1.0
+
+!GRID A
+  IMAX                  =  40                ! cells in i direction
+  JMAX                  =  80                ! cells in j direction
+
+  NO_K = .TRUE.
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-4               !constant gas viscosity
+  MW_avg                = 29.0
+ 
+! Solids-phase Section                                                          
+  
+  RO_s0                 = 1.12                 !solids density
+  D_p0                  = 0.15                 !particle diameter     
+  e                     = 0.8                  !restitution coefficient
+  Phi                   = 15.0                 !angle of internal friction
+  EP_star               = 0.42                 !void fraction at minimum
+
+
+  
+! Initial Conditions Section                                                    
+  
+
+    ! 1. BED
+  IC_X_w(1)             =   0.0                ! Initial solids region 
+  IC_X_e(1)             =   20 
+  IC_Y_s(1)             =   20.0
+  IC_Y_n(1)             =   30.0
+  IC_Z_b(1)             =   0.0
+  IC_Z_t(1)             =   1.0
+                                  
+  IC_EP_g(1)            =   0.42                                  
+  IC_U_g(1)             =   0.0
+  IC_V_g(1)             =   0.0  
+  IC_W_g(1)             =   0.0  
+  IC_U_s(1,1)           =   0.0
+  IC_V_s(1,1)           =   0.0                                  
+  IC_W_s(1,1)           =   0.0  
+  IC_T_g( 1)            =   298.0        
+
+    ! 2. BOTTOM
+  IC_X_w(2)             =   0.0                ! Bottom portion below solids
+  IC_X_e(2)             =   20 
+  IC_Y_s(2)             =   0.0
+  IC_Y_n(2)             =   20.0
+  IC_Z_b(2)             =   0.0
+  IC_Z_t(2)             =   1.0
+                                  
+  IC_EP_g(2)            =   1.0                                  
+  IC_U_g(2)             =   0.0
+  IC_V_g(2)             =   0.0  
+  IC_W_g(2)             =   0.0  
+  IC_U_s(2,1)           =   0.0
+  IC_V_s(2,1)           =   0.0                                  
+  IC_W_s(2,1)           =   0.0  
+  IC_T_g( 2)            =   298.0        
+
+    ! 3. TOP
+  IC_X_w(3)             =   0.0                ! Top portion above solids
+  IC_X_e(3)             =   20 
+  IC_Y_s(3)             =   30.0
+  IC_Y_n(3)             =   40.0
+  IC_Z_b(3)             =   0.0
+  IC_Z_t(3)             =   1.0
+                                  
+  IC_EP_g(3)            =   1.0                                  
+  IC_U_g(3)             =   0.0
+  IC_V_g(3)             =   0.0  
+  IC_W_g(3)             =   0.0  
+  IC_U_s(3,1)           =   0.0
+  IC_V_s(3,1)           =   0.0                                  
+  IC_W_s(3,1)           =   0.0  
+  IC_T_g( 3)            =   298.0        
+
+            
+                                                                                
+!  Boundary Conditions Section                                                  
+                   ! 1. Exit
+  BC_X_w(1)             =   0.0                !top exit
+  BC_X_e(1)             =   20               
+  BC_Y_s(1)             =   40.0
+  BC_Y_n(1)             =   40.0
+  BC_Z_b(1)             =   0.0
+  BC_Z_t(1)             =   1.0
+
+  BC_TYPE(1)            =  'PO'                !specified pressure outflow
+  BC_P_g(1)             =  1.013e6
+  BC_T_g(1)             =  298.0               !Gas Temperature
+
+                   ! 2. bottom wall
+  BC_X_w(2)             =   0.0              
+  BC_X_e(2)             =   20.0             
+  BC_Y_s(2)             =   0.0
+  BC_Y_n(2)             =   0.0
+  BC_Z_b(2)             =   0.0
+  BC_Z_t(2)             =   1.0
+
+  BC_TYPE(2)            =  'NSW'              
+                    
+! cut-cell boundary condition
+  BC_TYPE(3)           = 'CG_NSW'  ! <---- Change this to 'CG_FSW' to set
+                                   !       Free-slip walls
+
+
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                  !write text file HG.OUT
+                                               !  every 10 s
+  RES_DT                = 0.01                 !write binary restart file
+                                               !  HG.RES every 0.01 s
+  NLOG                  = 25                   !write logfile HG.LOG 
+                                               !every 25 time steps
+  FULL_LOG              = .TRUE.               !display residuals on screen
+
+  Resid_string    = "P0", "P1", "U0", "U1","V0", "V1"
+
+!SPX_DT values determine how often SPx files are written.  Here HG.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, HG.SP2, which contains
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.01 0.1  0.01  0.01  100.  100. 100.    100.   100.        
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+  LEQ_IT(1)     = 50
+  LEQ_TOL       = 9*1D-12
+  LEQ_PC        = 9*'NONE'
+  LEQ_METHOD    = 9*2
+
+!  Sweep Direction
+
+! LEQ_SWEEP(1) = 'ISIS'
+! LEQ_SWEEP(2) = 'ISIS'
+! LEQ_SWEEP(3) = 'ISIS'
+! LEQ_SWEEP(4) = 'ISIS'
+! LEQ_SWEEP(5) = 'ISIS'
+! LEQ_SWEEP(6) = 'ISIS'
+! LEQ_SWEEP(7) = 'ISIS'
+! LEQ_SWEEP(8) = 'ISIS'
+! LEQ_SWEEP(9) = 'ISIS'
+
+! # Maximum iterations for linear solve
+
+

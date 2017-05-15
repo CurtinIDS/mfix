@@ -1,0 +1,417 @@
+########################################################################
+#  Author: J.Musser                                 Date:   2012-11-15 #
+#                                                                      #
+#  Purpose: These simulations are constructed to reflect the classical #
+#  wet-bulb phenomenon whereby energy loss from evaporation is offset  #
+#  by energy absorption from the environment.                          #
+#                                                                      #
+#  Setup: A single droplet is suspended in a humidified air stream     #
+#  with an initial temperature equal to the air temperature (30C).     #
+#  Fifteen seconds of physical time is simulated to ensure the droplet #
+#  achieves a steady-state (SS) temperature. The SS temperature should #
+#  compare with the theoretical wet-bulb temperature.                  #
+#                                                                      #
+#  Boundary and initial conditions are provided for 11 cases. The      #
+#  relative humidity of the air ranges from 0% to 100% in increments   #
+#  of 10%.                                                             #
+#                                                                      #
+#  Note:                                                               #
+#  > Steady-state and theoretical wet-bulb temperatures are provided   #
+#    in the following table for comparison.                            #
+#  > The default test cases is for 50% relative humidity.              #
+#                                                                      #
+#  |----------------------------------------------------------------|  #
+#  | Relative | Mass fractions (Xg) | Mass Flow | Wet-Bulb | DEM-SS |  #
+#  | Humidity |---------------------|    Rate   |   Temp   |  Temp  |  #
+#  | (Tg=30C) |    Air   |    H2O   |  (g/sec)  |    (C)   |   (C)  |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |    0%    | 1.000000 | 0.000000 |  0.349315 |   10.5   |   9.49 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   10%    | 0.997390 | 0.002610 |  0.348762 |   13.2   |  12.43 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   20%    | 0.994771 | 0.005229 |  0.348208 |   15.7   |  15.10 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   30%    | 0.992144 | 0.007856 |  0.347655 |   18.0   |  17.51 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   40%    | 0.989509 | 0.010491 |  0.347102 |   20.1   |  19.72 |  #
+#  ******************************************************************  #
+#  *   50%    * 0.986865 * 0.013135 *  0.346548 *   22.0   *  21.76 *  #
+#  ******************************************************************  #
+#  |   60%    | 0.984212 | 0.015788 |  0.345995 |   23.8   |  23.64 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   70%    | 0.981552 | 0.018448 |  0.345442 |   25.5   |  25.39 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   80%    | 0.978882 | 0.021118 |  0.344888 |   27.1   |  27.02 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |   90%    | 0.976204 | 0.023796 |  0.344335 |   28.6   |  28.56 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#  |  100%    | 0.973518 | 0.026482 |  0.343781 |   30.0   |  30.00 |  #
+#  |----------|----------|----------|-----------|----------|--------|  #
+#                                                                      #
+#  References:                                                         #
+#  A.F. Mills. 1999. Basic Heat and Mass Transfer. Prentice Hall, USA. #
+#                                                                      #
+########################################################################
+
+  RUN_NAME  = 'WBT'
+  DESCRIPTION  = 'DEM TEST: Wet-bulb Test - 50% relative humidity'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_TYPE = 'NEW'
+  UNITS = 'CGS'
+
+  TIME =   0.0
+  TSTOP = 15.0
+
+  DT =     5.0E-3
+  DT_FAC = 1.0
+
+  ENERGY_EQ  = .T.
+  SPECIES_EQ(0:1) = .T.  .T.
+
+  MOMENTUM_X_EQ(0:1)  = .T.   .F.
+  MOMENTUM_Y_EQ(0:1)  = .F.   .F.
+  MOMENTUM_Z_EQ(0:1)  = .F.   .F.
+
+  CALL_USR = .T.
+
+  DES_INTERP_ON  = .F.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  NORM_g = 0.0
+
+#_______________________________________________________________________
+# GEOMETRY SECTION 
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  = 1.0   IMAX = 1
+  ZLENGTH  = 1.0   KMAX = 1
+  YLENGTH  = 1.0   JMAX = 1
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! GAS SECTION
+!---------------------------------------------------------------------//
+  NMAX_g = 2
+  SPECIES_g(1) = 'AIR'   SPECIES_ALIAS_g(1) = 'AIR'
+  SPECIES_g(2) = 'H2O'   SPECIES_ALIAS_g(2) = 'Vapor'
+
+!  MW_g - Obtained from Burcat and Ruscic databse
+!  MW_AVG - Calculated from individual species
+
+
+
+! PARTICLE SECTION
+!---------------------------------------------------------------------//
+  MMAX = 1
+
+  PARTICLES  = 1   ! Number of partiles in the system.
+
+! Particle-particle:
+  KN =   1.0d6               ! Normal collision spring constant
+  DES_EN_INPUT = 0.9         ! Restitution coefficient
+  MEW   = 0.1                ! Friction coefficient
+
+! Particle-wall:
+  KN_W = 1.0d6               ! Normal collision spring constant
+  DES_EN_WALL_INPUT = 0.9    ! Restitution coefficient
+  MEW_W = 0.1                ! Friction coefficient
+
+  NFACTOR = 0                ! No initial settling
+
+  DES_NEIGHBOR_SEARCH = 4    ! Grid based neighbor search
+  NEIGHBOR_SEARCH_N   = 9999 ! Steps between neighbor search
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL = 'DEM'
+
+  D_p0(1) = 0.1      ! (cm)
+  RO_s0(1)= 0.9586d0 ! (g/cm)
+
+  DES_Em(1) = 0.0    ! Emissivity
+
+  NMAX_s(1) = 1
+
+  SPECIES_s(1,1) = 'H2O(L)'
+  SPECIES_ALIAS_s(1,1) = 'Liquid'
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1) = 0.0
+  IC_X_e(1) = 1.0
+
+  IC_Y_s(1) = 0.0
+  IC_Y_n(1) = 1.0
+
+  IC_Z_b(1) = 0.0
+  IC_Z_t(1) = 1.0
+
+  IC_EP_g(1) = 1.0
+  IC_T_g(1)  = 303.15     ! (K) --> ~105F
+  IC_P_g(1)  = 1.01325d6  ! -> 1atm
+
+  IC_U_g(1) = 300.0       ! (cm/sec)
+  IC_V_g(1) =   0.0       ! (cm/sec)
+  IC_W_g(1) =   0.0       ! (cm/sec)
+
+  IC_T_s(1,1) = 303.15    ! (K)
+  IC_X_s(1,1,1) = 1.0
+
+! IC for Tg = 30C and RH = 0%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 1.000000  ! Air
+!  IC_X_g(1,2) = 0.000000  ! Water vapor
+
+! IC for Tg = 30C and RH = 10%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.997390  ! Air
+!  IC_X_g(1,2) = 0.002610  ! Water vapor
+
+! IC for Tg = 30C and RH = 20%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.994771  ! Air
+!  IC_X_g(1,2) = 0.005229  ! Water vapor
+
+! IC for Tg = 30C and RH = 30%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.992144  ! Air
+!  IC_X_g(1,2) = 0.007856  ! Water vapor
+
+! IC for Tg = 30C and RH = 40%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.989509  ! Air
+!  IC_X_g(1,2) = 0.010491  ! Water vapor
+
+! IC for Tg = 30C and RH = 50%
+!---------------------------------------------------//
+  IC_X_g(1,1) = 0.986865  ! Air
+  IC_X_g(1,2) = 0.013135  ! Water vapor
+
+! IC for Tg = 30C and RH = 60%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.984212  ! Air
+!  IC_X_g(1,2) = 0.015788  ! Water vapor
+
+! IC for Tg = 30C and RH = 70%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.981552  ! Air
+!  IC_X_g(1,2) = 0.018448  ! Water vapor
+
+! IC for Tg = 30C and RH = 80%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.978882  ! Air
+!  IC_X_g(1,2) = 0.021118  ! Water vapor
+
+! IC for Tg = 30C and RH = 90%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.976204  ! Air
+!  IC_X_g(1,2) = 0.023796  ! Water vapor
+
+! IC for Tg = 30C and RH = 100%
+!---------------------------------------------------//
+!  IC_X_g(1,1) = 0.973518  ! Air
+!  IC_X_g(1,2) = 0.026482  ! Water vapor
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+
+# Gas Inlet
+#---------------------------------------------------------------------//
+  BC_X_w(1)  = 0.0
+  BC_X_e(1)  = 0.0
+  BC_Z_b(1)  = 0.0
+  BC_Z_t(1)  = 1.0
+  BC_Y_s(1)  = 0.0
+  BC_Y_n(1)  = 1.0
+
+  BC_TYPE(1) = 'MI'
+
+  BC_P_g(1)  = 1.01325d6   ! (Barye) -> 1 atm
+  BC_T_g(1)  = 303.15      ! (K) --> 30C
+  BC_EP_g(1) = 1.0
+                                                                                
+  BC_V_g(1)  = 0.0
+  BC_W_g(1)  = 0.0
+
+! BC for Tg = 30C and RH = 0%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 1.000000  ! Air
+!  BC_X_g(1,2) = 0.000000  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.349315  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 10%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.997390  ! Air
+!  BC_X_g(1,2) = 0.002610  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.348762  ! Ug = 300 cm/sec
+
+! BC for Tg = 30C and RH = 20%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.994771  ! Air
+!  BC_X_g(1,2) = 0.005229  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.348208  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 30%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.992144  ! Air
+!  BC_X_g(1,2) = 0.007856  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.347655  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 40%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.989509  ! Air
+!  BC_X_g(1,2) = 0.010491  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.347102  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 50%
+!---------------------------------------------------------------------//
+  BC_X_g(1,1) = 0.986865  ! Air
+  BC_X_g(1,2) = 0.013135  ! Water vapor
+
+  BC_MassFlow_g(1) = 0.346548  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 60%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.984212  ! Air
+!  BC_X_g(1,2) = 0.015788  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.345995  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 70%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.981552  ! Air
+!  BC_X_g(1,2) = 0.018448  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.345442  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 80%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.978882  ! Air
+!  BC_X_g(1,2) = 0.021118  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.344888  ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 90%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.976204   ! Air
+!  BC_X_g(1,2) = 0.023796   ! Water Vapor
+
+!  BC_MassFlow_g(1) = 0.344335 ! Ug = 300 cm/sec
+
+
+! BC for Tg = 30C and RH = 100%
+!---------------------------------------------------------------------//
+!  BC_X_g(1,1) = 0.973518  ! Air
+!  BC_X_g(1,2) = 0.026482  ! Water vapor
+
+!  BC_MassFlow_g(1) = 0.343781  ! Ug = 300 cm/sec
+
+
+# Free-slip Walls
+#---------------------------------------------------------------------//
+  BC_X_w(2)  =  0.0   0.0   0.0   0.0
+  BC_X_e(2)  =  1.0   1.0   1.0   1.0
+  BC_Z_b(2)  =  0.0   1.0   0.0   0.0
+  BC_Z_t(2)  =  0.0   1.0   1.0   1.0
+  BC_Y_s(2)  =  0.0   0.0   0.0   1.0
+  BC_Y_n(2)  =  1.0   1.0   0.0   1.0
+
+  BC_TYPE(2) = 4*'FSW'
+
+  BC_hw_T_g(2) =  4*0.0
+  BC_C_T_g(2)  =  4*0.0
+
+  BC_hw_X_g(2,1) =  4*0.0
+  BC_hw_X_g(2,2) =  4*0.0
+
+  BC_C_X_g(2,1) =  4*0.0
+  BC_C_X_g(2,2) =  4*0.0
+
+
+# Gas-Solids Outlet
+#---------------------------------------------------------------------//
+  BC_X_w(6) = 1.0
+  BC_X_e(6) = 1.0
+  BC_Z_b(6) = 0.0
+  BC_Z_t(6) = 1.0
+  BC_Y_s(6) = 0.0 
+  BC_Y_n(6) = 1.0
+                  
+  BC_TYPE(6) = 'PO'
+
+  BC_P_g(6)  = 1.01325d6  ! (Barye)
+  BC_T_g(6)  = 303.15   ! (K) -> 30C
+
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  @(DES_RXNS)
+
+    Evaporation{ chem_eq = "Liquid --> Vapor"}
+
+  @(DES_END)
+
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  RES_DT = 0.1 
+
+  SPX_DT(1) = 0.1    ! EP_g 
+  SPX_DT(2) = 5.0    ! P_g, P_star 
+  SPX_DT(3) = 0.1    ! U_g, V_g, W_g
+  SPX_DT(4) = 500.   ! U_s, V_s, W_s
+  SPX_DT(5) = 500.   ! ROP_s
+  SPX_DT(6) = 0.1    ! T_g, T_s
+  SPX_DT(7) = 0.1    ! X_g, X_s
+  SPX_DT(8) = 500.   ! theta
+  SPX_DT(9) = 500.   ! Scalar
+
+  RESID_STRING  = 'P0' 'T0'
+
+  NLOG = 25
+  FULL_LOG = .T. 
+
+  PRINT_DES_DATA = .F. ! write DEM data : *.vtp files
+
+#_______________________________________________________________________
+# PARALLELIZATION CONTROLS
+
+  NODESI  = 1     NODESJ  = 1     NODESK  = 1
+
+
+#_______________________________________________________________________
+THERMO DATA
+
+H2O(L)            L 8/89H  2.O  1.   0.   0.L   273.150  6000.000  C  18.01528 1
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 7.25575005E+01-6.62445402E-01 2.56198746E-03    3
+-4.36591923E-06 2.78178981E-09-4.18865499E+04-2.88280137E+02-3.43772513E+04    4
+

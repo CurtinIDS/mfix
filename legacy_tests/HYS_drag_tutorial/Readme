@@ -1,0 +1,9 @@
+This tutorial uses polydisperse gas-solid suspensions 
+with a fluid-particle drag relation developed by Holloway, Yin, and Sundaresan (HYS) for 
+polydisperse (particles of different size/density) suspensions of spherical particles.  This case
+is a 0-D periodic channel with a pressure gradient imposed in the y-direction (delp_y) to balance
+the weight of the particles.  The particles have the same density, but different diameters.  In this
+folder there are results for the particle and fluid phase velocities to compare with your results.
+
+A detailed document outlining the HYS drag formulation can be found in 
+~/mfix/doc with the new release of MFIX in September 2009.

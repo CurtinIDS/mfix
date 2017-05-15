@@ -1,0 +1,177 @@
+!                                                                               
+!  Example of geometry input from .msh file                                            
+!                                                                               
+
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'MSH'             
+  DESCRIPTION           = 'Example of geometry input from .msh file'          
+  RUN_TYPE              = 'new'             
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                           !start time
+  TSTOP                 = 0.5                           !end time
+  DT                    = 1.0E-3                        !time step
+  ENERGY_EQ             = .FALSE.                       !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.            !do not solve species eq
+
+  NORM_G = 0.0
+  NORM_S = 0.0
+
+!===============================================================================
+! Cartesian Grid - Get geometry from .msh file
+!===============================================================================
+  CARTESIAN_GRID = .TRUE.
+
+  USE_MSH = .TRUE.
+
+  SCALE_MSH = 0.5      ! The sphere has a radius of 1.0 in the .msh file
+                       ! It can be scaled without changing the .msh file
+
+  TX_MSH = 2.0
+  TY_MSH = 2.0
+  TZ_MSH = 2.0
+
+  OUT_MSH_VALUE = -1.0   ! compute flow outside of sphere
+
+ 
+! cut-cell boundary condition
+  BC_TYPE(5)           = 'CG_NSW'
+
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+  F_DASHBOARD = 1
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.01
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3 4 
+
+                                                                               
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'CARTESIAN' 
+  XLENGTH               =   4.0
+  IMAX                  =   20 
+  YLENGTH               =   16.0
+  JMAX                  =   80 
+  ZLENGTH               =   4.0
+  KMAX                  =   20 
+
+
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-4                        !constant gas viscosity
+  RO_g0                 = 1.2E-3                        !constant gas density
+
+ 
+! Solids-phase Section                                                          
+  
+  RO_s0                 = 2.0                           !solids density
+  D_p0                  = 0.04                          !particle diameter     
+  e                     = 0.8                           !restitution coefficient
+  Phi                   =30.0                           !angle of internal friction
+  EP_star               = 0.42                          !void fraction at minimum
+                                                        !  fluidization
+
+  
+! Initial Conditions Section                                                    
+  
+    ! 1. bed                                      
+  IC_X_w(1)             =  0.0                         
+  IC_X_e(1)             =  4.0  
+  IC_Y_s(1)             =  0.0
+  IC_Y_n(1)             = 16.0
+  IC_Z_b(1)             =  0.0                         
+  IC_Z_t(1)             =  4.0                         
+ 
+                                                        !initial values in the region
+  IC_EP_g(1)            =  1.0                         !void fraction  
+  IC_U_g(1)             =  0.0                          !x gas velocity
+  IC_V_g(1)             = 100.0                         !y gas velocity
+  IC_W_g(1)             =  0.0                          !z gas velocity
+  IC_U_s(1,1)           =  0.0                          !x solids velocity 
+  IC_V_s(1,1)           =  0.0                          !y solids velocity
+  IC_W_s(1,1)           =  0.0                          !z solids velocity
+
+
+!  Boundary Conditions Section                                                  
+
+       ! 1. Distributor flow                                       
+  BC_X_w(1)             =  0.0                          !gas distributor plate
+  BC_X_e(1)             =  4.0 
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0 
+  BC_Z_b(1)             =  0.0 
+  BC_Z_t(1)             =  4.0
+
+
+  BC_TYPE(1)            = 'MI'                          !specified mass inflow 
+
+  BC_EP_g(1)            =   0.98 
+  BC_U_g(1)             =   0.0 
+  BC_V_g(1)             = 100.0 
+  BC_W_g(1)             =   0.0
+  BC_U_s(1,1)           =   0.0
+  BC_V_s(1,1)           = 100.0
+  BC_W_s(1,1)           =   0.0
+  BC_P_g(1)             =   0.0                  
+
+                                           
+       ! 2. Exit
+  BC_X_w(2)             =   0.0                         !top exit
+  BC_X_e(2)             =   4.0                         
+  BC_Y_s(2)             =  16.0
+  BC_Y_n(2)             =  16.0
+  BC_Z_b(2)             =   0.0
+  BC_Z_t(2)             =   4.0
+
+  BC_TYPE(2)            =  'PO'                         !specified pressure outflow
+  BC_P_g(2)             =  0.0                                 
+                                              
+
+                                  
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                           !write text file BUB02.OUT
+                                                        !  every 10 s
+  RES_DT                = 0.01                          !write binary restart file
+                                                        !  BUB02.RES every 0.01 s
+  NLOG                  = 25                            !write logfile BUB02.LOG 
+                                                        !every 25 time steps
+  FULL_LOG              = .TRUE.                        !display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written.  Here BUB02.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, BUB02.SP2, which contains
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 1.0 1.0       1.0  1.0  100.      100. 100.   100.0     100.        
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+

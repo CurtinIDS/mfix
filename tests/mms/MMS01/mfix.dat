@@ -1,0 +1,166 @@
+########################################################################
+# 2D, single-phase, sinusoidal MMS case                                #
+# Order verification using manufactured solution                       #
+#                                                                      #
+# Author: Aniruddha Choudhary                           Date: Feb 2015 #
+#                                                                      #
+# Reference: Choudhary, Aniruddha, Roy, Christopher J., Dietiker,      # 
+# Jean-François, Shahnam, Mehrdad and Garg, Rahul. "Code Verification  #
+# for Multiphase Flows Using the Method of Manufactured Solutions."    #
+# Paper presented at the meeting of the ASME 2014 4th Joint            #
+# US-European Fluids Engineering Division Summer Meeting collocated    #
+# with the ASME 2014 12th International Conference on Nanochannels,    #
+# Microchannels, and Minichannels, 2014.                               #
+# doi:10.1115/FEDSM2014-21608                                          #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  Run_name      = 'MMS2D'
+  Description   = '2D Sinusoidal MMS Case'
+  Units         = 'SI'
+  Run_type      = 'new'
+
+  Time          = 0.0 ! Steady state solution
+  Tstop         = 1.0
+
+  Energy_eq     = .F.
+  Species_eq(0) = .F.
+
+  Gravity       = 0.0
+
+  Call_usr      = .T.
+
+  !Set_corner_Cells  = .F.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  Max_nit       = 200000  ! large enough for all mesh levels
+
+  Norm_g        = 0.0d0
+
+  Tol_resid     = 1.0E-10
+
+  Discretize    = 9*9
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  Coordinates   = 'cartesian'
+
+  xlength = 1.0  
+  ylength = 1.0
+
+  imax    = 8  ! set via command line
+  jmax    = 8  ! set via command line
+
+  no_k = .T.
+
+#_______________________________________________________________________
+# GAS-PHASE SECTION
+
+  mu_g0 = 1.0
+  ro_g0 = 1.0
+  ! Note: viscosity and density selected to ensure comparable
+  ! contribution from convection and diffusion terms. 
+
+#_______________________________________________________________________
+# SOLIDS-PHASE SECTION
+
+  mmax = 0
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1)   = 0.0     
+  IC_X_e(1)   = 1.0    
+  IC_Y_s(1)   = 0.0    
+  IC_Y_n(1)   = 1.0    
+
+  IC_EP_g(1)  = 1.0   
+  IC_U_g(1)   = 5.0   
+  IC_V_g(1)   = 5.0     
+
+  IC_X_g(1,1) = 1.0	   
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! West: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(1)   = 0.0
+  BC_X_e(1)   = 0.0
+  BC_Y_s(1)   = 0.0
+  BC_Y_n(1)   = 1.0 
+
+  BC_type(1)  = 'MI'
+
+  BC_Ep_g(1)  = 1.0   
+  BC_U_g(1)   = 5.0
+  BC_V_g(1)   = 5.0
+  BC_P_g(1)   = 0.0
+
+! South: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(2)   = 0.0
+  BC_X_e(2)   = 1.0
+  BC_Y_s(2)   = 0.0
+  BC_Y_n(2)   = 0.0 
+
+  BC_type(2)  = 'MI'
+
+  BC_Ep_g(2)  = 1.0   
+  BC_U_g(2)   = 5.0
+  BC_V_g(2)   = 5.0
+  BC_P_g(2)   = 0.0
+
+! East: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(4)   = 1.0
+  BC_X_e(4)   = 1.0
+  BC_Y_s(4)   = 0.0
+  BC_Y_n(4)   = 1.0 
+
+  BC_type(4)  = 'MI'
+
+  BC_Ep_g(4)  = 1.0   
+  BC_U_g(4)   = -5.0
+  BC_V_g(4)   = 5.0
+  BC_P_g(4)   = 0.0
+
+! North: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(5)   = 0.0
+  BC_X_e(5)   = 1.0
+  BC_Y_s(5)   = 1.0
+  BC_Y_n(5)   = 1.0 
+
+  BC_type(5)  = 'MI'
+
+  BC_Ep_g(5)  = 1.0   
+  BC_U_g(5)   = 5.0
+  BC_V_g(5)   = -5.0
+  BC_P_g(5)   = 0.0
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+ 
+  Out_dt      = 1.                 
+  Res_dt      = 1.                 
+  Nlog        = 1                  
+  Full_log    = .T.              
+  Spx_dt      = 9*1.
+
+  Resid_string  = 'P0', 'U0', 'V0'
+
+#_______________________________________________________________________
+# DMP SETUP
+
+!  NODESI =  2  NODESJ =  1  NODESK =  1  ! set via command line

@@ -1,0 +1,250 @@
+########################################################################
+#  Author: J.Musser                                 Date:   2012-11-16 #
+#                                                                      #
+#  Purpose: This simulation reflects 'Run 03' from Kulic and Rhodes.   #
+#  A single droplet is suspended in a humidified air/water vapor       #
+#  stream.                                                             #
+#                                                                      #
+#  The droplet temperature is recorded for comparison with reported    #
+#  experimental data [1,2].                                            #
+#                                                                      #
+#  References:                                                         #
+#``````````````````````````````````````````````````````````````````````#
+#  1. E.Kulic and E.Rhodes. (1977) "Direct contact condensation from   #
+#     Air-Steam mixtures on a single droplet," The Canadian Journal of #
+#     Chemical Engineering, Vol. 55, 131-137.                          #
+#                                                                      #
+#  2.  E. Kulic (1976). An experimental and theoretical study of simul-#
+#     taneous heat and mass transfer applided to steam dousing.        #
+#     University of Waterloo, Ph.D. Thesis.                            #
+#                                                                      #
+#  3. A.F. Mills. 1999. Basic Heat and Mass Transfer. Prentice Hall,   #
+#     USA.                                                             #
+#                                                                      #
+########################################################################
+
+  RUN_NAME  = 'KR03'
+  DESCRIPTION  = 'DEM TEST: Water vapor condensing on a droplet'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  UNITS    = 'CGS'
+  RUN_TYPE = 'NEW'
+
+  TIME =   0.0
+  TSTOP =  4.05
+
+  DT =     5.0d-3
+  DT_FAC = 1.0
+
+  ENERGY_EQ  = .T.
+
+  SPECIES_EQ(0:1) = .T.  .T.
+
+  MOMENTUM_X_EQ(0:1)  = .T.   .F.
+  MOMENTUM_Y_EQ(0:1)  = .F.   .F.
+  MOMENTUM_Z_EQ(0:1)  = .F.   .F.
+
+  CALL_USR = .T.
+
+  DES_INTERP_ON = .F.
+
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  NORM_g = 0.0
+
+#_______________________________________________________________________
+# GEOMETRY SECTION 
+
+  COORDINATES = 'cartesian'
+
+  XLENGTH  = 1.0   IMAX = 1
+  ZLENGTH  = 1.0   KMAX = 1
+  YLENGTH  = 1.0   JMAX = 1
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+# GAS SECTION
+#---------------------------------------------------------------------//
+  NMAX_g = 2
+
+  SPECIES_g(1) = 'AIR'   SPECIES_ALIAS_g(1) = 'AIR'
+  SPECIES_g(2) = 'H2O'   SPECIES_ALIAS_g(2) = 'Vapor'
+
+! Thermochemical properties obtained from Burcat and Ruscic databse
+
+# PARTICLE SECTION
+#---------------------------------------------------------------------//
+  MMAX = 1
+
+  PARTICLES = 1                ! Number of partiles
+
+! Particle-particle:
+  KN =   1.0d6                 ! Normal collision spring constant
+  MEW =  0.0                   ! Friction coefficient
+
+! Particle-wall
+  KN_W =  1.0d6                ! Normal collision spring constant
+  MEW_W = 0.0                  ! Friction coefficient
+
+! Restitution coefficients
+
+  DES_EN_INPUT(1) = 0.9        ! e11  
+  DES_EN_WALL_INPUT = 0.9      ! e1w
+
+  DES_NEIGHBOR_SEARCH = 4      ! Grid based neighbor search
+  NEIGHBOR_SEARCH_N   = 9999   ! Steps between neighbor search
+
+# Solids phase 1
+#---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  D_p0(1) =   0.29        ! (cm)
+  RO_s0(1)=   0.9586      ! (g/cm)
+
+  K_s0(1) =   1.4651d-3   ! Conductivity  :: cal/(sec.cm.K)
+  DES_Em(1) = 0.0         ! Emissivity
+
+  NMAX_s(1) = 1
+
+  SPECIES_s(1,1) = 'H2O(L)'  SPECIES_ALIAS_s(1,1) = 'Liquid'
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1) = 0.0
+  IC_X_e(1) = 1.0
+
+  IC_Y_s(1) = 0.0
+  IC_Y_n(1) = 1.0
+
+  IC_Z_b(1) = 0.0
+  IC_Z_t(1) = 1.0
+
+  IC_EP_g(1) = 1.0
+  IC_T_g(1)  = 353.15     ! (K) --> 80C
+  IC_P_g(1)  = 1.01325d6 ! -> 1atm
+
+  IC_U_g(1) = 191.0  ! (cm/sec)
+  IC_V_g(1) = 0.0   ! (cm/sec)
+  IC_W_g(1) = 0.0   ! (cm/sec)
+
+  IC_X_g(1,1) = 0.644516  ! Air
+  IC_X_g(1,2) = 0.355484  ! Water vapor
+
+  IC_T_s(1,1)   = 289.15 ! Temperature
+  IC_X_s(1,1,1) = 1.0    ! Liquid Water
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+# Gas Inlet
+#---------------------------------------------------------------------//
+  BC_X_w(1) =    0.0
+  BC_X_e(1) =    0.0
+  BC_Z_b(1) =    0.0
+  BC_Z_t(1) =    1.0
+  BC_Y_s(1) =    0.0
+  BC_Y_n(1) =    1.0
+
+  BC_TYPE(1) =   'MI'
+
+  BC_EP_g(1) =   1.0
+
+  BC_P_g(1) =    1.01325d6    ! (Barye) -> 1 atm
+  BC_T_g(1) =  353.15         ! (K) --> 30C
+                                                                                
+  BC_V_g(1) =    0.0          ! (cm/sec)
+  BC_W_g(1) =    0.0          ! (cm/sec)
+
+  BC_MassFlow_g(1) = 0.156989 ! (g/sec)
+
+  BC_X_g(1,1) =  0.644516     ! Air
+  BC_X_g(1,2) =  0.355484     ! Water vapor
+
+
+# Free-slip Walls
+#---------------------------------------------------------------------//
+  BC_X_w(2)  =  0.0   0.0   0.0   0.0
+  BC_X_e(2)  =  1.0   1.0   1.0   1.0
+  BC_Z_b(2)  =  0.0   1.0   0.0   0.0
+  BC_Z_t(2)  =  0.0   1.0   1.0   1.0
+  BC_Y_s(2)  =  0.0   0.0   0.0   1.0
+  BC_Y_n(2)  =  1.0   1.0   0.0   1.0
+
+  BC_TYPE(2) = 4*'FSW'
+
+  BC_hw_T_g(2) =  4*0.0
+  BC_C_T_g(2)  =  4*0.0
+
+  BC_hw_X_g(2,1) =  4*0.0
+  BC_hw_X_g(2,2) =  4*0.0
+
+  BC_C_X_g(2,1) =  4*0.0
+  BC_C_X_g(2,2) =  4*0.0
+
+
+# Gas-Solids Outlet
+#---------------------------------------------------------------------//
+  BC_X_w(6) = 1.0
+  BC_X_e(6) = 1.0
+  BC_Z_b(6) = 0.0
+  BC_Z_t(6) = 1.0
+  BC_Y_s(6) = 0.0 
+  BC_Y_n(6) = 1.0
+                  
+  BC_TYPE(6) = 'PO'
+
+  BC_P_g(6)  = 1.01325d6  ! (Barye)
+  BC_T_g(6)  = 353.15   ! (K) -> 80C
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  @(DES_RXNS)
+
+    Evaporation{ chem_eq = "Vapor --> Liquid"}
+
+  @(DES_END)
+
+
+#_______________________________________________________________________
+# OUTPUT CONROL SECTION
+
+  RES_DT = 1.0d3  ! interval to update restart (.RES) file
+
+  NLOG = 25       ! time steps between updates to (.LOG) file
+  FULL_LOG = .T.  ! display residuals on screen
+
+! Interval at which .SPX files are written
+  SPX_DT(1:9) = 9*1.0d3
+
+  GROUP_RESID = .T.  ! Group residuals by equation
+
+  PRINT_DES_DATA = .F.
+
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  1  NODESJ = 1  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .F.
+
+
+#_______________________________________________________________________
+THERMO DATA
+
+H2O(L)            L 8/89H  2.O  1.   0.   0.L   273.150  6000.000  C  18.01528 1
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 7.25575005E+01-6.62445402E-01 2.56198746E-03    3
+-4.36591923E-06 2.78178981E-09-4.18865499E+04-2.88280137E+02-3.43772513E+04    4

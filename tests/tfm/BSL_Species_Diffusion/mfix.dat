@@ -1,0 +1,224 @@
+########################################################################
+# Species diffusion: Diffusion in mixture of air and water vapor       #
+#                                                                      #
+# Purpose: This case invokes the species transport equation in MFIX    #
+# and tests the diffusion model.                                       # 
+#                                                                      #
+# Setup: A rectangular tank is filled with air and water vapor (i.e.,  #
+# H20 in gaseous form). The West and East boundaries are maintained at #
+# constant mass fraction of the two species as:                        #
+#   West: X(H20)=0.9 and East: X(H20)=0.1.                             #
+#                                                                      #
+# References:                                                          #
+#    [1] Incropera, F. P., DeWitt, D. P. (1996). Fundamentals of Heat  #
+#    and Mass Transfer. 4th Edition.                                   #
+#    New York City, New York: John Wiley & Sons, Inc..                 #
+#                                                                      #
+# Author: Aniruddha Choudhary (anirudd@vt.edu)          Date: Aug 2015 #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  Run_name      = 'TFM05'
+  Description   = 'Species diffusion'
+  Units         = 'SI'
+  Run_type      = 'new'
+
+  Time          = 0.0
+  Tstop         = 1.0
+
+  Energy_eq     = .F.
+
+  Momentum_x_eq(0)  = .T.
+  Momentum_y_eq(0)  = .T.
+
+  Gravity       = 0.0
+
+  Call_usr      = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  Max_nit       = 15000
+
+  Tol_resid_X   = 1.0E-8
+
+  leq_method = 9*3
+  Leq_pc        = 9*'NONE'
+  Leq_tol       = 9*1.0d-3
+
+  Norm_g        = 1.0
+
+! Under relaxation factors
+! Defaults:
+!      [UR_FAC(1,6,9)=0.8]
+!      [UR_FAC(2,3,4,5,8)=0.5]
+!      [UR_FAC(7)=1]
+
+  ur_fac(1) = 0.1    ! pressure
+  ur_fac(3) = 0.1    ! u-mtm
+!  ur_fac(4) = 0.15    ! v-mtm
+
+  ur_fac(7) = 0.95    ! species
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  Coordinates   = 'cartesian'
+
+  xlength = 0.5
+  ylength = 0.2
+
+  imax    = 100
+  jmax    = 40
+
+  no_k = .T.
+
+#_______________________________________________________________________
+# GAS-PHASE SECTION
+
+  NMAX_g        = 2
+  SPECIES_g(1)  = 'AIR'
+  SPECIES_g(2)  = 'H2O'
+
+  DIF_g0        = 2.4E-5
+
+!  RO_g0 = 1.0
+
+!  MW_g(1) = 28.97
+!  MW_g(2) = 18.02
+
+!  MW_g - Obtained from Burcat and Ruscic database
+!  MW_AVG - Calculated from individual species
+
+#_______________________________________________________________________
+# SOLIDS-PHASE SECTION
+
+  MMAX = 0
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1)   = 0.0
+  IC_X_e(1)   = 0.5
+  IC_Y_s(1)   = 0.0
+  IC_Y_n(1)   = 0.2
+
+  IC_EP_g(1)  = 1.0
+  IC_T_g(1)   = 300.0     ! (K)
+  IC_P_g(1)   = 101325    ! (Pa)
+
+  IC_U_g(1)   = 0.0       ! (m/s)
+  IC_V_g(1)   = 0.0       ! (m/s)
+
+  IC_X_g(1,1) = 1.0       ! Air
+  IC_X_g(1,2) = 0.0       ! H2O
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! West and East: specified mass fractions of air and water vapor
+!---------------------------------------------------------------------//
+
+! West
+
+  BC_X_w(1)   = 0.0
+  BC_X_e(1)   = 0.0
+  BC_Y_s(1)   = 0.0
+  BC_Y_n(1)   = 0.2
+
+  BC_Type(1)  = 'FSW'
+
+  BC_XW_g(1,1) = 0.1  ! Air  10
+  BC_XW_g(1,2) = 0.9  ! H2O  90
+
+
+! East
+
+  BC_X_w(2)   = 0.5
+  BC_X_e(2)   = 0.5
+  BC_Y_s(2)   = 0.0
+  BC_Y_n(2)   = 0.2
+
+  BC_Type(2)  = 'FSW'
+
+  BC_XW_g(2,1) = 0.9  ! Air
+  BC_XW_g(2,2) = 0.1  ! H2O
+
+
+
+! Point Source: West boundary
+!---------------------------------------------------------------------//
+  PS_X_w(1)          =    0.003  ! (m)
+  PS_X_e(1)          =    0.003  ! (m)
+  PS_Y_s(1)          =    0.0   ! (m)
+  PS_Y_n(1)          =    0.2   ! (m)
+
+  PS_MASSFLOW_G(1)   =    1.0d-4
+
+  PS_X_g(1,1)        =    0.0   ! Air
+  PS_X_g(1,2)        =    1.0   ! H2O
+
+! Point Source: East boundary
+!---------------------------------------------------------------------//
+  PS_X_w(2)          =    0.498  ! (m)
+  PS_X_e(2)          =    0.498  ! (m)
+  PS_Y_s(2)          =    0.0    ! (m)
+  PS_Y_n(2)          =    0.2    ! (m)
+
+  PS_MASSFLOW_G(2)   =    0.01
+
+  PS_X_g(2,1)        =    0.0   ! Air
+  PS_X_g(2,2)        =    1.0   ! H2O
+
+
+
+
+! South and North: Free-slip wall
+!---------------------------------------------------------------------//
+  
+! South
+
+  BC_X_w(3)   = 0.0
+  BC_X_e(3)   = 0.5
+  BC_Y_s(3)   = 0.0
+  BC_Y_n(3)   = 0.0
+
+  BC_Type(3)  = 'FSW'
+
+  BC_hw_X_g(3,1)  = 0.0
+  BC_C_X_g(3,1)   = 0.0
+  BC_hw_X_g(3,2)  = 0.0
+  BC_C_X_g(3,2)   = 0.0
+
+! North
+
+  BC_X_w(4)   = 0.0
+  BC_X_e(4)   = 0.5
+  BC_Y_s(4)   = 0.2
+  BC_Y_n(4)   = 0.2
+
+  BC_Type(4)  = 'FSW'
+
+  BC_hw_X_g(4,1)  = 0.0
+  BC_C_X_g(4,1)   = 0.0
+  BC_hw_X_g(4,2)  = 0.0
+  BC_C_X_g(4,2)   = 0.0
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  Out_dt      = 1.0
+  Res_dt      = 0.1
+  Nlog        = 1
+  Full_log    = .T.
+  Spx_dt      = 9*0.1
+
+  Resid_string  = 'P0' 'U0' 'X001' 'X002'
+
+#_______________________________________________________________________
+# DMP SETUP
+
+!  NODESI =  2  NODESJ =  2  NODESK =  1  ! set via command line

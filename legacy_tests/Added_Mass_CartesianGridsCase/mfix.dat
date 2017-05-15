@@ -1,0 +1,377 @@
+! A 2D bubble-column fluidized bed simulation.  This is a 2D version
+! of the case referred to below.  This particular case is meant to
+! check that the cut-cell technique works with the added_mass option.
+
+! For details see: Pfleger, D., Gomes, S., Gilbert, N., and Wagner,
+! H.-G., "Hydrodynamic simulations of laboratory scale bubble 
+! columns fundamental studies of the Eulerian-Eulerian modelling
+! approach", Chem. Eng. Science, 54, (1999) pp. 5091-5099.
+
+! Author: S. Benyahia, Nov. 2010
+
+!*********************************************************************
+! Run Control
+!*********************************************************************
+  RUN_NAME = 'R'
+  DESCRIPTION = 'bubble column with water-air'
+  RUN_TYPE = 'new'
+
+  UNITS = 'cgs'
+
+  TIME  = 0.0       ! start time
+  TSTOP = 3.0       ! stop time
+  DT = 1.0E-2       ! time step
+  DT_MAX = 1E-1     ! maximum time step   [1.0]
+  DT_MIN = 1d-8     ! minimum time step   [1.0E-6]
+
+! Solve energy eq?  [.TRUE.]
+  ENERGY_EQ = .FALSE.
+
+! Solve species eq?  [.TRUE.]
+  SPECIES_EQ = .FALSE.    .FALSE.
+
+! the gas-solid drag model.  ['SYAM_OBRIEN']
+  DRAG_TYPE  = 'WEN_YU'
+
+! use model B form of momentum equations?  [.FALSE.]
+  MODEL_B = .FALSE.   ! use model A
+ 
+! use the schaeffer model for frictional/plastic solids phase
+! stress?   [.TRUE.] 
+  SCHAEFFER = .FALSE.   ! frictional stresses for for solid particles 
+                        ! only. in this case this 'solids' phase is
+                        ! actually air (see below)
+
+
+!*********************************************************************
+! Numerical Parameters
+!*********************************************************************
+  MAX_NIT = 50          ! maximum number of iterations [500]
+
+  TOL_RESID = 1E-4      ! max. continuity+momentum residual at 
+                        ! convergence [1E-3]
+
+! Discretization scheme
+#  DISCRETIZE =  9*2
+#  DEF_COR = .TRUE.
+
+! factor to normalize gas pressure/solids correction equation(s) 
+! residual
+!  [undefined] : normalization uses residual from first iteration 
+!      0       : normalization based on dominate term in continuity eqn
+!  [defined]   : normalized by value provided
+  NORM_G = 0.0 
+
+! reduce time step if residuals sum does not decrease?  [.TRUE.]
+#  DETECT_STALL = .FALSE.
+
+! Number of iterations in the linear equation solver
+!      [LEQ_IT(1,2)=20]
+!      [LEQ_IT(3-5)=5]
+!      [LEQ_IT(6-9)=15]
+  LEQ_IT = 9*200
+
+! The tolerance in the linear equation solver  [1.0D-4]
+  LEQ_TOL = 9*1D-08
+
+  
+!*********************************************************************
+! Geometry 
+!*********************************************************************
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  = 20.0    IMAX = 40       ! length and cells in x/i direction
+  YLENGTH  = 45.0    JMAX = 90	     ! length and cells in y/j direction
+  ZLENGTH  = 5       NO_K = .TRUE.   ! 2D, no k direction
+
+
+!=====================================================================
+! Cartesian Grid - Quadric definition:
+!=====================================================================
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+
+! Predefined quadrics: set QUADRIC_FORM to one of the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!=====================================================================
+
+  CARTESIAN_GRID = .TRUE.
+
+  N_QUADRIC = 1
+  QUADRIC_FORM(1) = 'Z_CYL_EXT' 
+  RADIUS(1)       =  5.0
+  t_x(1)          =  10.0	 
+  t_y(1)          =  15.0         
+  BC_ID_Q(1)      =  12         
+
+! cut-cell boundary condition
+  BC_TYPE(12)           = 'CG_NSW'
+
+  TOL_SMALL_CELL = 0.2
+
+  PRINT_WARNINGS = .TRUE.
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+
+!=====================================================================
+! VTK file options
+!=====================================================================
+  WRITE_VTK_FILES = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.1
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and \u03b5)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3 4 11 12 101
+
+
+!*********************************************************************
+! Gas Phase 
+!*********************************************************************
+! Water-phase or continuous phase
+  MU_g0 = 0.9E-2     ! constant viscosity (poise)
+  RO_G0 = 1.0     ! constant fluid density
+
+! the reference pressure is used to adjust input/output values of
+! pressure to a gauge value.
+  P_Ref = 1.01E6     ! reference pressure [bayre] 
+
+! use k-e turbulence model for single-phase flow with standard wall
+! functions?   [.FALSE.]
+  K_EPSILON = .TRUE.  
+  Mu_gmax = 1.E+03     ! max. value of the turbulent viscosity of the fluid
+
+
+!*********************************************************************
+! Solids Phase
+!*********************************************************************
+! air bubble-phase (dispersed phase)
+  MMAX = 1     ! number of 'solids' phases [1]
+  SOLIDS_MODEL(1) = 'TFM'     ! set the model type for the indicated
+                              ! solids
+
+  D_p0 = 0.2     ! constant bubble diameter 
+  MU_S0 = 1.8E-4     ! constant 'gas' bubble viscosity
+  RO_s0 = 0.00118     ! constant bubble density
+
+! solids phase(s) forms a packed bed with indicated void fraction
+! ep_star?
+  CLOSE_PACKED(1) = .F.     ! bubble-phase can reach near 100% vol. 
+                            ! fraction.
+
+! use added (virtual) mass to increase the inertia of the dispersed
+! phase.   [.FALSE.] 
+  ADDED_MASS = .TRUE.    
+  M_AM = 1     ! dispersed phase where virtual mass force is applied
+
+! this effectively does not matter as no solids models are invoked
+! (e.g., friction, schaeffer, granular_energy) but still must be
+! set. plastic pressure will still be calculated but will not be 
+! applied since closed_packed is false.
+  EP_star = 0.35     ! packed bed void fraction
+
+! these are unecessary are will not be used unless a solids model
+! is invoked (e.g., friction, schaeffer, granular_energy)
+#  C_e = 0.8     ! coefficient of restitution p-p
+#  Phi = 0.0     ! angle of internal friction (in degrees)
+
+
+!*********************************************************************
+! Initial Conditions
+!*********************************************************************
+! Bed filled with continuous phase (water) at rest
+
+! domain --------------------
+  IC_X_w          =       0.0
+  IC_X_e          =      20.0
+  IC_Y_s          =       0.0
+  IC_Y_n          =      45.0
+  IC_Z_b          =       0.0
+  IC_Z_t          =       5.0
+
+  IC_EP_g         =       1.0
+
+  IC_U_g          =       0.0
+  IC_V_g          =       0.0
+  IC_W_g          =       0.0
+
+  IC_U_s(1,1)     =       0.0
+  IC_V_s(1,1)     =       0.0
+  IC_W_s(1,1)     =       0.0
+
+  IC_P_g(1)       =       1.01E6
+  IC_T_g(1)       =     300.0
+  
+  IC_K_Turb_G(1)  =      10.
+  IC_E_Turb_G(1)  =     100.
+
+!*********************************************************************
+! Boundary Conditions
+!*********************************************************************
+! 2D bubble column with solids (air) entering through narrow inlet in
+! bottom at the center.  A presure outlet is on top.
+
+! By default outside boundaries are initialized as no slip walls.
+! Below, the west and east (left and right) are explicitly set to no
+! slip for both fluid (water) and solids (air) using the partial slip
+! bc implementation. However, standard wall functions are employed for 
+! the fluid (water) phase since the k_epsilon turbulence model is used
+
+!                        Inlet        Exit
+  BC_X_w          =       8.5        0.0
+  BC_X_e          =      11.5       20.0
+  BC_Y_s          =       0.0       45.0
+  BC_Y_n          =       0.0       45.0
+  BC_Z_b          =       0.0        0.0
+  BC_Z_t          =       5.0        5.0
+  BC_TYPE         =       'MI'       'PO'
+
+  BC_EP_g         =       0.9
+
+  BC_U_g          =       0.0
+  BC_V_g          =       0.0
+  BC_W_g          =       0.0
+
+#  BC_VOLFLOW_s(1,1)= @(3*13.33333) !@(48*1000.0/3600.0)
+  BC_U_s(1,1)     =       0.0
+  BC_V_s(1,1)     =  44.444444444444444
+#  BC_W_s(1,1)     =       0.0
+
+  BC_P_g          =       1.01E6    1.01E6
+  BC_T_g          =     300.0     300.0
+  
+  BC_K_Turb_G(1)  =        1.   ! initial turbulent kinetic energy
+  BC_E_Turb_G(1)  =       10.   ! initial turbulent dissipation
+
+
+! West wall --------------------
+  BC_X_w(4)       =       0.
+  BC_X_e(4)       =       0.
+  BC_Y_s(4)       =       0.
+  BC_Y_n(4)       =      45.0 
+  BC_Z_b(4)       =       0.0
+  BC_Z_t(4)       =       5.0
+  BC_TYPE(4)      = 'PAR_SLIP_WALL'
+
+! setup no slip wall for solids (air). for set wall velocity bc leave
+! hw undefined and set vw accordingly (vw=0 for no slip).
+  BC_Uw_s(4,1)    =       0.0 	
+  BC_Vw_s(4,1)    =       0.0
+#  BC_Ww_s(4,1)    =       0.0 
+#  BC_hw_s(4,1)   =        0.0
+
+! turn off johnson-jackson partial slip bc for the solids (unnecessary
+! unless granular_energy)
+  BC_JJ_PS(5)    =         0
+
+! setup no slip wall for fluid (water). for set wall velocity bc leave
+! hw undefined and set vw accordingly (vw=0 for no slip).
+  BC_Uw_g(4)      =       0.0
+  BC_Vw_g(4)      =       0.0
+#  BC_Ww_g(4)      =       0.0
+
+! East wall --------------------
+  BC_X_w(5)       =      20.0
+  BC_X_e(5)       =      20.0
+  BC_Y_s(5)       =       0.0
+  BC_Y_n(5)       =      45.0
+  BC_Z_b(5)       =       0.0
+  BC_Z_t(5)       =       5.0
+  BC_TYPE(5)      =      'PSW'
+  
+  BC_Uw_s(5,1)    =       0.0
+  BC_Vw_s(5,1)    =       0.0
+#  BC_Ww_s(5,1)    =       0.0
+#  BC_hw_s(5,1)   =        0.0
+  BC_JJ_PS(5)    =         0
+ 
+  BC_Uw_g(5)      =       0.0
+  BC_Vw_g(5)      =       0.0
+#  BC_Ww_g(5)      =       0.0
+
+! Front wall (if 3D) --------------------
+  BC_X_w(6)       =       0.0
+  BC_X_e(6)       =      20.0
+  BC_Y_s(6)       =       0.0
+  BC_Y_n(6)       =      45.0
+  BC_Z_b(6)       =       0.0
+  BC_Z_t(6)       =       0.0
+! the specified boundary condition is ignored, which is useful
+! for turning off some bc without having to delete them
+  BC_TYPE(6)      =      'DUMMY'
+
+  BC_Uw_s(6,1)    =       0.0 	
+  BC_Vw_s(6,1)    =       0.0
+#  BC_Ww_s(6,1)    =       0.0  	    
+#  BC_hw_s(6,1)   =        0.0
+  BC_JJ_PS(6)     =        0
+
+  BC_Uw_g(6)      =       0.0
+  BC_Vw_g(6)      =       0.0
+#  BC_Ww_g(6)      =       0.0
+
+! Back wall (if 3D) --------------------
+  BC_X_w(7)       =       0.0
+  BC_X_e(7)       =      20.0
+  BC_Y_s(7)       =       0.0
+  BC_Y_n(7)       =      45.0
+  BC_Z_b(7)       =       5.0
+  BC_Z_t(7)       =       5.0
+  BC_TYPE(7)      =     'DUMMY'
+
+  BC_Uw_s(7,1)    =       0.0
+  BC_Vw_s(7,1)    =       0.0
+#  BC_Ww_s(7,1)    =       0.0
+#  BC_hw_s(7,1)   =        0.0
+  BC_JJ_PS(7)     =       0
+
+  BC_Uw_g(7)       =      0.0
+  BC_Vw_g(7)       =      0.0
+#  BC_Ww_g(7)       =      0.0
+
+
+!*********************************************************************
+! Output Control
+!*********************************************************************
+  RES_DT     =   0.1       ! Interval (s) to update restart (.RES) file 
+#  OUT_DT     =  1.0       ! Interval (s) to update standard output (.OUT) file 
+
+! Interval (s) to update .SPX files 
+  SPX_DT(1)  =   1.0E-1  ! Void fraction (EP_g)
+  SPX_DT(2)  =   1.0E-1  ! Gas and solids pressure (P_g, P_star)
+  SPX_DT(3)  =   0.1     ! Gas velocity (U_g, V_g, W_g)
+  SPX_DT(4)  =   0.1     ! Solids velocity (U_s, V_s, W_s)
+  SPX_DT(5)  = 100.0     ! Solids density (ROP_s)
+  SPX_DT(6)  =   1.E2    ! Gas and solids temp. (T_g, T_s1, T_s2)
+  SPX_DT(7)  = 100.0     ! Gas and solids mass fractions (X_g, X_s)
+  SPX_DT(8)  = 100.0     ! Granular Temperature (G)
+  SPX_DT(9)  = 100.0     ! User defined scalars
+  SPX_DT(10)  =  0.1     ! Reaction rates
+  SPX_DT(11)  =  0.1     ! Turbulence quantities (k and e)
+
+! Specify residuals to be printed as 4-character strings.
+  RESID_STRING = 'P0' 'U0' 'V0' 'U1' 'V1' 'K0'
+
+! Interval in number of time steps at which .LOG file is written.  [25]
+  NLOG   = 100
+
+! Display the residuals on the screen and messages about convergence
+! on the screen and in the .LOG file. [.FALSE.]
+  FULL_LOG = .TRUE.

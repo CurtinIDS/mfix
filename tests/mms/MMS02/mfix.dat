@@ -1,0 +1,282 @@
+########################################################################
+# 3D, two-phase, curlbased MMS case                                    #
+# Order verification using manufactured solution                       #
+#                                                                      #
+# Author: Aniruddha Choudhary                           Date: Feb 2015 #
+#                                                                      #
+# Reference: Choudhary, Aniruddha, Roy, Christopher J., Dietiker,      # 
+# Jean-François, Shahnam, Mehrdad and Garg, Rahul. "Code Verification  #
+# for Multiphase Flows Using the Method of Manufactured Solutions."    #
+# Paper presented at the meeting of the ASME 2014 4th Joint            #
+# US-European Fluids Engineering Division Summer Meeting collocated    #
+# with the ASME 2014 12th International Conference on Nanochannels,    #
+# Microchannels, and Minichannels, 2014.                               #
+# doi:10.1115/FEDSM2014-21608                                          #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  Run_name      = 'MMS02'
+  Description   = '3D Two-phase MMS Case'
+  Units         = 'SI'
+  Run_type      = 'new'
+
+  Time          = 0.0 ! Steady state solution
+  Tstop         = 1.0
+
+  Mmax          = 1
+  Energy_eq     = .T.
+  Species_eq(0) = .F.
+  Species_eq(1) = .F.
+
+  Gravity       = 0.0
+
+  Call_usr      = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  Max_nit       = 200000  ! large enough for all mesh levels
+
+  Norm_g        = 0.0d0
+  Norm_s        = 0.0d0
+
+  Tol_resid     = 1.0E-10
+  Tol_resid_T   = 1.0E-10
+  Tol_resid_Th  = 1.0E-10
+
+  Discretize    = 9*9
+
+  UR_fac(6)     = 0.1     ! energy equations 
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  Coordinates   = 'cartesian'
+
+  xlength = 1.0  
+  ylength = 1.0
+  zlength = 1.0
+
+!  imax    = 8  ! set via command line
+!  jmax    = 8  ! set via command line
+!  kmax    = 8  ! set via command line
+
+#_______________________________________________________________________
+# GAS-PHASE SECTION
+
+  mu_g0 = 1.0
+  ro_g0 = 1.0
+  ! Note: viscosity and density selected to ensure comparable
+  ! contribution from convection and diffusion terms. 
+
+  k_g0  = 0.05
+  C_pg0 = 1.0
+
+#_______________________________________________________________________
+# SOLIDS-PHASE SECTION
+
+  solids_model(1)   = 'tfm'
+
+  Granular_energy   = .F.
+  Friction          = .F.   ! no Princeton solid stress model
+  Schaeffer         = .F.   ! no Schaeffer frictional stress formulation
+
+  ro_s0(1)          = 2.0
+  d_p0(1)           = 1.0e-5  ! particle diameter: should not affect 
+                              ! mms solution
+
+  mu_s0             = 2.0   ! If this value is specified then 
+                            ! kinetic theory calculation is turned off 
+                            ! with P_s=0, and Lambda_s = -2/3*mu_s0
+  k_s0(1)           = 0.1
+  C_ps0(1)          = 2.0
+
+  ep_star           = 0.4
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1)   = 0.0     
+  IC_X_e(1)   = 1.0    
+  IC_Y_s(1)   = 0.0    
+  IC_Y_n(1)   = 1.0    
+  IC_Z_b(1)   = 0.0
+  IC_Z_t(1)   = 1.0  
+
+  IC_EP_g(1)  = 0.7   
+  IC_U_g(1)   = 5.0   
+  IC_V_g(1)   = 5.0     
+  IC_W_g(1)   = 5.0
+  IC_U_s(1,1) = 5.0
+  IC_V_s(1,1) = 5.0
+  IC_W_s(1,1) = 5.0
+  IC_P_g(1)   = 0.0
+  IC_T_g(1)   = 350.0
+  IC_T_s(1,1) = 300.0
+  IC_Theta_m(1,1) =100.0
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! West: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(1)   = 0.0
+  BC_X_e(1)   = 0.0
+  BC_Y_s(1)   = 0.0
+  BC_Y_n(1)   = 1.0 
+  BC_Z_b(1)   = 0.0
+  BC_Z_t(1)   = 1.0
+
+  BC_type(1)  = 'MI'
+
+  BC_EP_g(1)  = 0.7   
+  BC_U_g(1)   = 5.0   
+  BC_V_g(1)   = 5.0     
+  BC_W_g(1)   = 5.0
+  BC_U_s(1,1) = 5.0
+  BC_V_s(1,1) = 5.0
+  BC_W_s(1,1) = 5.0
+  BC_P_g(1)   = 0.0
+  BC_T_g(1)   = 350.0
+  BC_T_s(1,1) = 300.0
+  BC_Theta_m(1,1) =100.0
+
+! South: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(2)   = 0.0
+  BC_X_e(2)   = 1.0
+  BC_Y_s(2)   = 0.0
+  BC_Y_n(2)   = 0.0
+  BC_Z_b(2)   = 0.0
+  BC_Z_t(2)   = 1.0
+
+  BC_type(2)  = 'MI'
+
+  BC_EP_g(2)  = 0.7   
+  BC_U_g(2)   = 5.0   
+  BC_V_g(2)   = 5.0     
+  BC_W_g(2)   = 5.0
+  BC_U_s(2,1) = 5.0
+  BC_V_s(2,1) = 5.0
+  BC_W_s(2,1) = 5.0
+  BC_P_g(2)   = 0.0
+  BC_T_g(2)   = 350.0
+  BC_T_s(2,1) = 300.0
+  BC_Theta_m(2,1) =100.0
+
+! Bottom: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(3)   = 0.0
+  BC_X_e(3)   = 1.0
+  BC_Y_s(3)   = 0.0
+  BC_Y_n(3)   = 1.0
+  BC_Z_b(3)   = 0.0
+  BC_Z_t(3)   = 0.0
+
+  BC_type(3)  = 'MI'
+
+  BC_EP_g(3)  = 0.7   
+  BC_U_g(3)   = 5.0   
+  BC_V_g(3)   = 5.0     
+  BC_W_g(3)   = 5.0
+  BC_U_s(3,1) = 5.0
+  BC_V_s(3,1) = 5.0
+  BC_W_s(3,1) = 5.0
+  BC_P_g(3)   = 0.0
+  BC_T_g(3)   = 350.0
+  BC_T_s(3,1) = 300.0
+  BC_Theta_m(3,1) =100.0
+
+! East: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(4)   = 1.0
+  BC_X_e(4)   = 1.0
+  BC_Y_s(4)   = 0.0
+  BC_Y_n(4)   = 1.0 
+  BC_Z_b(4)   = 0.0
+  BC_Z_t(4)   = 1.0
+
+  BC_type(4)  = 'MI'
+
+  BC_EP_g(4)  = 0.7   
+  BC_U_g(4)   = -5.0   
+  BC_V_g(4)   = 5.0     
+  BC_W_g(4)   = 5.0
+  BC_U_s(4,1) = -5.0
+  BC_V_s(4,1) = 5.0
+  BC_W_s(4,1) = 5.0
+  BC_P_g(4)   = 0.0
+  BC_T_g(4)   = 350.0
+  BC_T_s(4,1) = 300.0
+  BC_Theta_m(4,1) =100.0
+
+! North: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(5)   = 0.0
+  BC_X_e(5)   = 1.0
+  BC_Y_s(5)   = 1.0
+  BC_Y_n(5)   = 1.0
+  BC_Z_b(5)   = 0.0
+  BC_Z_t(5)   = 1.0
+
+  BC_type(5)  = 'MI'
+
+  BC_EP_g(5)  = 0.7   
+  BC_U_g(5)   = 5.0   
+  BC_V_g(5)   = -5.0     
+  BC_W_g(5)   = 5.0
+  BC_U_s(5,1) = 5.0
+  BC_V_s(5,1) = -5.0
+  BC_W_s(5,1) = 5.0
+  BC_P_g(5)   = 0.0
+  BC_T_g(5)   = 350.0
+  BC_T_s(5,1) = 300.0
+  BC_Theta_m(5,1) =100.0
+
+! Top: set as MI for MMS
+!---------------------------------------------------------------------//
+
+  BC_X_w(6)   = 0.0
+  BC_X_e(6)   = 1.0
+  BC_Y_s(6)   = 0.0
+  BC_Y_n(6)   = 1.0
+  BC_Z_b(6)   = 1.0
+  BC_Z_t(6)   = 1.0
+
+  BC_type(6)  = 'MI'
+
+  BC_EP_g(6)  = 0.7   
+  BC_U_g(6)   = 5.0   
+  BC_V_g(6)   = 5.0     
+  BC_W_g(6)   = -5.0
+  BC_U_s(6,1) = 5.0
+  BC_V_s(6,1) = 5.0
+  BC_W_s(6,1) = -5.0
+  BC_P_g(6)   = 0.0
+  BC_T_g(6)   = 350.0
+  BC_T_s(6,1) = 300.0
+  BC_Theta_m(6,1) =100.0
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+ 
+  Out_dt      = 1.                 
+  Res_dt      = 1.                 
+  Nlog        = 1                  
+  Full_log    = .T.              
+  Spx_dt      = 9*1.
+
+  Resid_string  = 'P0' 'T0' 'U0' 'W0' 'T1' 'U1' 'W1' 'G1'
+
+#_______________________________________________________________________
+# DMP SETUP
+
+!  NODESI =  2  NODESJ =  1  NODESK =  1  ! set via command line

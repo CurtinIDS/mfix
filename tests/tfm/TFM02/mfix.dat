@@ -1,0 +1,145 @@
+########################################################################
+# Steady-state 1D heat conduction through a plane slab.                #
+#                                                                      #
+# Author: Aniruddha Choudhary                           Date: May 2015 #
+#                                                                      #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  Run_name      = 'TFM02'
+  Description   = 'Steady-state 1D heat conduction'
+  Units         = 'SI'
+  Run_type      = 'new'
+
+  Time          = 0.0 ! Steady state solution
+  Tstop         = 1.0
+
+  Energy_eq     = .T.
+  Momentum_x_eq = .F.
+  Momentum_y_eq = .F.
+  Species_eq(0) = .F.
+
+  Gravity       = 0.0
+
+  Call_usr      = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  Max_nit       = 200000  ! large enough for all mesh levels
+
+  Tol_resid_T   = 1.0E-10
+
+  Leq_pc        = 9*'NONE'
+
+  Discretize    = 9*2
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  Coordinates   = 'cartesian'
+
+  xlength = 0.20  
+  ylength = 0.50
+
+  imax    = 40  ! set via command line
+  jmax    = 2   ! set via command line
+
+  no_k = .T.
+
+#_______________________________________________________________________
+# GAS-PHASE SECTION
+
+  mu_g0 = 0.001 ! shouldn't affect solution
+  ro_g0 = 1.0   ! shouldn't affect solution
+  C_Pg0 = 1.2   ! (W/m-degC) shouldn't affect solution
+
+#_______________________________________________________________________
+# SOLIDS-PHASE SECTION
+
+  mmax = 0
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1)   = 0.0     
+  IC_X_e(1)   = 0.2    
+  IC_Y_s(1)   = 0.0    
+  IC_Y_n(1)   = 0.5    
+
+  IC_EP_g(1)  = 1.0   
+  IC_U_g(1)   = 0.0   
+  IC_V_g(1)   = 0.0     
+  IC_P_g(1)   = 0.0
+  IC_T_g(1)   = 350.0
+
+  IC_X_g(1,1) =   1.0	   
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! Fixed temperature bath on West (400K) and East (320K)
+!---------------------------------------------------------------------//
+
+! West wall
+  BC_X_w(1)   = 0.0 	
+  BC_X_e(1)   = 0.0
+  BC_Y_s(1)   = 0.0	
+  BC_Y_n(1)   = 0.5
+
+  BC_Type(1)  = 'NSW'
+ 
+  BC_TW_g(1)  = 400.0
+
+! East wall
+  BC_X_w(2)   = 0.2 	
+  BC_X_e(2)   = 0.2
+  BC_Y_s(2)   = 0.0	
+  BC_Y_n(2)   = 0.5
+
+  BC_Type(2)  = 'NSW'
+ 
+  BC_TW_g(2)  = 320.0
+
+! Zero heat flux on Top and Bottom walls
+!---------------------------------------------------------------------//
+
+! South wall
+  BC_X_w(3)   = 0.0 	
+  BC_X_e(3)   = 0.2
+  BC_Y_s(3)   = 0.0	
+  BC_Y_n(3)   = 0.0
+
+  BC_Type(3)  = 'NSW'
+
+  BC_HW_T_g(3)= 0.0
+  BC_C_T_g(3) = 0.0
+
+! North wall
+  BC_X_w(4)   = 0.0 	
+  BC_X_e(4)   = 0.2
+  BC_Y_s(4)   = 0.5	
+  BC_Y_n(4)   = 0.5
+  BC_Type(4)  = 'NSW'
+
+  BC_HW_T_g(4)= 0.0
+  BC_C_T_g(4) = 0.0
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+ 
+  Out_dt      = 1.                 
+  Res_dt      = 1.                 
+  Nlog        = 1                  
+  Full_log    = .T.              
+  Spx_dt      = 9*1.
+
+  Resid_string  = 'T0'
+
+#_______________________________________________________________________
+# DMP SETUP
+
+!  NODESI =  2  NODESJ =  1  NODESK =  1  ! set via command line

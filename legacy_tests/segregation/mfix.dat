@@ -1,0 +1,150 @@
+!  Fluidized Bed Simulation with Particle Segregation
+!                                                                               
+!  bub01 - fluidized bed with a central jet with particle segregation
+! 
+! ****************** Reference ************************************
+! Goldschmidt, M.J.V., Kuipers, J.A.M., and van Swaiij, W.P.M., (2001),
+! Segregation in Dense Gas-Fluidised Beds: Validation of Multi-Fluid
+! Continuum Model with Non-intrusive Digital Image Analysis
+! Measurements, 10th Engineering Foundation Conference on Fluidization,
+! Beijing, China, May 20-25, pp.795-802
+! **********************************************************************
+
+                           
+! Run-control section                                                                                                   
+  RUN_NAME              = 'SGE'             
+  DESCRIPTION           = 'particle segregation'
+  RUN_TYPE              = 'NEW'             
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                           !start time
+  TSTOP                 = 1.0
+  DT                    = 1.0E-4                        !time step
+  DT_MIN                = 1.0D-08
+  DETECT_STALL          = .FALSE
+  CLOSE_PACKED          = .TRUE.  .TRUE.
+  ENERGY_EQ             = .FALSE.                         !do not 
+  SPECIES_EQ            = .FALSE.    .FALSE.    .FALSE. !do not s
+  DISCRETIZE            =   7*2
+  MAX_NIT = 50
+                                                                               
+! Geometry Section                                                              
+                                                                               
+  COORDINATES   = 'cartesian' 
+  XLENGTH       =   15                          !radius
+  IMAX          =   15                          !cells in i direction
+  YLENGTH       = 30.0                          !height
+  JMAX          = 30                            !cells in j direction
+  NO_K          = .TRUE.                        !2D, no k direction
+  SEGREGATION_SLOPE_COEFFICIENT    = 0.3	!used in calculating the initial slope of segregation: see Gera et al. (2003)
+  ep_s_max(1)    		   = 0.6            !  maximum solid packing of phase 1
+  ep_s_max(2)	        	   = 0.6            !  maximum solid packing of phase 2
+
+!  FEDORS_LANDEL = .TRUE.                        !compute ep_star using Fedors_landel correlation
+  YU_STANDISH = .TRUE.                          !compute ep_star using Yu_Standish correlation
+!
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-4                !constant gas viscosity
+  RO_g0                 = 1.20e-3               !constant gas density
+
+ 
+! Solids-phase Section 
+
+  MMAX                  = 2
+  RO_s0                 = 2.524d0  2.524d0      !solids density
+  D_p0                  = 0.15d0  0.25d0        !particle diameter     
+  e                     = 0.97d0                !restitution coefficient
+  C_f                   = 0.1d0
+  Phi                   = 55.d0                 !angle of internal friction
+  EP_star               = 0.4d0                 !void fraction at minimum -> redundant for binary mixture
+!                                               !  fluidization  
+! Initial Conditions Section                                                    
+! 
+    ! 1. bed           
+  IC_X_w(1)             =  0.0                  !lower half of the domain
+  IC_X_e(1)             =  15.0                 ! 0 < x < 15, 0 < y < 15
+  IC_Y_s(1)             =  0.0
+  IC_Y_n(1)             =  15.0                 !initial values in the region
+  IC_EP_g(1)            =  0.41d0               !void fraction
+  IC_ROP_s(1,1)         =  0.74458              !ro_s(1)*ep_s(1)
+  IC_ROP_s(1,2)         =  0.74458d0            !ro_s(2)*ep_s(2) 
+  
+  IC_U_g(1)             =  0.0                  !radial gas velocity
+  IC_V_g(1)             =  0.0                  !axial gas velocity
+  IC_U_s(1,1)           =  0.0                  !radial solids_1 velocity 
+  IC_V_s(1,1)           =  0.0                  !axial solids_1 velocity
+  IC_U_s(1,2)           =  0.0                  !radial solids_2 velocity
+  IC_V_s(1,2)           =  0.0 			!axial solids_2 velocity
+
+    !  2. Freeboard     
+  IC_X_w(2)             =  0.0 
+  IC_X_e(2)             =  15.0
+  IC_Y_s(2)             =  15.0
+  IC_Y_n(2)             =  30.0
+  IC_EP_g(2)            =  1.0 
+  IC_ROP_s(2,1)         =  0.0
+  IC_ROP_s(2,2)         =  0.0 
+  IC_U_g(2)             =  0.0
+  IC_V_g(2)             =  0.0
+  IC_U_s(2,1)           =  0.0
+  IC_V_s(2,1)           =  0.0 
+  IC_U_s(2,2)           =  0.0
+  IC_V_s(2,2)           =  0.0  
+
+!  Boundary Conditions Section   
+  
+       ! 1. Distributor jet     
+  BC_X_w(1)             =  0.0          !Distributor
+  BC_X_e(1)             =  15.0         ! 0 < x < 15, y = 0
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0
+
+  BC_TYPE(1)            = 'MI'          !specified mass inflow 
+
+  BC_EP_g(1)            =  1.0 
+  BC_U_g(1)             =  0.0 
+  BC_V_g(1)             =  110.0
+  BC_P_g(1)             =  0.0
+
+             
+       ! 2. Exit
+  BC_X_w(2)             = 0.0           !top exit
+  BC_X_e(2)             = 15.0          ! 0 < x < 15, y = 30
+  BC_Y_s(2)             = 30.0
+  BC_Y_n(2)             = 30.0 
+  BC_TYPE(2)            = 'PO'          !specified pressure outflow
+  BC_P_g(2)             = 0.0       
+!   
+!  Output Control  
+!   
+  OUT_DT                = 1.            !write text file SGE01.OUT
+  RES_DT                = 0.01          !write binary restart file
+!  SGE01.RES every 0.01 s
+  NLOG                  = 25            !write logfile SGE01.LOG 
+!every 25 time steps
+  FULL_LOG              = .TRUE.        !display residuals on screen
+
+!SPX_DT values determine how often SPx files are written.  Here SGE01.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, 
+! gas and solids pressure (P_g, P_star), is written every 
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.1 0.1      0.1  0.1  0.1      100. 100.   0.1     100. 
+  RESID_STRING  = 'P0' 'P1' 'U0' 'R2' 'V0' 'V1' 'V2'       
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+!  Sweep Direction
+
+LEQ_SWEEP(1) = 'ISIS' 
+LEQ_SWEEP(2) = 'ISIS'  
+LEQ_SWEEP(3) = 'ISIS' 
+LEQ_SWEEP(4) = 'ISIS'  
+LEQ_SWEEP(5) = 'ISIS'  
+LEQ_SWEEP(6) = 'ISIS'  
+LEQ_SWEEP(7) = 'ISIS' 
+LEQ_SWEEP(8) = 'ISIS'  
+LEQ_SWEEP(9) = 'ISIS'

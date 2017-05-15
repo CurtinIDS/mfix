@@ -1,0 +1,87 @@
+#
+#  developed flow -- use cyclic condition
+#
+#  F.B. Modeler                  9-6-94
+#
+#  V_g(2,j,k) = delp_y * XLENGTH^2/(4*mu_g0*YLENGTH) (BSL p.46)
+#  
+#
+# Run-control section
+#
+  RUN_NAME = 'COL01'
+  DESCRIPTION = 'developed laminar flow'
+  RUN_TYPE = 'new'  !  'restart_1' ! 
+  UNITS = 'cgs'
+# TIME  =0.0  TSTOP = 1.0E-4   DT = 1.0e-4   DT_MAX = 1.0e-4   OUT_DT = 1.0e-4
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+  MOMENTUM_X_EQ(1) = .FALSE.
+  MOMENTUM_Y_EQ(1) = .FALSE.
+  LEQ_IT(1) = 20    
+  LEQ_IT(3) = 50
+  LEQ_IT(4) = 50    
+!  UR_FAC(3) = 0.7  LEQ_METHOD(3) = 2
+!  UR_FAC(4) = 0.7  LEQ_METHOD(4) = 2 
+
+  GRAVITY = 980.0
+#
+# Geometry Section
+#
+  COORDINATES = 'cylindrical'
+
+  XLENGTH  =   7.0    IMAX =  7 
+  YLENGTH  = 100.0    JMAX = 10
+
+  NO_K     = .TRUE.
+  CYCLIC_Y = .TRUE.
+
+  MAX_NIT = 3000
+  TOL_RESID  = 1.E-4
+ 
+#
+# Gas-phase Section
+#
+  RO_g0 = 1.0
+  MU_g0 = 0.01
+  MW_avg = 29.
+#
+# Solids-phase Section
+#
+  MMAX         = 0
+
+#
+# Initial Conditions Section
+#
+       !              
+  IC_X_w           =  0.0 
+  IC_X_e           =  7.0 
+  IC_Y_s           =  0.0 
+  IC_Y_n           = 100.0
+ 
+  IC_EP_g          =  1.0 
+ 
+  IC_U_g           =   0.0
+  IC_V_g           =   0.0
+
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 100.    100.  100.
+ 
+
+  NLOG   = 25
+  RESID_STRING = 'P0'  'U0' 'V0'
+  FULL_LOG = .TRUE.
+  
+# DMP control
+  
+   NODESI = 1   NODESJ = 1   NODESK = 1
+
+

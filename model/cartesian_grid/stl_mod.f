@@ -1,0 +1,79 @@
+      MODULE stl
+
+      Use param1, only: zero
+
+!     Maximum number of facets that can be read
+      INTEGER, PARAMETER          :: DIM_STL = 10000000   !10 Million
+!     Number of facets
+      INTEGER                     :: N_FACETS
+      INTEGER, PARAMETER :: WEST_FACEID = 9000000
+      INTEGER, PARAMETER :: EAST_FACEID = 9000001
+      INTEGER, PARAMETER :: SOUTH_FACEID = 9000002
+      INTEGER, PARAMETER :: NORTH_FACEID = 9000003
+      INTEGER, PARAMETER :: BOTTOM_FACEID = 9000004
+      INTEGER, PARAMETER :: TOP_FACEID = 9000005
+
+!     Number of facets for des. This could be a diiferent number from
+! N_FACETS if the outer boundary is triangulated here
+      INTEGER                     :: N_FACETS_DES
+!     Vertex Coordinates X ,Y and Z
+      DOUBLE PRECISION, DIMENSION(3,3,DIM_STL) :: VERTEX
+!     Face normal vector (normalized)
+      DOUBLE PRECISION, DIMENSION(3,DIM_STL) :: NORM_FACE
+!     TRANSLATION COMPONENTS
+      DOUBLE PRECISION :: TX_STL,TY_STL,TZ_STL
+      DOUBLE PRECISION :: TX_MSH,TY_MSH,TZ_MSH
+!     SCALING FACTOR
+      DOUBLE PRECISION :: SCALE_STL
+      DOUBLE PRECISION :: SCALE_MSH
+!     RANGE OF STL FILE:
+      DOUBLE PRECISION :: XMIN_STL,XMAX_STL
+      DOUBLE PRECISION :: YMIN_STL,YMAX_STL
+      DOUBLE PRECISION :: ZMIN_STL,ZMAX_STL
+      DOUBLE PRECISION :: XMIN_MSH,XMAX_MSH
+      DOUBLE PRECISION :: YMIN_MSH,YMAX_MSH
+      DOUBLE PRECISION :: ZMIN_MSH,ZMAX_MSH
+!     VALUE OF F_STL OUTSIDE OF STL BOUNDING BOX
+      DOUBLE PRECISION :: OUT_STL_VALUE
+      DOUBLE PRECISION :: OUT_MSH_VALUE
+!     SMALLEST ANGLE FOR DETECTION OF SMALL TRIANGLES
+      DOUBLE PRECISION :: STL_SMALL_ANGLE
+      DOUBLE PRECISION :: MSH_SMALL_ANGLE
+!     DIRECTION OF RAY TRACED TO DETERMINE WHETHER A POINT IS INSIDE/OUTSIDE
+      CHARACTER(LEN=3) :: RAY_DIR
+!     Tolerance for polygone edge detection
+      DOUBLE PRECISION :: TOL_STL
+      DOUBLE PRECISION :: TOL_MSH
+      DOUBLE PRECISION :: TOL_STL_DP
+!     Boundary condition ID
+      INTEGER :: STL_BC_ID
+
+      INTEGER, DIMENSION(DIM_STL) :: BC_ID_STL_FACE
+
+!     Maximum number of facets per cell. The arrays below are used
+! to define cut-cells under the CG modules
+      INTEGER          :: DIM_FACETS_PER_CELL
+      INTEGER, DIMENSION (:), ALLOCATABLE ::  N_FACET_AT
+      INTEGER, DIMENSION (:,:), ALLOCATABLE ::  LIST_FACET_AT
+
+! List of facets intersecting each DES grid cell
+      TYPE FACETS_TO_DG
+         INTEGER :: COUNT
+         INTEGER, ALLOCATABLE :: ID(:)
+         INTEGER, ALLOCATABLE :: DIR(:)
+         DOUBLE PRECISION, ALLOCATABLE :: MIN(:)
+         DOUBLE PRECISION, ALLOCATABLE :: MAX(:)
+      END TYPE FACETS_TO_DG
+
+! Start/End positions for the different kinds of STLs
+      INTEGER, PARAMETER :: ALL_STL = 0
+      INTEGER, PARAMETER :: BASE_STL = 1
+      INTEGER, PARAMETER :: BCWALLS_STL = 2
+      INTEGER, PARAMETER :: IMPRMBL_STL = 3
+      INTEGER, PARAMETER :: DEFAULT_STL = 4
+      INTEGER :: STL_START(4), STL_END(4)
+
+      TYPE (FACETS_TO_DG), ALLOCATABLE ::  FACETS_AT_DG(:)
+      CHARACTER(LEN=3) :: CAD_PROPAGATE_ORDER
+
+      END MODULE stl

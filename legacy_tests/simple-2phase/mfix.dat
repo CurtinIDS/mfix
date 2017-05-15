@@ -1,0 +1,99 @@
+#
+#  Simple two-phase flow
+#
+#
+# Run-control section
+#
+  RUN_NAME = 'PH2'
+  DESCRIPTION = 'Simple two-phase flow'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+  TIME  = 0.0
+  TSTOP = 0.3
+  DT = 1.0E-4
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+#
+# Geometry Section
+#
+  COORDINATES = 'Cartesian'
+
+  XLENGTH  =   5.0    IMAX =   5
+  YLENGTH  =   5.0    JMAX =   5
+
+  NO_K     = .TRUE.
+
+  MAX_NIT = 500
+  TOL_RESID  = 1.0E-3
+
+  ur_fac(1) = 0.5                          !pressure
+
+  ur_fac(3) = 0.2                          !u-velocity
+
+  ur_fac(4) = 0.2                          !v-velocity
+
+#
+# Gas-phase Section
+#
+  RO_g0 = 1.2E-3
+  MU_g0 = 1.8E-4
+  MW_avg = 29.
+#
+# Solids-phase Section
+#
+  RO_s0        = 2.0
+  D_p0         = 0.04
+  CLOSE_PACKED = .TRUE.
+
+  e       = 0.8
+  Phi     = 0.0
+  EP_star = 0.42
+#
+# Initial Conditions Section
+#
+       !
+  IC_X_w           =  0.0
+  IC_X_e           =  5.0
+  IC_Y_s           =  0.0
+  IC_Y_n           =  5.0
+ 
+  IC_EP_g          =  .9
+  IC_P_g           = 0.0
+ 
+  IC_U_g           =   0.0
+  IC_V_g           =   0.0
+
+  IC_U_s(1,1)      =  0.0
+  IC_V_s(1,1)      =  0.0
+
+#
+#  Boundary Conditions Section
+#
+       !               Exit
+  BC_X_w           =  0.0
+  BC_X_e           =  5.0
+  BC_Y_s           =  5.0
+  BC_Y_n           =  5.0
+ 
+  BC_TYPE          =  'PO'
+
+  BC_P_g           = 0.0
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s1 X_s    Theta
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 100.   100.   100.
+
+  FULL_LOG = .T.
+  NLOG   = 100
+  TOL_DIVERGE = 1.0D+6
+  
+# DMP control
+  
+     NODESI = 1   NODESJ = 1   NODESK = 1

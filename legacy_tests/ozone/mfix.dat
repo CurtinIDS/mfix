@@ -1,0 +1,140 @@
+#
+#  Ozone decomposition in a bubbling Fluidized Bed
+#   C. Fryer and O.E. Potter, "Experimental Investigation of models for
+#   fluidized bed catalytic reactors," AIChE J., 22, 38-47 (1976)
+#
+#
+# Run-control section
+#
+  RUN_NAME = 'O3033f-3d'
+  DESCRIPTION = 'Ozone decomposition - 8 cm/s, fine, 3d'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+  TIME  = 0.0
+  TSTOP = 0.20e-2
+  DT = 0.2E-3    
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .TRUE.    .FALSE.
+
+  DISCRETIZE = 7*2
+
+  UR_FAC(2) = 0.4
+
+  C(1) = 1.57 !rxn rate constant
+  
+  drag_c1 = 0.765   !constants for drag expression
+  drag_d1 = 2.92761 !  to adjust umf to 1.7 cm/s
+#
+# Geometry Section
+#
+  COORDINATES = 'Cylindrical'
+
+  XLENGTH  =  11.45     IMAX = 76
+  YLENGTH  =  30.00     JMAX = 112
+  ZLENGTH  =  @(2.*PI)  KMAX = 16
+
+#
+# Gas-phase Section
+#
+  MU_g0 = 1.8E-4
+
+  NMAX_g = 3
+  SPECIES_g(1) = 'O3'   SPECIES_ALIAS_g(1) = 'O3'
+  SPECIES_g(2) = 'O2'   SPECIES_ALIAS_g(2) = 'O2'
+  SPECIES_g(3) = 'N2'   SPECIES_ALIAS_g(3) = 'N2'
+
+
+#
+# Solids-phase Section
+#
+  RO_s0   = 2.65
+  D_p0     = @(0.0117*0.75)
+
+  e       = 0.8
+  Phi     = 30.0
+  EP_star = 0.48
+
+#
+# Initial Conditions Section
+#
+       !              Bed       Freeboard
+  IC_X_w           =  0.0             0.0
+  IC_X_e           = 11.45           11.45
+  IC_Y_s           =  0.0            11.5
+  IC_Y_n           = 11.5            30.0
+  IC_Z_b           =  0.0             0.0
+  IC_Z_t           =  @(2.*PI)        @(2.*PI)
+ 
+  IC_EP_g          =  0.48            1.0
+ 
+  IC_U_g           =  0.0             0.0
+  IC_V_g           =@(1.7/0.48)       1.7
+  IC_W_g           =  0.0             0.0
+
+  IC_U_s(1,1)      =  0.0             0.0
+  IC_V_s(1,1)      =  0.0             0.0
+  IC_W_s(1,1)      =  0.0             0.0
+
+  IC_P_star        =  0.0             0.0
+  IC_T_g           =  297.           297.
+
+  IC_X_g(1,2)      =  .233           .233
+  IC_X_g(1,3)      =  .767           .767 
+
+#
+#  Boundary Conditions Section
+#
+       !             Grid       Exit
+  BC_X_w           =  0.0        0.0
+  BC_X_e           = 11.45      11.45
+  BC_Y_s           =  0.0       30.0
+  BC_Y_n           =  0.0       30.0
+  BC_Z_b           =  0.0             0.0
+  BC_Z_t           =  @(2.*PI)        @(2.*PI)
+ 
+  BC_TYPE          = 'MI'      'PO'
+
+  BC_EP_g          =  1.0   
+
+  BC_U_g           =  0.0  
+  BC_V_g           =  8.0   
+  BC_W_g           =  0.0   
+
+  BC_P_g           = 2*1.01E6
+  BC_T_g           = 2*297.
+
+  BC_X_g(1,1)      = 0.1
+  BC_X_g(1,2)      = 0.2097
+  BC_X_g(1,3)      = 0.6903
+
+#_______________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  @(RXNS)
+
+    Ozone_Decomp { chem_eq = "O3 --> 1.5O2" }
+
+  @(END)
+
+#
+#  Output Control
+#
+  RES_DT = 0.05 
+  OUT_DT = 0.5e-2 
+
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g     Theta_m  S
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 0.01     100.   100. 
+# TOL_DIVERGE = 500
+  NLOG   = 5
+  
+  FULL_LOG = .TRUE.
+
+  RESID_STRING = 'P0' 'P1' 'X001' 'X002' 'X003'
+
+# DMP control
+  
+NODESI = 1 NODESJ = 1 NODESK = 1
+

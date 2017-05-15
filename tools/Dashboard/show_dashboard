@@ -1,0 +1,15 @@
+#!/bin/sh    
+
+# Loop around forever (until the break statement is used)
+# Updates the file: DASHBOARD.TXT every $1 secs
+# where $1 is the argument of the script
+# for example invoking show_dashboard 2 will update the display every 2 seconds
+while [ "forever" ]
+do
+   clear
+   cat DASHBOARD.TXT
+   /bin/sleep $1
+done
+
+
+

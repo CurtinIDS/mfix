@@ -1,0 +1,36 @@
+R
+1
+T
+3
+3
+1 2
+Y
+EP_g
+3
+2 8
+N
+30 30
+1 1
+POST_epgRadial.dat 
+
+
+V_s
+3
+
+
+
+
+POST_vsRadial.dat
+
+
+EP_g
+3
+2 8
+Y
+1 102
+N
+1 1
+POST_epgAxial.dat
+q
+0
+

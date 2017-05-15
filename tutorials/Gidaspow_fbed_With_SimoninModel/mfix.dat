@@ -1,0 +1,193 @@
+!                                                                               
+!  Bubbling Fluidized Bed Simulation                                            
+!                                                                               
+!  Bubbling Fluidized Bed Simulation  -- Gidaspow p. 156
+!  using Simonin turbulence model with Jenkins small friction BC.
+!                           
+! Run-control section                                                           
+                                                                               
+  RUN_NAME 		= 'G'             
+  DESCRIPTION 		= 'Gidaspow bed with Jet'          
+  RUN_TYPE 		= 'new'      
+  UNITS 		= 'cgs'
+  TIME  		= 0.				!start time
+  TSTOP 		= 1.0
+  DT 			= 1.0E-4			!time step
+  DT_MIN		= 1.0E-8			!min time-step
+!!
+
+  NORM_G            =  0.0d0
+  NORM_S            =  0.0d0
+
+  DISCRETIZE(1)     =  2
+  DISCRETIZE(2)     =  2
+  DISCRETIZE(3)     =  2
+  DISCRETIZE(4)     =  2
+  DISCRETIZE(5)     =  2
+  DISCRETIZE(8)     =  2
+  DEF_COR  =  .TRUE.
+!
+
+  MAX_NIT = 50
+
+!!
+  ENERGY_EQ 		= .FALSE.			!do not solve energy eq
+  SPECIES_EQ 		= .FALSE.    .FALSE. 		!do not solve species eq
+  
+! Adding Gran_Temp for Comparison with Previous Runs
+  GRANULAR_ENERGY	= .TRUE. ! granular energy pde will be solved when using ahmadi
+                                 ! or Simonin models
+
+K_EPSILON = .T.           ! Now must be set to true with Ahmadi/Simonin models
+JENKINS = .T.             ! 
+AHMADI = .F.              ! Will not be allowed to turn on both ahmadi and simonin.
+SIMONIN = .T.
+FRICTION = .F.
+
+!
+! Physical and Numerical Parameters
+!
+!                                                                               
+! Geometry Section                                                               
+#                                                                               
+  COORDINATES = 'Cartesian'
+                                                                                
+  XLENGTH  =  39.37   IMAX = 124
+  YLENGTH  =  58.44   JMAX = 108
+  NO_K     		= .TRUE. 			!2D, no k direction
+
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0 		= 1.8E-4			!constant gas viscosity
+  MW_avg = 29.
+  MU_gmax = 1000.                                       !must define mu_gmax with k_epsilon
+
+ 
+! Solids-phase Section 
+  
+  DRAG_TYPE             = 'GIDASPOW'                                      
+  
+  RO_s0   		= 2.61				!solids density
+  D_p0    		= 0.05			        !particle diameter
+  e       		= 0.8 				!restitution coefficient
+  Phi    		= 30.0				!angle of internal friction
+  EP_star 		= 0.44				!void fraction at minimum
+							!  fluidization
+
+  PHIP     =        0.005 !Specularite coef. for use with JJ BC
+  phi_w    =       11.31 ! angle of internal friction to use with Jenkins BC
+
+
+#                                                                               
+# Initial Conditions Section                                                    
+#                                                                               
+       !              Bed       Freeboard                                       
+  IC_X_w           =  0.0             0.0                                       
+  IC_X_e           = 39.37           39.37                                      
+  IC_Y_s           =  0.0            29.22                                      
+  IC_Y_n           = 29.22           58.44                                      
+                                                                                
+  IC_EP_g          =  0.441            1.0                                       
+                                                                                
+  IC_U_g           =  0.0             0.0                                       
+  IC_V_g           =@(35/0.44)     35.                                       
+                                                                                
+  IC_U_s(1,1)      =  0.0             0.0                                       
+  IC_V_s(1,1)      =  0.0             0.0                                       
+                                                                                
+  IC_P_star        =  0.0             0.0                                       
+  IC_T_g           = 297.           297.                
+  
+  IC_Theta_m(1,1)     = 10.
+  IC_K_Turb_G(1)      = 10.
+  IC_E_Turb_G(1)      = 100.
+
+  IC_Theta_m(2,1)     = 1000.
+  IC_K_Turb_G(2)      = 100.
+  IC_E_Turb_G(2)      = 1000.
+                        
+                                                                                
+#
+#  Boundary Conditions Section
+#
+       !             Grid    Jet     Grid     Exit  
+  BC_X_w           =  0.0   19.05    20.32     0.0  
+  BC_X_e           = 19.05  20.32    39.37    39.37  
+  BC_Y_s           =  0.0    0.0      0.0     58.44  
+  BC_Y_n           =  0.0    0.0      0.0     58.44 
+                  
+  BC_TYPE          = 'MI'   'MI'      'MI'     'PO' 
+                                             
+  BC_EP_g          =  1.0    1.0      1.0      
+                                                                                
+  BC_U_g           =  0.0    0.0      0.0    
+  BC_V_g           = 35.0   577.0    35.0
+                                    
+  BC_P_g           = 4*1.01E6 
+  BC_T_g           = 4*297.  
+  BC_K_Turb_G = 1000.  1000.  1000.
+  BC_E_Turb_G = 10000. 10000. 10000.
+###############################################
+# walls must be defined (NSW, FSW or PSW) to use wall functions with k_epsilon model
+###############################################
+  BC_X_w(6) = 0.
+  BC_X_e(6) = 0.
+  BC_Y_s(6) = 0.
+  BC_Y_n(6) = 58.44
+  BC_TYPE(6) = 'PSW'
+  !
+  BC_Uw_g(6) = 0.
+  BC_Vw_g(6) = 0.
+  BC_Uw_s(6,1) = 0.
+  BC_Vw_s(6,1) = 0.
+  BC_Thetaw_m(6,1) = 0.
+  BC_JJ_PS(6) = 1
+#
+###############################################
+#
+  BC_X_w(5) = 39.37
+  BC_X_e(5) = 39.37
+  BC_Y_s(5) = 0.
+  BC_Y_n(5) = 58.44
+  BC_TYPE(5) = 'PSW'
+  !
+  BC_Uw_g(5) = 0.
+  BC_Vw_g(5) = 0.
+  BC_Uw_s(5,1) = 0.
+  BC_Vw_s(5,1) = 0.
+  BC_Thetaw_m(5,1) = 0.
+  BC_JJ_PS(5) = 1
+
+!
+###############################################
+
+
+   
+#                
+!  Output Control                                                               
+!  
+
+! TOL_DIVERGE		= 1.E+08                
+  OUT_DT 		= 10. 				!write text file BUB01.OUT
+							!  every 10 s
+  RES_DT 		= 0.01				!write binary restart file
+							!  BUB01.RES every 0.01 s
+  NLOG   		= 100 				!write logfile BUB01.LOG 
+							!every 25 time steps
+  FULL_LOG 		= .TRUE. 			!display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written.  Here BUB01.SP1, which
+!contains void fraction (EP_g), is written every 0.05 s, BUB01.SP2, which contains
+
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g  theta  scalar rrate k_epsilon
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.01 0.01     0.01  0.01  100.      100. 100. 0.01  100. 100. 0.01
+
+  RESID_STRING = 'P0' 'P1' 'U0' 'V0' 'V1' 'K0' 'G1'  ! display K0 residuals for k & epsilon !
+!
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!

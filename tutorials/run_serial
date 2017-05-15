@@ -1,0 +1,38 @@
+#!/bin/tcsh 
+# Script to run all the tutorial cases in serial
+
+# set up tutorial directory and model directory
+set `pwd` ; tutorial_dir=$1
+set `pwd` ; mfix_model_dir=$1/../model
+
+# Keep a list of all tutorials that will be run (directories where mfix.dat exists)
+echo 'Identifying all tutorials that need to be run...'
+find . -name "mfix.dat" | sed 's/mfix.dat//' >List_of_tutorials_to_run.txt
+
+# Compile MFIX
+echo 'Initial compilation of MFIX:'
+sh $mfix_model_dir/make_mfix <in
+
+# For each tutorial:
+#    go to the directory
+#    remove files from potential previous runs
+#    compile MFIX (with repeat flag -r)
+#    run MFIX
+#    go back to home tutorial directory
+
+for tutorial in `cat List_of_tutorials_to_run.txt`
+do
+
+   cd $tutorial
+   echo "********************************************************************"
+   echo $tutorial
+   rm -f *.RES *.SP* *.LOG *.OUT *.vtp *.vtk
+   echo 'Compiling MFIX...'
+   sh $mfix_model_dir/make_mfix -r >compile.log
+   echo 'Done.'
+   echo 'Running MFIX...'
+   ./mfix.exe > run.log 
+   echo 'Done.'
+   cd $tutorial_dir
+
+done

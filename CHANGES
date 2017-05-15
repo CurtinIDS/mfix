@@ -1,0 +1,51 @@
+Changes from MFIX 2015-2 (Date: 10/27/2015) to MFIX 2016-1 (Date: 04/01/2016)
+
+
+New features added:
+-------------------
+
+* DMP support for DEM thermochemistry - MFIX-DEM simulations with heat transfer
+  and/or chemical reactions now support parallel execution. This allows for
+  larger particle counts in reacting flow simulations with reduced time-to-
+  solution for greater modeling capability of MFIX-DEM.
+
+* DEM particle-wall heat transfer - MFIX-DEM particles may exchange heat with
+  the domain boundaries via specified constant wall temperature boundary 
+  conditions. The rotating drum with particle-wall heat transfer tutorial 
+  illustrates this new feature (tutorials/DEM_Wall_HT)
+
+Changes in existing features:
+-----------------------------
+
+* Greater UDF capabilities - Users may construct user-defined functions (UDFs)
+  to specify source terms to the governing equations and many transport
+  coefficients and field properties. This allows for faster model development
+  by removing the need to modify master source routines. See usr_source.f and
+  usr_prop.f routines and the UDF keyword section for more information.
+
+
+* Documentation:
+----------------
+
+* Updated documentation:
+  o MFIX User Guide  [1]
+
+
+Project Metrics:
+----------------
+
+* Change from 2015-2 Release:
+  o 1 new file and about over 13,700 additional lines of code
+
+* 2016-1 Total count:
+  o Files: 541
+  o Lines: 245,389
+  o Blank Lines: 34,948
+  o Code Lines: 135,401
+  o Comment Lines: 78,216
+  o Statements: 95,400
+
+
+References:
+-----------
+[1] https://mfix.netl.doe.gov/download/mfix/mfix_current_documentation/mfix_user_guide.pdf

@@ -1,0 +1,144 @@
+#
+#  granular shear flow
+#
+# Run-control section
+#
+  RUN_NAME = 'GSF'
+  DESCRIPTION = 'Granular shear flow'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+  TIME  =0.0
+  TSTOP = 10.0
+  DT = 1.0e-4 
+  DT_MIN = 1.0e-7
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.     .FALSE.
+
+  GRANULAR_ENERGY = .TRUE.
+
+   MOMENTUM_X_EQ =  .FALSE.  .TRUE.
+   MOMENTUM_Y_EQ =  .FALSE.  .TRUE.
+
+   GRAVITY = 0.0
+   
+#
+# Geometry Section
+#
+  COORDINATES = 'Cartesian'
+
+  XLENGTH  =  10.0    IMAX = 10
+  YLENGTH  =  1.0     JMAX =  10
+
+  NO_K     = .TRUE.
+
+#
+# Gas-phase Section
+#
+  RO_g0 = 0.0         !no gas phase
+  MU_g0 = 1.8E-4
+
+#
+# Solids-phase Section
+#
+  RO_s0        = 2.0
+  D_p0         = 0.01 
+  CLOSE_PACKED = .TRUE.
+
+  C_e       = 1.0   !restitution coefficients
+  C_e       = 1.0   !  particle-particle collisions
+  e_w       = 0.8   !  particle-wall collisions
+  
+  PHIP    = 0.5     ! specularity coefficient              
+  
+  Phi     = 0.0
+  EP_star = 0.5 
+#
+# Initial Conditions Section
+#
+
+  IC_X_w           =  0.0 
+  IC_X_e           = 10.0
+  IC_Y_s           =  0.0
+  IC_Y_n           = 1.0
+ 
+  IC_EP_g          = 0.7
+ 
+  IC_U_g           =   0.0
+  IC_V_g           =  0.0
+
+  IC_U_s      = 10.0
+  IC_V_s      = 0.0
+  IC_Theta_m  = 0.5
+
+  IC_P_star        =  0.0
+
+#
+#  Boundary Conditions Section
+#
+       !               West        East
+       !            solids-inlet   Solids-Exit
+  BC_X_w           =   0.0         10.0
+  BC_X_e           =   0.0         10.0
+  BC_Y_s           =   0.0          0.0
+  BC_Y_n           =   1.0          1.0
+ 
+  BC_TYPE          =  'MI'       'PO'
+
+  BC_EP_g          =  0.7 
+ 
+  BC_U_g           =  0.0
+  BC_V_g           =  0.0 
+ 
+  BC_U_s           =  10.0
+  BC_V_s           =  0.0  
+  BC_Theta_m       =  0.5  
+  
+  BC_P_g           = 2*0.
+
+
+       !            South wall  
+  BC_X_w(5)      =   0.0 
+  BC_X_e(5)      =  10.0 
+  BC_Y_s(5)      =   0.0
+  BC_Y_n(5)      =   0.0 
+  
+  BC_TYPE(5)       =  'NSW' 
+  BC_JJ_PS(5)      =    1         !Johnson-Jackson slip bc
+  BC_Uw_s(5,1)     =    0.0  
+  BC_Vw_s(5,1)     =    0.0 
+  BC_Ww_s(5,1)     =    0.0
+  BC_Thetaw_m(5,1) =    0.5  
+
+       !                North wall
+  BC_X_w(6)      =        0.0
+  BC_X_e(6)      =        10.0
+  BC_Y_s(6)      =        1.0
+  BC_Y_n(6)      =        1.0
+ 
+  BC_TYPE(6)       =    'NSW'
+  BC_JJ_PS(6)      =      1     !Johnson-Jackson slip bc
+  BC_Uw_s(6,1)     =      0.0
+  BC_Vw_s(6,1)     =      0.0
+  BC_Ww_s(6,1)     =      0.0
+  BC_Thetaw_m(6,1) =      0.5   
+
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g   Theta_m
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 100.  0.1        100.
+
+  FULL_LOG = .TRUE.
+  RESID_STRING  = 'P1' 'U1' 'V1' 'G1'
+  
+# DMP control
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+

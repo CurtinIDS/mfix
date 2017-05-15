@@ -1,0 +1,7 @@
+ # DE Norms for 1D species diffusion:
+ # imax=          100  jmax=          40
+ # 1st line: L1 Norms, 2nd line: L2 Norms, 3rd line: Linf Norms
+ # Columns: X_g_1 X_g_2
+  8.44850715614143682E-002  8.44850715614697684E-002
+  9.71665765079579302E-002  9.71665765080217264E-002
+  0.14943968368935989       0.14943968368945737     

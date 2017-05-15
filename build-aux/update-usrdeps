@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#  Processes the output of fortran-decomp to remove the MODDIR prefix
+#  for those modules built in the current directory
+
+# escape dots in MODDIR (which could a relative path, e.g. ../..)
+ESC_MODDIR=$(echo ${MODDIR} | sed 's/\./\\./g')
+
+for p in $(${GREP} -o "^[a-zA-Z0-9_]*.${MODEXT}" $1); do
+    ${SED} -i -e "s!${ESC_MODDIR}/${p}!${p}!g" $1;
+done

@@ -1,0 +1,181 @@
+########################################################################
+#  Author: J.Musser                                  Date: 2014-11-17  #
+#                                                                      #
+#  Purpose: Test DEM Hertz collision model.                            #
+#                                                                      #
+#  REF: Di Renzo, A. and Di Maio F.P. "Comparison of contact-force     #
+#       models for the simulation of collisions in DEM-based granular  #
+#       flow codes," Chemical Engineering Science, 59(3), pg 525-541.  #
+#                                                                      #
+#  REF: Kharaz, A.H., Gorham, D.A., and Salman, A.D. "An experimental  #
+#       study of the elastic rebound of spheres," Powder Technology,   #
+#       120(3), pg 281-291.                                            #
+#                                                                      #
+########################################################################
+
+  RUN_NAME = 'DEM05'
+  DESCRIPTION = 'DEM05: Oblique particle collision'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_TYPE = 'NEW'
+  UNITS = 'SI'
+
+  TIME =  0.0000
+  TSTOP = 0.0025
+
+  DT = 1.0d-4
+
+  ENERGY_EQ = .F.
+
+  SPECIES_EQ(0:2) = .F. .F. .F.
+
+  MOMENTUM_X_EQ(0:2) = .F. .F. .F.
+  MOMENTUM_Y_EQ(0:2) = .F. .F. .F.
+  MOMENTUM_Z_EQ(0:2) = .F. .F. .F.
+
+! No gravity 
+  GRAVITY = 0.0
+
+! Invoke UDFs
+  CALL_USR = .TRUE.
+
+
+  DES_INTG_METHOD='ADAMS_BASHFORTH'
+
+#_______________________________________________________________________
+# GEOMETRY SECTION 
+
+  COORDINATES = 'Cartesian'
+
+  XLENGTH  = 0.500   IMAX = 5
+  ZLENGTH  = 0.500   KMAX = 5
+  YLENGTH  = 0.100   JMAX = 1
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! GAS SECTION
+!---------------------------------------------------------------------//
+  RO_g0 = 0.0
+  MU_g0 = 0.2
+
+
+! SOLIDS SECTION
+!---------------------------------------------------------------------//
+  MMAX = 2
+
+  PARTICLES = 93      ! Number of particles
+
+! Friction coefficients (1)
+  MEW      = 0.092           ! particle-particle
+  MEW_W    = 0.092           ! Particle-wall
+
+!......................................................................!
+! The following keywords are required inputs for the simulation. They  !
+! are not specified here because they are passed as run time arguments.!
+!                                                                      !
+!                                                                      !
+! --- Linear spring-dashpot collision parameters --------------------- !
+!                                                                      !
+! Normal collision spring constant. (N/m)                              !
+! KN =   1.72d7                   ! particle-particle                  !
+! KN_W = 1.72d7                   ! particle-wall                      !
+!                                                                      !
+! Tangential collision spring constant ratio [KT/KN]. (1)              !
+! KT_FAC =   @(1.48/1.72)         ! particle-particle                  !
+! KT_W_FAC = @(1.48:1.72)         ! particle-wall                      !
+!                                                                      !
+! Restitution coefficient. (1)                                         !
+! DES_EN_INPUT(1:3) =      3*1.0  ! particle-particle: 1-1, 1-2, 2-2   !
+! DES_EN_WALL_INPUT(1:2) = 2*1.0  ! particle-wall: 1-W, 2-W            !
+!                                                                      !
+!                                                                      !
+! --- Hertzian collision parameters ---------------------------------- !
+!                                                                      !
+! Youngs Modulus (Pa)                                                  !
+! E_YOUNG(1) = 380.0d9            ! Phase 1 particles                  !
+! E_YOUNG(2) =  70.0d9            ! Phase 2 particles (fake wall)      !
+! Ew_YOUNG =    70.0d9            ! Wall                               !
+!                                                                      !
+! Poisson ratio (1)                                                    !
+! V_POISSON(1) = 0.23             ! Phase 1 particles                  !
+! V_POISSON(2) = 0.25             ! Phase 2 particles (fake wall)      !
+! Vw_POISSON   = 0.25             ! Wall                               !
+!                                                                      !
+! Normal damping coefficient (1)                                       !
+! DES_EN_INPUT(1:3) =      3*1.0  ! particle-particle: 1-1, 1-2, 2-2   !
+! DES_EN_WALL_INPUT(1:2) = 2*1.0  ! particle-wall: 1-W, 2-W            !
+!                                                                      !
+! Tangential damping coefficient (1)                                   !
+! DES_EN_INPUT(1:3) =      3*1.0  ! particle-particle: 1-1, 1-2, 2-2   !
+! DES_EN_WALL_INPUT(1:2) = 2*1.0  ! particle-wall: 1-W, 2-W            !
+!                                                                      !
+!......................................................................!
+
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  D_p0(1)  =  5.0d-3     ! (m)
+  RO_s0(1) =  4.0d03     ! (kg/m^3)
+
+
+! Solids phase 2 :: Particles used as wall  (fake wall)
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(2) = 'DEM'
+
+  D_p0(2)  =  5.0d-3     ! (m)
+  RO_s0(2) =  5.0d03     ! (kg/m^3)
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1) =    0.0  ! (m)
+  IC_X_e(1) =    0.5  ! (m)
+  IC_Z_b(1) =    0.0  ! (m)
+  IC_Z_t(1) =    0.5  ! (m)
+  IC_Y_s(1) =    0.0  ! (m)
+  IC_Y_n(1) =    0.1  ! (m)
+
+  IC_EP_g(1) =   1.0  ! (-)
+
+  IC_U_g(1) =    0.0  ! (m/sec)
+  IC_V_g(1) =    0.0  ! (m/sec)
+  IC_W_g(1) =    0.0  ! (m/sec)
+
+  IC_P_g(1) =    0.0  ! (Pa)
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! No BCs needed for this case.
+
+
+#_______________________________________________________________________
+# OUTPUT CONROL SECTION
+
+  RES_DT = 1.0d3  ! interval to update restart (.RES) file
+
+  NLOG = 5000     ! time steps between updates to (.LOG) file
+  FULL_LOG = .T.  ! display residuals on screen
+
+! Interval at which .SPX files are written
+  SPX_DT(1) = 1.0d-3
+  SPX_DT(2:9) = 8*1.0d3
+
+  GROUP_RESID = .T.
+
+  PRINT_DES_DATA = .T.
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  1  NODESJ = 1  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .F.

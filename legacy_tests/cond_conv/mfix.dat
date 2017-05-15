@@ -1,0 +1,128 @@
+#
+#  Conduction and convection 
+#
+#  F.B. Modeler                  9-6-94
+#
+# Run-control section
+#
+  RUN_NAME = 'COND02'
+  DESCRIPTION = 'Steady conduction and convection'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+#  TIME  =0.0  TSTOP = 1.0E-4   DT = 1.0e-4   DT_MAX = 1.0e-4   OUT_DT = 1.0e-4
+
+  ENERGY_EQ = .TRUE.
+
+  SPECIES_EQ = .FALSE.    .FALSE.
+  MOMENTUM_X_EQ = .TRUE.    .FALSE.
+  MOMENTUM_Y_EQ = .TRUE.    .FALSE.
+  MOMENTUM_Z_EQ = .FALSE.    .FALSE.
+
+  DISCRETIZE = 7*0
+#
+# Geometry Section
+#
+  COORDINATES = 'Cylindrical'
+
+  XLENGTH  =   7.0    IMAX =   7
+  YLENGTH  = 100.0    JMAX = 100
+
+#  XLENGTH  = 100      IMAX = 100
+#  YLENGTH  = 7.0      JMAX = 1
+
+#  XLENGTH  = 7.0      IMAX = 1
+#  YLENGTH  = 7.0      JMAX = 1
+#  ZLENGTH  = 100      KMAX = 100
+
+  NO_K     = .TRUE.
+
+  MAX_NIT = 500
+  UR_FAC(6) = 0.5
+  TOL_RESID_T = 1.0E-6
+#
+# Gas-phase Section
+#
+  RO_g0 = 1.0
+  MU_g0 = 0.01
+  MW_avg = 29.
+  GRAVITY = 0.0
+  K_g0 = 0.2
+  C_pg0 = 1.
+#
+# Solids-phase Section
+#
+  MMAX         = 0
+
+#
+# Initial Conditions Section
+#
+       !              
+  IC_X_w           =  0.0
+  IC_X_e           = 7.0
+  IC_Y_s           =  0.0
+  IC_Y_n          = 100.0
+#  IC_Z_b           =  0.0
+#  IC_Z_t          = 100.0
+ 
+  IC_EP_g          =  1.0
+ 
+  IC_U_g           =  0.0
+  IC_V_g           =  10.0
+  IC_W_g           =  0.0
+
+  IC_T_g           = 500. 
+
+#
+#  Boundary Conditions Section
+#
+       !              bottom          Top
+  BC_X_w            =  0.0  3.5       0.0
+  BC_X_e            =  3.5  7.0       7.0
+  BC_Y_s            =  0.0  0.0      100.0
+  BC_Y_n            =  0.0  0.0      100.0
+#  BC_Z_b           =  0.0  0.0      100.0
+#  BC_Z_t           =  0.0  0.0      100.0
+ 
+  BC_TYPE          =  'MI'  'MI'   'PO'
+
+  BC_EP_g          =  1.0    1.0     1.0
+
+  BC_U_g           =  3*0.0 
+  BC_V_g           =  3*10.0 
+  BC_W_g           =  3*0.0
+
+  BC_T_g           = 300.0   500.   300.
+
+  BC_P_g           = 3*0
+#
+#  Internal surface
+#
+#  IS_X_w            =  3.5
+#  IS_X_e            =  3.5
+#  IS_Y_s            =  0.0
+#  IS_Y_n            =  100.0
+##  IS_Z_b           =  0.0
+##  IS_Z_t           =  100.0
+ 
+#  IS_TYPE          =  'IP'
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 100.  100.    100.  100. 100.     0.01  100.   100.   100.
+
+  NLOG   = 25
+  FULL_LOG = .TRUE.
+  RESID_STRING = 'P0' 'V0' 'U0' 'T0' 
+  
+ 
+# DMP control
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+

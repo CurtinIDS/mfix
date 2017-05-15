@@ -1,0 +1,379 @@
+########################################################################
+# Variable solids density tutorial                                     #
+#                                                                      #
+# Author: J. Musser                                    Date: 06-05-14  #
+#                                                                      #
+#  REF: Q.Xue, and R.O.Fox, 'Multi-fluid CFD modeling of biomass       #
+#       gasification in polydisperse fluidized-bed gasifiers." Powder  #
+#       Technology, Vol 254, pp. 187-198, 2014.                        #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_NAME = 'BIO'
+  DESCRIPTION = 'Biomass gasification tutorial'
+
+  RUN_TYPE = 'new'
+  UNITS = 'CGS'
+
+  TIME =  0.0
+  TSTOP = 1.0!d-1
+
+  DT     =   1.0E-4  ! Initial time step-size
+  DT_MAX =   1.0E-2  ! Maximum time step-size
+  DT_MIN =   1.0E-9  ! Minimum time step-size
+
+  ENERGY_EQ =  .T.
+  SPECIES_EQ = .T. .T. .F.
+
+  FEDORS_LANDEL = .T.
+
+  CALL_USR  = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+! superbee by itself (w/o Def_Cor) eventually shows issue in the matrix
+! for one of the species equations
+  DISCRETIZE = 7*0
+  MAX_NIT = 50
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  =  4.0   IMAX =  10
+  YLENGTH  = 28.0   JMAX =  70
+  ZLENGTH  =  1.0   NO_K = .T.
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  MU_g0 = 3.491d-4  ! Constant Viscosity
+
+  NMAX_g = 9
+
+  SPECIES_g(1) = 'O2'                  SPECIES_ALIAS_g(1) = 'O2'
+  SPECIES_g(2) = 'N2'                  SPECIES_ALIAS_g(2) = 'N2'
+  SPECIES_g(3) = 'H2O'                 SPECIES_ALIAS_g(3) = 'H2O'
+  SPECIES_g(4) = 'CO'                  SPECIES_ALIAS_g(4) = 'CO'
+  SPECIES_g(5) = 'CO2'                 SPECIES_ALIAS_g(5) = 'CO2'
+  SPECIES_g(6) = 'H2 REF ELEMENT    '  SPECIES_ALIAS_g(6) = 'H2'
+  SPECIES_g(7) = 'CH4'                 SPECIES_ALIAS_g(7) = 'CH4'
+  SPECIES_g(8) = 'Tar'                 SPECIES_ALIAS_g(8) = 'Tar'
+  SPECIES_g(9) = 'Tar'                 SPECIES_ALIAS_g(9) = 'Tar0'
+
+  MW_g(1) =  32.0    ! O2
+  MW_g(2) =  28.0    ! N2
+  MW_g(3) =  18.0    ! H2O
+  MW_g(4) =  28.0    ! CO
+  MW_g(5) =  44.0    ! CO2
+  MW_g(6) =   2.0    ! H2
+  MW_g(7) =  16.0    ! CH4
+  MW_g(8) = 100.0016 ! Tar
+  MW_g(9) = 100.0000 ! Tar0
+
+
+! Solids Section:
+!---------------------------------------------------------------------//
+  MMAX = 2
+
+  e =       0.97  ! part-part restitution coefficient     (assumption)
+  Phi =    55.0   ! angle of internal friction               (degrees)
+  C_f =     0.1   ! coeff of friction between two phases
+
+  EP_star = 0.40  ! void fraction at maximum packing      (assumption)
+
+  SEGREGATION_SLOPE_COEFFICIENT = 0.3
+
+
+! Solids phase 1: Biomass
+!---------------------------------------------------------------------//
+  D_p0(1) =    50.0d-3   ! (cm)
+
+  CLOSE_PACKED(1) = .T.
+  EP_S_MAX(1) = 0.6
+
+  NMAX_s(1) = 4
+
+  SPECIES_s(1,1) = 'Biomass'       SPECIES_ALIAS_s(1,1) = 'Biomass'
+  SPECIES_s(1,2) = 'H2O(L)'        SPECIES_ALIAS_s(1,2) = 'Moisture'
+  SPECIES_s(1,3) = 'Fixed Carbon'  SPECIES_ALIAS_s(1,3) = 'Char'
+  SPECIES_s(1,4) = 'BioAsh'        SPECIES_ALIAS_s(1,4) = 'Ash'
+
+! Proximate Analysis
+  X_s0(1,1) = 0.95    RO_Xs0(1,1) = 0.5944  ! Biomass
+  X_s0(1,2) = 0.00    RO_Xs0(1,2) = 0.6490  ! Moisture
+  X_s0(1,3) = 0.00    RO_Xs0(1,3) = 0.4500  ! Char
+  X_s0(1,4) = 0.05    RO_Xs0(1,4) = 0.4500  ! Ash
+
+  INERT_SPECIES(1) = 4  ! Ash
+
+  MW_s(1,1) = 100.00036 ! Biomass
+  MW_s(1,2) =  18.0     ! Moisture
+  MW_s(1,3) =  12.0     ! Char
+  MW_s(1,4) = 120.0     ! Ash
+
+
+! Solids phase 2: Sand
+!---------------------------------------------------------------------//
+  D_p0(2) =   52.0d-3   ! (cm)
+  RO_s0(2) =   2.649d0  ! (g/cm^3)
+
+  CLOSE_PACKED(2) = .T.
+  EP_S_MAX(2) = 0.6
+
+  NMAX_s(2) = 1
+  SPECIES_s(2,1) = 'Si'            SPECIES_ALIAS_s(2,1) = 'Sand'
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+
+! Freeboard
+!---------------------------------------------------------------------//
+  IC_X_w(1) =       0.00     ! (cm)
+  IC_X_e(1) =       4.00     ! (cm)
+  IC_Y_s(1) =      10.40     ! (cm)
+  IC_Y_n(1) =      28.00     ! (cm)
+
+  IC_EP_g(1) =      1.00     ! (-)
+
+  IC_T_g(1) =    1073.15     ! (K)
+  IC_P_g(1) =     101.325d4  ! (1 atm)
+
+  IC_U_g(1) =       0.0      ! (cm/sec)
+  IC_V_g(1) =       0.0      ! (cm/sec)
+
+  IC_X_g(1,2) =     1.00     ! N2
+
+  IC_T_s(1,1) =  1073.15     ! (K)
+  IC_T_s(1,2) =  1073.15     ! (K)
+
+  IC_X_s(1,1,4) =   1.0      ! Ash
+  IC_X_s(1,2,1) =   1.0      ! Ash
+
+
+! Bed
+!---------------------------------------------------------------------//
+  IC_X_w(2) =       0.00     ! (cm)
+  IC_X_e(2) =       4.00     ! (cm)
+  IC_Y_s(2) =       0.00     ! (cm)
+  IC_Y_n(2) =      10.40     ! (cm)
+
+! Gas phase:
+!----------------------------------------/
+  IC_EP_g(2) =      0.41     ! (-)
+
+  IC_T_g(2) =    1073.15     ! (K)
+  IC_P_g(2) =     101.325d4  ! (1 atm)
+
+  IC_U_g(2) =       0.0      ! (cm/sec)
+  IC_V_g(2) =       0.0      ! (cm/sec)
+
+  IC_X_g(2,2) =     1.00     ! N2
+
+! Solids phase 1 (Biomass):
+!----------------------------------------/
+  IC_EP_s(2,1) =    0.0      ! (-)
+
+  IC_T_s(2,1) =  1073.15     ! (K)
+
+  IC_X_s(2,1,4) =   1.0      ! Ash
+
+
+! Solids phase 2 (Sand):
+!----------------------------------------/
+  IC_EP_s(2,2) =    0.59     ! (-)
+
+  IC_T_s(2,2) =  1073.15     ! (K)
+
+  IC_U_s(2,2) =     0.00     ! (cm/sec)
+  IC_V_s(2,2) =     0.00     ! (cm/sec)
+
+  IC_X_s(2,2,1) =   1.0      ! Si
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+
+! Distributor: (Gas only)
+!---------------------------------------------------------------------//
+  BC_X_w(1) =       0.00     ! (cm)
+  BC_X_e(1) =       4.00     ! (cm)
+  BC_Y_s(1) =       0.00     ! (cm)
+  BC_Y_n(1) =       0.00     ! (cm)
+
+  BC_TYPE(1) =      'MI'
+
+  BC_EP_g(1) =      1.0      ! (-)
+
+  BC_P_g(1) =     101.325d4  ! (1 atm)
+  BC_T_g(1) =    1073.15      ! (K)
+
+  BC_U_g(1) =       0.0      ! (cm/sec)
+  BC_V_g(1) =      23.7      ! (cm/sec)
+
+  BC_X_g(1,1) =     0.24     ! O2
+  BC_X_g(1,2) =     0.76     ! N2
+
+
+! Side inlet: (gas/solids)
+!---------------------------------------------------------------------//
+  BC_X_w(2) =       0.00     ! (cm)
+  BC_X_e(2) =       0.00     ! (cm)
+  BC_Y_s(2) =       1.20     ! (cm)
+  BC_Y_n(2) =       2.00     ! (cm)
+
+  BC_TYPE(2) =      'MI'
+
+! Gas phase:
+!----------------------------------------/
+  BC_EP_g(2) =      0.993022 ! (-)
+
+  BC_P_g(2) =     101.325d4  ! (1 atm)
+  BC_T_g(2) =     300.0      ! (K)
+
+  BC_U_g(2) =      12.357    ! (cm/sec)
+  BC_V_g(2) =       0.0      ! (cm/sec)
+
+  BC_X_g(2,2) =     1.00     ! N2
+
+! Solids phase 1 (Biomass):
+!----------------------------------------/
+  BC_EP_s(2,1) =    0.006978 ! (-)
+
+  BC_T_s(2,1) =   300.0      ! (K)
+
+  BC_U_s(2,1) =    12.357    ! (cm/sec)
+  BC_V_s(2,1) =     0.00     ! (cm/sec)
+
+  BC_X_s(2,1,1) =   0.95      ! Biomass
+  BC_X_s(2,1,4) =   0.05      ! Ash
+
+! Solids phase 2 (Sand):
+!----------------------------------------/
+  BC_EP_s(2,2) =    0.0      ! (-)
+
+  BC_T_s(2,2) =   300.0      ! (K)
+
+
+! Pressure Outlet
+!---------------------------------------------------------------------//
+  BC_X_w(5) =       0.00     ! (cm)
+  BC_X_e(5) =       4.00     ! (cm)
+  BC_Y_s(5) =      28.00     ! (cm)
+  BC_Y_n(5) =      28.00     ! (cm)
+
+  BC_TYPE(5) =      'PO'
+
+  BC_P_g(5) =     101.325d4 ! (1 atm)
+
+  BC_T_g(5) =    1073.15     ! (K)
+  BC_T_s(5,1) =  1073.15     ! (K)
+  BC_T_s(5,2) =  1073.15     ! (K)
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  STIFF_CHEMISTRY = .T.
+
+  @(RXNS)
+
+    Drying { chem_eq = 'Moisture --> H2O' }
+
+
+    Pyrolysis {
+
+      chem_eq = 'Biomass --> ' &
+        '0.9639 * CO + 0.8771 * CO2 + 0.3491 * CH4 + ' &
+        '1.6276 * H2 + 1.4210 * H2O'
+
+      DH = 3.585d3     ! (cal/mol-biomass)  150.0 J/g-biomass
+      fracDH(1) = 1.0  ! assign to the coal phase
+    }
+
+
+    Charring {
+
+      chem_eq = 'Biomass --> 8.3334 * Char'
+
+      DH = 3.585d3     ! (cal/mol-biomass)  150.0 J/g-biomass
+      fracDH(1) = 1.0  ! assign to the coal phase
+    }
+
+
+    Tarring {
+
+      chem_eq = 'Biomass --> Tar'
+
+      DH = 3.585d3     ! (cal/mol-biomass)  150.0 J/g-biomass
+      fracDH(1) = 1.0  ! assign to the coal phase
+    }
+
+  @(END)
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  RES_DT = 0.10
+
+  SPX_DT(1) = @(1.0/32.0)   ! EP_g 
+  SPX_DT(2) = @(1.0/32.0)   ! P_g, P_star 
+  SPX_DT(3) = @(1.0/32.0)   ! U_g, V_g, W_g
+  SPX_DT(4) = @(1.0/32.0)   ! U_s, V_s, W_s
+  SPX_DT(5) = @(1.0/32.0)   ! ROP_s
+  SPX_DT(6) = @(1.0/32.0)   ! T_g, T_s
+  SPX_DT(7) = @(1.0/32.0)   ! X_g, X_s
+  SPX_DT(8) = 100.          ! theta
+  SPX_DT(9) = 100.          ! Scalar
+
+  GROUP_RESID = .T.
+
+  NLOG = 100
+  FULL_LOG = .T.
+
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  1  NODESJ =  1  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .F.
+
+
+#_______________________________________________________________________
+THERMO DATA
+
+Biomass                    WARNING!       0.S   200.000  6000.000  B 100.00036 1
+-7.94079328E-01 8.09779756E-03-6.56398654E-06 1.84781958E-09 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00-7.94079328E-01 8.09779756E-03-6.56398654E-06    3
+ 1.84781958E-09 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+Fixed Carbon               WARNING!       0.S   200.000  6000.000  B  12.01100 1
+-7.94079328E-01 8.09779756E-03-6.56398654E-06 1.84781958E-09 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00-7.94079328E-01 8.09779756E-03-6.56398654E-06    3
+ 1.84781958E-09 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+BioAsh                     WARNING!       0.S   200.000  6000.000  B  56.00000 1
+ 8.70769880E+00 8.45407650E-03 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 8.70769880E+00 8.45407650E-03 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+Tar                        WARNING!       0.S   200.000  6000.000  B 144.00000 1
+-8.24608207E-03 3.69260193E-04-2.11918112E-07 5.04138153E-11-1.69120432E-15    2
+ 0.00000000E+00 0.00000000E+00-8.24608207E-03 3.69260193E-04-2.11918112E-07    3
+ 5.04138153E-11-1.69120432E-15 0.00000000E+00 0.00000000E+00-2.07379339E+05    4
+

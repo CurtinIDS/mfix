@@ -1,0 +1,271 @@
+########################################################################
+#  Author: J.Musser                                 Date:   2012-11-15 #
+#                                                                      #
+#  Purpose: Test the DEM particle-gas reaction model.                  #
+#                                                                      #
+#  REF: Musser, J., “Modeling of heat transfer and reactive chemistry  #
+#       for particles in gas-solid flow utilizing continuum-discrete   #
+#       methodology (CDM),” WVU, PhD Thesis 2011.                      #
+#                                                                      #
+########################################################################
+
+  RUN_NAME = 'RC_VV'
+  DESCRIPTION = 'DEM TEST: reactive particle in uniform gas flow'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_TYPE = 'NEW'
+  UNITS = 'CGS'
+
+  TIME  =   0.0
+  TSTOP =   2.05
+
+  DT =     1.0d-4
+  DT_MAX = 2.0d-4
+
+  ENERGY_EQ = .T.
+
+  SPECIES_EQ(0:2) = .T. .T. .T.
+
+  MOMENTUM_X_EQ(0:2) = .F. .F. .F.
+  MOMENTUM_Y_EQ(0:2) = .F. .F. .F.
+  MOMENTUM_Z_EQ(0:2) = .F. .F. .F.
+
+  DRAG_TYPE = 'WEN_YU'
+
+  DES_INTERP_ON = .F.
+  DES_INTERP_MEAN_FIELDS = .F.
+  DES_INTERP_SCHEME = 'NONE'
+
+  DES_ONEWAY_COUPLED = .T.
+
+  CALL_USR = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  TOL_RESID = 1.0E-2
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  =  12.00   IMAX =  3
+  YLENGTH  = 120.00   JMAX = 30
+  ZLENGTH  =   0.36   NO_K = .T.
+
+! Grid partition for DES grid
+  DESGRIDSEARCH_IMAX = 1
+  DESGRIDSEARCH_JMAX = 1
+  DESGRIDSEARCH_KMAX = 1
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! GAS SECTION
+!---------------------------------------------------------------------//
+
+  RO_g0 = 1.1854E-3  ! g/cm^3
+  MU_g0 = 1.8603E-4  ! g/(cm.s)
+  K_g0  = 1.2396E-4  ! cal/(s.g.K)
+
+  NMAX_g = 2
+
+  SPECIES_g(1) = 'A'  SPECIES_ALIAS_g(1) = 'Ag'
+  SPECIES_g(2) = 'C'  SPECIES_ALIAS_g(2) = 'Cg'
+
+! MW_g - Obtained from Burcat and Ruscic databse
+
+! PARTICLE SECTION
+!---------------------------------------------------------------------//
+  MMAX = 2
+
+  PARTICLES  = 2   ! Number of partiles in the system.
+
+! Particle-particle:
+  KN =   1.0d6               ! Normal collision spring constant
+  MEW   = 0.1                ! Friction coefficient
+
+! Particle-wall:
+  KN_W = 1.0d6               ! Normal collision spring constant
+  MEW_W = 0.1                ! Friction coefficient
+
+! Restitution coefficients
+
+  DES_EN_INPUT(1:2) = 0.9  0.9 ! e11  e12
+  DES_EN_INPUT(3)   =      0.9 !      e22
+
+  DES_EN_WALL_INPUT = 0.9  0.9 ! e1w  e2w
+
+  NFACTOR = 0                ! No initial settling
+
+  DES_NEIGHBOR_SEARCH = 4    ! Grid based neighbor search
+  NEIGHBOR_SEARCH_N   = 9999 ! Steps between neighbor search
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  D_p0(1) =  0.30     ! (cm)
+  RO_s0(1)=  2.50     ! (g/cm)
+
+  K_s0(1) =  0.3585   ! conductivity, cal/(sec.cm.K)
+  DES_Em(1) = 0.0     ! Emissivity
+
+  NMAX_s(1) = 3
+
+  SPECIES_s(1,1) = 'B'    SPECIES_ALIAS_s(1,1) = 'Bs'
+  SPECIES_s(1,2) = 'D'    SPECIES_ALIAS_s(1,2) = 'Ds'
+  SPECIES_s(1,3) = 'I'    SPECIES_ALIAS_s(1,3) = 'Is'
+
+! Solids phase 2
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(2) = 'DEM'
+
+  D_p0(2) =  0.36     ! (cm)
+  RO_s0(2)=  8.85     ! (g/cm)
+
+  K_s0(2) =   2.0076E-5 ! conductivity, cal/(sec.cm.K)
+  DES_Em(2) = 0.0       ! Emissivity
+
+  NMAX_s(2) = 1
+
+  SPECIES_s(2,1) = 'I'    SPECIES_ALIAS_s(2,1) = 'Sand'
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1)   =    0.0  ! (cm)
+  IC_X_e(1)   =   12.0  ! (cm)
+  IC_Y_s(1)   =    0.0  ! (cm)
+  IC_Y_n(1)   =  120.0  ! (cm)
+
+  IC_EP_g(1)  =    1.0  ! (-)
+
+  IC_U_g(1)   =    0.0  ! (cm/sec)
+  IC_V_g(1)   =  600.0  ! (cm/sec)
+
+  IC_T_g(1)   =  298.15 ! (K)
+
+  IC_X_g(1,1)  =   1.0  ! A
+  IC_X_g(1,2)  =   0.0  ! C
+
+  IC_T_s(1,1) =  500.00 ! (K)
+
+  IC_X_s(1,1,1) =  0.5  ! B
+  IC_X_s(1,1,2) =  0.0  ! D
+  IC_X_s(1,1,3) =  0.5  ! I
+
+  IC_T_s(1,2) =  500.00 ! (K)
+
+  IC_X_s(1,2,1) =  1.0  ! I
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+
+# Gas Inlet
+#---------------------------------------------------------------------//
+  BC_TYPE(1) =   'MI'
+
+  BC_X_w(1) =      0.0     ! (cm)
+  BC_X_e(1) =     12.0     ! (cm)
+  BC_Y_s(1) =      0.0     ! (cm)
+  BC_Y_n(1) =      0.0     ! (cm)
+
+  BC_P_g(1) =    101.352d4 ! (barye)
+
+  BC_U_g(1) =      0.0     ! (cm/sec)
+  BC_V_g(1)  =   600.0     ! (cm/sec_)
+
+  BC_EP_g(1) =     1.0     ! void fraction
+  BC_T_g(1)  =   298.15    ! inlet gas temp
+
+  BC_X_g(1,1) =    1.0     ! A
+  BC_X_g(1,2) =    0.0     ! C
+
+
+# Gas-Solids Outlet
+#---------------------------------------------------------------------//
+  BC_X_w(5) =    1.0
+  BC_X_e(5) =   12.0
+  BC_Y_s(5) =  120.0
+  BC_Y_n(5) =  120.0
+
+  BC_TYPE(5) = 'PO'
+
+  BC_P_g(5)  = 101.325d4  ! (Barye)
+
+
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+! Specified constant rate
+  C(1) = 3.927d-4 ! (moles/sec)
+
+  @(DES_RXNS)
+
+    EX_RXN{
+      chem_eq = " Ag + 2Bs --> Cg + Ds"
+      DH = 0.0
+      fracDH(1) = 1.0
+    }
+
+  @(DES_END)
+
+
+#_______________________________________________________________________
+# OUTPUT CONROL SECTION
+
+  RES_DT = 1.0d3  ! interval to update restart (.RES) file
+
+  NLOG = 25       ! time steps between updates to (.LOG) file
+  FULL_LOG = .T.  ! display residuals on screen
+
+! Interval at which .SPX files are written
+  SPX_DT(1:9) = 9*1.0d3
+
+  GROUP_RESID = .T.
+
+  PRINT_DES_DATA = .F.
+
+  USR_TYPE(1) = 'ASCII'
+  USR_VAR(1) =  'Particle mass data'
+  USR_DT(1) =    1.0d-1 ! (sec)
+
+
+#_______________________________________________________________________
+THERMO DATA
+
+A                          WARNING!       0.S   200.000  6000.000  B  25.00000 1
+ 3.50000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 3.50000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+B                          WARNING!       0.S   200.000  6000.000  B  15.00000 1
+ 1.40000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 1.40000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+C                          WARNING!       0.S   200.000  6000.000  B  30.00000 1
+ 4.60000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 4.60000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00-2.50000000E+03    4
+
+D                          WARNING!       0.S   200.000  6000.000  B  25.00000 1
+ 1.50000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 1.50000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+I                          WARNING!       0.S   200.000  6000.000  B  20.00000 1
+ 3.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 3.00000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4

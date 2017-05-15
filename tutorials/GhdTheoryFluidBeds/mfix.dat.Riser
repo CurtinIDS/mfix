@@ -1,0 +1,222 @@
+#
+# Riser simualtion with 2-solids-species
+#
+#
+# Using GHD kinetic theory. 
+#  
+# Run-control section
+#
+  RUN_NAME = 'R'
+  DESCRIPTION = 'Binary mixture using GHD theory'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+  TIME  =0.0  TSTOP = 2.0   DT = 1.0e-4 
+  DT_MIN = 1.0e-8   DT_MAX = 1.0e-4
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE. .FALSE. .FALSE.
+
+  GRANULAR_ENERGY = .t.
+  
+  KT_TYPE = 'GHD'   ! using GHD polydisperse kinetic theory
+  
+
+   MOMENTUM_X_EQ =  3*.T.
+   MOMENTUM_Y_EQ =  3*.T.
+
+
+   GRAVITY = 981
+   MAX_NIT = 50 !high NIT for convergence
+   LEQ_TOL = 9*1D-15
+   LEQ_IT(1) = 200
+  
+   
+   DISCRETIZE = 9*2
+   DEF_COR = .T.
+   NORM_G = 0.0
+   TOL_RESID = 1D-5
+#  TOL_RESID_Th = 1D-3
+#
+# Geometry Section
+#
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  =   16.0    IMAX = 16 
+  YLENGTH  = 64.0    JMAX = 64
+
+  NO_K     = .TRUE.
+
+
+#
+# Gas-phase Section                                                            
+  NMAX(0)=0 
+  MU_g0 = 1.8E-4			!constant gas viscosity
+  RO_g0 = 1.3E-3
+  MW_avg = 29.
+  MU_gmax = 1000.
+
+#
+# Solids-phase Section
+#
+  NMAX(1)=0
+  DRAG_TYPE             = 'WEN_YU'
+#  LAM_HYS = 0.0001d0 
+  
+  FRICTION = .TRUE.
+  SAVAGE = 2
+
+  MMAX = 2 !the code will internally modify mmax to 3 to solve for mixture.
+  RO_s         = 2*2.5d0
+  D_p0(1)         = 0.05d0  ! note that large particle diameter ratios may not converge well.
+  D_p0(2)         = 0.025d0 ! also some convergence issues were reported with low C_e.
+!
+ 
+  CLOSE_PACKED = 2*.TRUE.
+
+  C_e       = 0.95  !  particle-particle collisions
+#  e_w       = 0.7   !  particle-wall collisions, no complex wall BC (JJ) are used for now.
+  C_f       = 0.0d0
+  
+ EPS_F_MIN = 0.55
+ PHIP    = 0.0001     ! specularity coefficient, not used              
+ 
+  Phi     = 30
+  EP_star = 0.35d0
+  Phi_w   = 12.0
+
+  ep_s_max(1)		   = 0.65d0
+  ep_s_max(2)		   = 0.65d0
+#
+# Initial Conditions Section
+#
+
+  IC_X_w(1)           =  0.0 
+  IC_X_e(1)           =  16.0 
+  IC_Y_s(1)           =  0.0 
+  IC_Y_n(1)           = 64.0
+ 
+  IC_EP_g(1)          = 0.98
+  IC_ROP_s(1,1)         =  @(0.01d0*2.5d0)
+  IC_ROP_s(1,2)         =  @(0.01d0*2.5d0)
+ 
+  IC_U_g(1)           =   0.0
+  IC_V_g(1)           =  50.0         
+  IC_P_g(1) = 1013250.        
+  IC_T_g(1) = 298.
+
+  IC_U_s(1,1)      = 0.0
+  IC_V_s(1,1)     = 0.0
+  IC_Theta_m(1,1)  = 1.0d-3 ! Warning! theta includes mass of particle
+  IC_U_s(1,2)      = 0.0
+  IC_V_s(1,2)     = 0.0
+  IC_Theta_m(1,2)  = 1.0d-3
+                        
+#
+#  Boundary Conditions Section
+#
+  BC_X_w(1)      =   0.0
+  BC_X_e(1)      =   16.0
+  BC_Y_s(1)      =   0.0
+  BC_Y_n(1)      =   0.0
+
+  BC_TYPE(1)       =  'MI'
+  BC_Ep_g(1)     =    1.0
+  BC_U_g(1)     =    0.0
+  BC_V_g(1)     =    200.0       
+  BC_P_g(1) = 1013250.        
+  BC_T_g(1) = 298.
+#
+  BC_X_w(5)      =   16.0
+  BC_X_e(5)      =   16.0
+  BC_Y_s(5)      =   10.0
+  BC_Y_n(5)      =   20.0
+
+  BC_TYPE(5)       =  'MI'
+  BC_Ep_g(5)     =    0.6
+  BC_U_g(5)     =    -20.0
+  BC_V_g(5)     =    0.0       
+  BC_P_g(5) = 1013250.        
+  BC_T_g(5) = 298.
+  BC_ROP_s(5,1)         =  @(0.2d0*2.5d0)
+  BC_ROP_s(5,2)         =  @(0.2d0*2.5d0)
+
+  BC_U_s(5,1)      = -20.0
+  BC_V_s(5,1)     = 0.0
+  BC_Theta_m(5,1)  = 1.0d-3 ! Warning! theta includes mass of particle
+  BC_U_s(5,2)      = -20.0
+  BC_V_s(5,2)     = 0.0
+  BC_Theta_m(5,2)  = 1.0d-3
+#
+
+
+#           walls  
+  BC_X_w(2)      =   0.0 
+  BC_X_e(2)      =   0.0 
+  BC_Y_s(2)      =   0.0
+  BC_Y_n(2)      =  64.
+  
+  BC_TYPE(2)       =  'PSW' 
+  BC_JJ_PS(2)      =    2*0    !DO NOT USE Johnson-Jackson slip bc
+  BC_Uw_s(2,1)     =    2*0.0   
+  BC_Vw_s(2,1)     =    2*0.0d0 
+  BC_Ww_s(2,1)     =    2*0.0
+  BC_Uw_s(2,2)     =    2*0.0   
+  BC_Vw_s(2,2)     =    2*0.0d0 
+  BC_Ww_s(2,2)     =    2*0.0
+  BC_Uw_s(2,3)     =    2*0.0   
+  BC_Vw_s(2,3)     =    2*0.0d0 
+  BC_Ww_s(2,3)     =    2*0.0
+  BC_hw_s(2,1)     =    2*0.0
+  BC_hw_s(2,2)     =    2*0.0
+  BC_hw_s(2,3)     =    2*0.0
+  BC_Uw_g(2)     =    2*0.0 
+  BC_Vw_g(2)     =    2*0.0 
+  BC_Ww_g(2)     =    2*0.0
+  BC_hw_g(2)     =    2*0.0
+  BC_Thetaw_m(2,1) =    2*0.0 
+  BC_C_Theta_m(2,1) =      2*0.0
+  BC_HW_Theta_m(2,1) =      2*0.0
+  BC_Thetaw_m(2,2) =    2*0.0 
+  BC_C_Theta_m(2,2) =      2*0.0
+  BC_HW_Theta_m(2,2) =      2*0.0
+  BC_Thetaw_m(2,3) =    2*0.0 
+  BC_C_Theta_m(2,3) =      2*0.0
+  BC_HW_Theta_m(2,3) =      2*0.0
+#           walls  
+  BC_X_w(3)      =   16.0 
+  BC_X_e(3)      =   16.0 
+  BC_Y_s(3)      =   0.0
+  BC_Y_n(3)      =  64.
+  
+  BC_TYPE(3)       =  'PSW'
+#
+                BC_X_W(4)  =       0.
+                BC_X_E(4)  =       16.
+                BC_Y_S(4)  =     64.
+                BC_Y_N(4)  =     64.
+               BC_TYPE(4)  =       'PO'
+
+                BC_P_G(4)  =   1013250.
+
+                BC_T_G(4)  =     298
+
+
+
+
+
+  NODESI = 1   NODESJ = 1   NODESK = 1
+#
+#  Output Control
+#
+  RES_DT = 0.05
+  OUT_DT = 10.
+        
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g   Theta_m
+         !     P_star    V_g  V_s            T_s1 X_s
+          !              W_g  W_s            T_s2
+  SPX_DT = 0.05 0.05   0.05  0.05  0.05  0.05 0.05  0.05        0.05
+
+   FULL_LOG = .TRUE.
+  RESID_STRING  = 'P0' 'U3' 'V3' 'U0' 'V0' 'G3'
+  
+# DMP control
+ NODESI = 1 NODESJ = 1 NODESK = 1  

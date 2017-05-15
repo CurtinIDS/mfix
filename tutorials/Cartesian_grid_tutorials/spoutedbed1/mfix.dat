@@ -1,0 +1,400 @@
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'SB1'             
+  DESCRIPTION           = '2D Spouted Bed'
+  RUN_TYPE              = 'NEW'              
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                  !start time
+  TSTOP                 = 0.5
+  DT                    = 1.0E-4               !time step
+  ENERGY_EQ             = .FALSE.              !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.   !do not solve species eq
+  DT_MIN = 1.0E-8
+
+  DT_MAX = 5.0E-4
+
+  GRANULAR_ENERGY       = .FALSE.  
+  BLENDING_STRESS       = .FALSE.
+  MAX_NIT               = 500
+
+  TOL_RESID             = 1.0E-4
+
+  NORM_G = 1.0
+  NORM_S = 1.0
+
+!===============================================================================
+! Cartesian Grid - Quadric definition:
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+!
+! Predefined quadrics: set QUADRIC_FORM to on eof the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!===============================================================================
+  CARTESIAN_GRID = .TRUE.
+  N_QUADRIC = 3
+
+! First Quadric: Inlet: Cylinder of radius 0.195 cm
+
+  QUADRIC_FORM(1) = 'Y_CYL_INT'
+  RADIUS(1) = 0.195
+
+  t_x(1) = 2.55D0                  ! Translation in x direction
+  t_y(1) = 0.0d0                   ! Translation in y direction
+  t_z(1) = 0.0D0                   ! Translation in z direction
+
+  piece_ymax(1) =  2.0D0
+
+! Second Quadric: Cone of half-angle 30.0 degrees 
+  QUADRIC_FORM(2) = 'Y_CONE'
+  HALF_ANGLE(2) = 30.0
+
+  t_x(2) = 2.55D0                 ! Translation in x direction
+  t_y(2) = 1.68627451d0           ! Translation in y direction
+  t_z(2) = 0.0D0                  ! Translation in z direction
+
+  piece_ymin(2) =  2.0d0
+  piece_ymax(2) =  6.0d0
+
+! Third Quadric: Inlet: Cylinder of radius 2.525 cm
+
+  QUADRIC_FORM(3) = 'Y_CYL_INT'
+  RADIUS(3) = 2.525
+
+  t_x(3) = 2.55D0                  ! Translation in x direction
+  t_y(3) = 0.0d0                   ! Translation in y direction
+  t_z(3) = 0.0D0                   ! Translation in z direction
+
+  piece_ymin(3) =  6.0d0
+
+  N_GROUP = 1
+
+  GROUP_SIZE(1) = 3
+  GROUP_Q(1,1) = 1
+  GROUP_Q(1,2) = 2
+  GROUP_Q(1,3) = 3
+  GROUP_RELATION(1) = 'PIECEWISE'
+
+
+  BC_ID_Q(1) = 3 3 3
+
+  PG_OPTION = 1
+
+
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+  F_DASHBOARD = 1
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.01
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3 4 
+
+
+!===============================================================================
+! Geometry Section                                                              
+!===============================================================================
+                                                                               
+  COORDINATES           = 'cartesian' 
+  IMAX                  = 58
+  JMAX                  = 80
+
+  NO_K = .TRUE.
+
+
+! Grid in x-direction
+
+  DX(0)   =  1.5720E-001
+  DX(1)   =  1.4987E-001
+  DX(2)   =  1.4288E-001
+  DX(3)   =  1.3622E-001
+  DX(4)   =  1.2988E-001
+  DX(5)   =  1.2382E-001
+  DX(6)   =  1.1805E-001
+  DX(7)   =  1.1255E-001
+  DX(8)   =  1.0730E-001
+  DX(9)   =  1.0230E-001
+  DX(10)  =  9.7535E-002
+  DX(11)  =  9.2989E-002
+  DX(12)  =  8.8655E-002
+  DX(13)  =  8.4523E-002
+  DX(14)  =  8.0584E-002
+  DX(15)  =  7.6828E-002
+  DX(16)  =  7.3248E-002
+  DX(17)  =  6.9834E-002
+  DX(18)  =  6.6579E-002
+  DX(19)  =  6.3476E-002
+  DX(20)  =  6.0518E-002
+  DX(21)  =  5.7697E-002
+  DX(22)  =  5.5008E-002
+  DX(23)  =  5.2444E-002
+  DX(24)  =  5.0000E-002
+  DX(25)  =  5.0000E-002
+  DX(26)  =  5.0000E-002
+  DX(27)  =  5.0000E-002
+  DX(28)  =  5.0000E-002
+  DX(29)  =  5.0000E-002
+  DX(30)  =  5.0000E-002
+  DX(31)  =  5.0000E-002
+  DX(32)  =  5.0000E-002
+  DX(33)  =  5.0000E-002
+  DX(34)  =  5.2444E-002
+  DX(35)  =  5.5008E-002
+  DX(36)  =  5.7697E-002
+  DX(37)  =  6.0518E-002
+  DX(38)  =  6.3476E-002
+  DX(39)  =  6.6579E-002
+  DX(40)  =  6.9834E-002
+  DX(41)  =  7.3248E-002
+  DX(42)  =  7.6828E-002
+  DX(43)  =  8.0584E-002
+  DX(44)  =  8.4523E-002
+  DX(45)  =  8.8655E-002
+  DX(46)  =  9.2989E-002
+  DX(47)  =  9.7535E-002
+  DX(48)  =  1.0230E-001
+  DX(49)  =  1.0730E-001
+  DX(50)  =  1.1255E-001
+  DX(51)  =  1.1805E-001
+  DX(52)  =  1.2382E-001
+  DX(53)  =  1.2988E-001
+  DX(54)  =  1.3622E-001
+  DX(55)  =  1.4288E-001
+  DX(56)  =  1.4987E-001
+  DX(57)  =  1.5720E-001
+
+
+! Grid in y-direction
+  DY(0)   =   0.11389    
+  DY(1)   =   0.11230    
+  DY(2)   =   0.11073    
+  DY(3)   =   0.10919    
+  DY(4)   =   0.10767    
+  DY(5)   =   0.10617    
+  DY(6)   =   0.10469    
+  DY(7)   =   0.10323    
+  DY(8)   =   0.10179    
+  DY(9)   =   0.10038    
+  DY(10)  =   0.98977E-01
+  DY(11)  =   0.97597E-01
+  DY(12)  =   0.96237E-01
+  DY(13)  =   0.94896E-01
+  DY(14)  =   0.93574E-01
+  DY(15)  =   0.92270E-01
+  DY(16)  =   0.90985E-01
+  DY(17)  =   0.89717E-01
+  DY(18)  =   0.88467E-01
+  DY(19)  =   0.87234E-01
+  DY(20)  =   0.87234E-01
+  DY(21)  =   0.91498E-01
+  DY(22)  =   0.95971E-01
+  DY(23)  =   0.10066    
+  DY(24)  =   0.10558    
+  DY(25)  =   0.11075    
+  DY(26)  =   0.11616    
+  DY(27)  =   0.12184    
+  DY(28)  =   0.12779    
+  DY(29)  =   0.13404    
+  DY(30)  =   0.14059    
+  DY(31)  =   0.14747    
+  DY(32)  =   0.15468    
+  DY(33)  =   0.16224    
+  DY(34)  =   0.17017    
+  DY(35)  =   0.17849    
+  DY(36)  =   0.18721    
+  DY(37)  =   0.19636    
+  DY(38)  =   0.20596    
+  DY(39)  =   0.21603    
+  DY(40)  =   0.22659    
+  DY(41)  =   0.23767    
+  DY(42)  =   0.24929    
+  DY(43)  =   0.26147    
+  DY(44)  =   0.27426    
+  DY(45)  =   0.28766    
+  DY(46)  =   0.29266    
+  DY(47)  =   0.29775    
+  DY(48)  =   0.30292    
+  DY(49)  =   0.30819    
+  DY(50)  =   0.31354    
+  DY(51)  =   0.31899    
+  DY(52)  =   0.32454    
+  DY(53)  =   0.33018    
+  DY(54)  =   0.33592    
+  DY(55)  =   0.34176    
+  DY(56)  =   0.34769    
+  DY(57)  =   0.35374    
+  DY(58)  =   0.35989    
+  DY(59)  =   0.36614    
+  DY(60)  =   0.37250    
+  DY(61)  =   0.37898    
+  DY(62)  =   0.38556    
+  DY(63)  =   0.39227    
+  DY(64)  =   0.39908    
+  DY(65)  =   0.40602    
+  DY(66)  =   0.41308    
+  DY(67)  =   0.42025    
+  DY(68)  =   0.42756    
+  DY(69)  =   0.43499    
+  DY(70)  =   0.44255    
+  DY(71)  =   0.45024    
+  DY(72)  =   0.45807    
+  DY(73)  =   0.46603    
+  DY(74)  =   0.47413    
+  DY(75)  =   0.48237    
+  DY(76)  =   0.49075    
+  DY(77)  =   0.49928    
+  DY(78)  =   0.50796    
+  DY(79)  =   0.51678    
+
+
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-4               !constant gas viscosity
+  MW_avg                = 29.0
+ 
+! Solids-phase Section                                                          
+  
+  RO_s0                 = 6.0                  !solids density
+  D_p0                  = 0.05                 !particle diameter     
+  e                     = 0.8                  !restitution coefficient
+  Phi                   = 15.0                 !angle of internal friction
+  EP_star               = 0.42                 !void fraction at minimum
+#
+#       CONSTANTS TO ENSURE CORRECT DRAG CORRELATION
+#
+        drag_c1    =  0.487
+        drag_d1    =  5.7117 
+
+  
+! Initial Conditions Section                                                    
+  
+! 3. Inlet jet                                      
+  IC_X_w(3)             =  0.0                
+  IC_X_e(3)             =  5.1                
+  IC_Y_s(3)             =  0.0
+  IC_Y_n(3)             =  2.0 
+
+                                              
+  IC_EP_g(3)            =  1.00                
+  IC_U_g(3)             =  0.0               
+  IC_V_g(3)             =  300.00            
+  IC_T_g(3)             =  298.0             
+  IC_U_s(3,1)           =  0.0                
+  IC_V_s(3,1)           =  0.0               
+
+! 2. bed                                      
+  IC_X_w(2)             =  0.0                 
+  IC_X_e(2)             =  5.1                 
+  IC_Y_s(2)             =  2.0
+  IC_Y_n(2)             =  5.28 
+                                               
+  IC_EP_g(2)            =  0.45                
+  IC_U_g(2)             =  0.0                 
+  IC_V_g(2)             =  @(50.0/0.45)        
+  IC_T_g(2)             =  298.0               
+  IC_U_s(2,1)           =  0.0                 
+  IC_V_s(2,1)           =  0.0                 
+
+! 1. Freeboard                                       
+  IC_X_w(1)             =   0.0               
+  IC_X_e(1)             =   5.1               
+  IC_Y_s(1)             =   5.28
+  IC_Y_n(1)             =  19.8
+                                  
+  IC_EP_g(1)            =   1.0                                  
+  IC_U_g(1)             =   0.0
+  IC_V_g(1)             =  50.0  
+  IC_T_g(1)             =  298.0              
+  IC_U_s(1,1)           =   0.0
+  IC_V_s(1,1)           =   0.0                                  
+                                                                                
+!  Boundary Conditions Section                                                  
+            
+! 1. Central jet                                       
+  BC_X_w(1)             =  2.35                 
+  BC_X_e(1)             =  2.75               
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0
+
+  BC_TYPE(1)            = 'MI'                
+
+  BC_EP_g(1)            =  1.0 
+  BC_U_g(1)             =  0.0 
+  BC_V_g(1)             =  700.00
+  BC_P_g(1)             =  1.013e6
+  BC_T_g(1)             =  298.0              
+
+       ! 2. Exit
+  BC_X_w(2)             =   0.0               
+  BC_X_e(2)             =   5.1               
+  BC_Y_s(2)             =   19.8
+  BC_Y_n(2)             =   19.8
+
+  BC_TYPE(2)            =  'PO'               
+  BC_P_g(2)             =  1.013e6
+  BC_T_g(2)             =  298.0              
+
+                    
+  BC_TYPE(3) = 'CG_NSW'
+
+
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                  !write text file SB1.OUT
+                                               !  every 10 s
+  RES_DT                = 0.01                 !write binary restart file
+                                               !  SB1.RES every 0.01 s
+  NLOG                  = 25                   !write logfile SB1.LOG 
+                                               !every 25 time steps
+  FULL_LOG              = .TRUE.               !display residuals on screen
+
+  Resid_string    = "P0", "P1", "U0", "U1", "V0", "V1"
+
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.01 0.01     0.01 0.01  100.     100. 100.    100.   100.        
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+!  Sweep Direction
+
+! LEQ_SWEEP(1) = 'ISIS'
+! LEQ_SWEEP(2) = 'ISIS'
+! LEQ_SWEEP(3) = 'ISIS'
+! LEQ_SWEEP(4) = 'ISIS'
+! LEQ_SWEEP(5) = 'ISIS'
+! LEQ_SWEEP(6) = 'ISIS'
+! LEQ_SWEEP(7) = 'ISIS'
+! LEQ_SWEEP(8) = 'ISIS'
+! LEQ_SWEEP(9) = 'ISIS'
+
+! # Maximum iterations for linear solve
+
+  LEQ_IT = 9*50

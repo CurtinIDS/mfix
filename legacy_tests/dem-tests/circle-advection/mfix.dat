@@ -1,0 +1,149 @@
+########################################################################
+#                                                                      #
+# Author:  Sreekanth Pannala                            Date: 01-2010  #
+# Modified: J. Musser                                   Date: 05-2014  #
+#                                                                      #
+#  References:                                                         #
+#                                                                      #
+#  R. Garg, J. Galvin, T. Li, and S. Pannala, Documentation of open-   #
+#     source MFIX-DEM software for gas-solids flows," from URL:        #
+#     https://mfix.netl.doe.gov/documentation/dem_doc_2012-1.pdf,      #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_NAME    = 'DEM_CA'
+  DESCRIPTION = 'DEM Test: Circle Advection'
+
+  RUN_TYPE = 'NEW'
+  UNITS    = 'CGS'
+
+  TIME  = 0.0      ! start time
+  TSTOP = 4.0      ! stop time
+
+!  DT     = 5.0d-6  ! time step
+  DT     = 1.0d-4  ! time step
+  DT_FAC = 1.0     ! fixed step size
+
+  ENERGY_EQ  = .F.
+  SPECIES_EQ = .F.   .F.
+
+  MOMENTUM_X_EQ(0) = .F. .F.
+  MOMENTUM_Y_EQ(0) = .F. .F.
+
+  GRAVITY = 0.0
+
+  CALL_USR = .T.
+
+  DRAG_TYPE = 'USR_DRAG'
+
+  DES_INTERP_ON=.T.
+  DES_INTERP_SCHEME = 'GARG_2012'
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  MAX_NIT = 250
+  TOL_RESID = 1.E-3
+
+  LEQ_SWEEP(1) = 9*'ISIS'
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH =   1.0   IMAX = 32
+  YLENGTH =   1.0   JMAX = 32
+  ZLENGTH =   1.0   NO_K = .T.
+
+  CYCLIC_X = .T.
+  CYCLIC_Y = .T.
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  MU_g0 = 1.800d-4    ! constant gas viscosity
+  RO_g0 = 1.205d-3    ! constant gas density
+
+
+! Particle Section
+!---------------------------------------------------------------------//
+  MMAX = 1
+
+  PARTICLES = 64
+
+! Particle-particle:
+  KN =   8.0d5               ! Normal collision spring constant
+  DES_EN_INPUT = 0.8         ! Restitution coefficient
+  MEW   = 0.2                ! Friction coefficient
+
+! Particle-wall:
+  KN_W = 8.0d5               ! Normal collision spring constant
+  DES_EN_WALL_INPUT = 0.8    ! Restitution coefficient
+  MEW_W = 0.1                ! Friction coefficient
+
+  NFACTOR = 0                ! No initial settling
+
+  DES_NEIGHBOR_SEARCH =   4  ! Grid based neighbor search
+  NEIGHBOR_SEARCH_N   = 100  ! Steps between neighbor search
+
+! Solids phase 1:
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL = 'DEM'
+
+  RO_s0 = 2.70d0      ! density
+  D_p0  = 0.01d0      ! diameter
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1)   =   0.0
+  IC_X_e(1)   =   1.0
+  IC_Y_s(1)   =   0.0
+  IC_Y_n(1)   =   1.0
+
+  IC_EP_g(1)  =   1.0   ! void fraction
+
+  IC_U_g(1)   =   0.0   ! x-dir gas velocity
+  IC_V_g(1)   =   0.0   ! y-dir gas velocity
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! No boundaries. The domain is 2D and fully periodic.
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  FULL_LOG = .T.    ! display residuals on screen
+  NLOG = 25         ! frequency to updated log file (.LOG)
+
+! Output Control
+  RES_DT =  0.01   ! frequency to write restart file (.RES)
+  USR_DT =  0.25   ! frequency to write error
+
+  SPX_DT    =   0.01  ! EPg
+  SPX_DT(2) = 8*1.00  ! Everything else
+
+  GROUP_RESID = .T.
+
+  PRINT_DES_DATA = .F.
+
+
+#_______________________________________________________________________
+# DMP SETUP
+
+! MPI partition
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .F.

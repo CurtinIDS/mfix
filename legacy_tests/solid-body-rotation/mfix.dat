@@ -1,0 +1,142 @@
+#
+#  Test case for verifying solid body rotation velocity profile
+#  The case converges in two iterations.  The correct W velocity profile in the .OUT file should be
+#  as follows
+#
+# W_g at K =    2
+#
+#   J   I=     1           2           3           4           5           6           7           8           9          10
+#   3    -2.5003E+00  2.5003E+00  7.5008E+00  1.2501E+01  1.7501E+01  2.2501E+01  2.7501E+01  3.2501E+01  3.7501E+01  4.2501E+01
+#   2    -2.5003E+00  2.5003E+00  7.5008E+00  1.2501E+01  1.7501E+01  2.2501E+01  2.7501E+01  3.2501E+01  3.7501E+01  4.2501E+01
+#   1    -2.5003E+00  2.5003E+00  7.5008E+00  1.2501E+01  1.7501E+01  2.2501E+01  2.7501E+01  3.2501E+01  3.7501E+01  4.2501E+01
+#   J   I=    11          12
+#   3     4.7500E+01 -4.7500E+01
+#   2     4.7500E+01  5.2500E+01
+#   1     4.7500E+01 -4.7500E+01
+#
+
+
+#
+# Run-control section
+#
+  RUN_NAME = 'rot03'
+  DESCRIPTION = 'Rotary drum, only fluid, no gravity'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+
+  TOL_RESID = 1.E-4
+  NORM_g = 1.E4
+  MAX_NIT = 5000
+  
+  ENERGY_EQ  = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+  GRANULAR_ENERGY = .FALSE.
+
+  MOMENTUM_X_EQ =  .FALSE.             .FALSE.    
+  MOMENTUM_Y_EQ =  .FALSE.             .FALSE.
+  MOMENTUM_Z_EQ =  .TRUE.              .FALSE.
+  UR_FAC(5) = 1.
+ 
+  gravity = 0.0 
+#
+# Geometry Section
+#
+  COORDINATES = 'cylindrical'
+
+  XLENGTH  =   5.0   IMAX =   10
+  YLENGTH  = 100.0   JMAX =    1
+  ZLENGTH  = @(2*PI) KMAX =   1
+  
+#
+# Gas-phase Section
+#
+  RO_g0 = 1.                  
+  MU_g0 = 1.
+  MW_avg = 29.
+  
+#
+# Solids-phase Section
+#
+  MMAX = 0  !no solids
+  
+#
+# Initial Conditions Section
+#
+       !              Bed
+  IC_X_w           =  0.0
+  IC_X_e           = 5.0
+  IC_Y_s           =  0.0
+  IC_Y_n           = 100.0
+  IC_Z_b           = 0.
+  IC_Z_t           = @(2*PI)
+ 
+  IC_EP_g          =  1.0
+ 
+  IC_U_g           =  0.0 
+  IC_V_g           =  0.0
+  IC_W_g           =  0.0
+
+
+
+#
+#  Boundary Conditions Section
+#
+
+
+       !            the outer wall is Moving
+  BC_X_w(5)      =  5.0
+  BC_X_e(5)      =  5.0
+  BC_Y_s(5)      =  0.0
+  BC_Y_n(5)      = 100.0
+  BC_Z_b(5)      =   0.0
+  BC_Z_t(5)      = @(2*PI)
+  
+  BC_TYPE(5)     =  'PSW' 
+  
+          
+  BC_Uw_g(5)     =    0.0  
+  BC_Vw_g(5)     =    0.0 
+  BC_Ww_g(5)     =    50.0              
+          
+
+
+       !            Free-slip boundaries at north and south
+  BC_X_w(1)      =   0.0
+  BC_X_e(1)      =  5.0
+  BC_Y_s(1)      =   0.0
+  BC_Y_n(1)      =   0.0
+  BC_Z_b(1)      =   0.0
+  BC_Z_t(1)      = @(2*PI)
+  
+  BC_TYPE(1)       =  'FSW' 
+  
+
+  BC_X_w(2)      =   0.0
+  BC_X_e(2)      =  5.0
+  BC_Y_s(2)      =  100.0
+  BC_Y_n(2)      =  100.0
+  BC_Z_b(2)      =   0.0
+  BC_Z_t(2)      = @(2*PI)
+  
+  BC_TYPE(2)       =  'FSW' 
+  
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g    Theta
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 100. 0.01     0.01  100.  100.      100. 100.    100.   100. 
+
+  FULL_LOG = .TRUE.
+  RESID_STRING  = 'P0' 'U0' 'W0' 
+  
+# DMP control
+  
+#  NODESI = 1   NODESJ = 1   NODESK = 1
+
+

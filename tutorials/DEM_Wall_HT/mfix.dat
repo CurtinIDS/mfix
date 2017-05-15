@@ -1,0 +1,214 @@
+
+########################################################################
+# Example of DEM Heat Transfer BC Rotating Drum                        #
+#                                                                      #
+# Author:  Aaron Morris                                 Date: 01-2016  #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_NAME = 'ROTDRUM'
+  DESCRIPTION = 'Example of rotating drum with particle-wall conduction'
+
+  RUN_TYPE = 'NEW'
+  UNITS    = 'SI'
+
+  TIME  = 0.00
+  TSTOP = 20.0
+  DT    = 1.0d-3
+
+  ENERGY_EQ = .TRUE.
+  
+  SPECIES_EQ(0:1) = .FALSE.    .FALSE.
+
+! Rotating drum modeled as a granular system and gas phase momentum equations
+! are turned off
+  MOMENTUM_X_EQ(0:1) = .FALSE.  .FALSE.
+  MOMENTUM_Y_EQ(0:1) = .FALSE.  .FALSE.
+  MOMENTUM_Z_EQ(0:1) = .FALSE.  .FALSE.
+
+  CALL_USR = .TRUE.
+  
+# Drum rotation rate
+  C(1) = 20.0	C_NAME(1) = "RPM"
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+! Background mesh.
+  XLENGTH = 0.65   IMAX =  30
+  YLENGTH = 0.65   JMAX =  30
+  ZLENGTH = 0.04   KMAX =  4
+
+  CARTESIAN_GRID = .TRUE.
+  USE_STL = .TRUE.
+  DIM_FACETS_PER_CELL = 24
+
+  ! Shift drum center to center of the domain
+  TX_STL = 0.325
+  TY_STL = 0.325
+
+  OUT_STL_VALUE = 1.0
+
+  STL_BC_ID = 5
+
+! cut-cell boundary condition 
+  BC_TYPE(5) = 'CG_NSW'
+  BC_TW_S(5,1) = 600.0		! Wall temperature seen by solids [K]
+  BC_TW_G(5) =   300.0		! Wall temperature seen by gas [K]
+
+
+  FAC_DIM_MAX_CUT_CELL = 0.4
+  PRINT_PROGRESS_BAR = .TRUE.
+
+  F_DASHBOARD = 1
+
+  TOL_SMALL_CELL = 0.0
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  RO_g0 =   0.0		! Density set to 0 to turn off interphase momentum
+  MU_g0 =   1.8d-5	! Viscosity [Pa-s]
+  C_pg0 =   1020.0	! Gas specific heat [J/kg-K](air @ ~450K)
+  K_g0  =   0.0372	! Gas thermal cond [W/m-K]  air @ ~450K) 
+
+
+! Solids Section
+!---------------------------------------------------------------------// 
+  MMAX = 1
+
+! Read particles from particle_input.dat
+  PARTICLES = 20000
+
+! Particle-particle collision properties
+  KN     = 1.0d2    ! Normal collision spring constant
+  MEW    = 0.1      ! Friction coefficient
+
+  DES_EN_INPUT = 0.9 ! Restitution coefficient.
+
+! Particle-wall:
+  KN_W     = 1.0d2  ! Normal collision spring constant
+  MEW_W    = 0.1    ! Friction coefficient
+
+  DES_EN_WALL_INPUT = 0.9d0  ! Restitution coefficient
+
+  NEIGHBOR_SEARCH_N = 10  ! Steps between neighbor search
+
+! Solids phase 1:
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  RO_s0(1) = 2500.0	! Material density [kg/m3]
+  D_p0(1)  = 0.005	! Diameter [m]
+  C_ps0(1) = 840.0	! Specific heat [J/kg-K] 
+  DES_em(1) = 0.0	! Thermal emissivity (zero to turn off radiation)
+  K_s0(1)   = 1.05	! Thermal conductivity [W/m-K]
+
+  ! Specify minimum conduction distance, s [m]
+  DES_MIN_COND_DIST = 5.75E-8
+  ! Specify lens thickness (normalized by particle radius)
+  FLPC  =   0.2D0
+
+  ! Specify actual material properties.  These are used to correct for the
+  ! unrealistically large contact areas that arise due to artificial
+  ! collision softening.
+  ! Note that the LSD collision model is used and these terms are only
+  ! used to correct the heat transfer
+  EW_YOUNG_ACTUAL = 70.0D9
+  E_YOUNG_ACTUAL(1) = 70.0D9
+  v_poisson_ACTUAL(1) = 0.3
+  vw_poisson_actual = 0.3
+
+
+ 
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+! Baseline ICs that cover the complete domain:
+!---------------------------------------------------------------------//
+!		  !filled area	!void area
+  IC_X_w(1:2)   =  0.000	0.000
+  IC_X_e(1:2)   =  0.650	0.650
+  IC_Y_s(1:2)   =  0.000	0.085
+  IC_Y_n(1:2)   =  0.085	0.650
+  IC_Z_b(1:2)   =  0.000	0.000
+  IC_Z_t(1:2)   =  0.040	0.040
+
+  IC_EP_g(1:2)  =  0.5		1.0
+
+  IC_U_g(1:2)  	=  0.0		0.0
+  IC_V_g(1:2)  	=  0.0		0.0
+  IC_W_g(1:2)  	=  0.0		0.0
+  IC_T_g(1:2)  	= 300.0		300.0
+  IC_P_G(1:2)  	= 101.325D4	101.325D4
+  IC_EP_s(1:2,1)= 0.5		0.0
+  IC_U_s(1:2,1) = 0.0		0.0
+  IC_V_S(1:2,1) = 0.0		0.0
+  IC_W_S(1:2,1) = 0.0		0.0
+  IC_T_s(1:2,1) = 300.0		300.0
+
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! Rotating Drum Caps:
+!---------------------------------------------------------------------//
+!		    !Front	! Back
+  BC_X_w(1:2) =       0.000	0.000
+  BC_X_e(1:2) =       0.650	0.650
+  BC_Z_b(1:2) =       0.000	0.040
+  BC_Z_t(1:2) =       0.000	0.040	
+  BC_Y_s(1:2) =       0.000	0.000
+  BC_Y_n(1:2) =       0.650	0.650
+
+  BC_TYPE(1:2)    =   2*'FSW'
+  BC_HW_T_g(1:2)  =   2*0.0
+  BC_C_T_G(1:2)	  =   2*0.0
+
+  BC_HW_T_s(1:2,1)=   2*0.0
+  BC_C_T_S(1:2,1) =   2*0.0    
+
+
+
+
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  FULL_LOG = .TRUE.   ! display residuals on screen
+  GROUP_RESID = .T.   ! group residuals
+
+  RES_DT = 0.1        ! interval to update .RES
+  SPX_DT = 9*100.
+  SPX_DT(1) = 2.5d-2  ! Volume fraction(EPg) and Particle data (vtp)
+
+  PRINT_DES_DATA = .T.
+
+  NLOG = 2500         ! interval to update .LOG
+
+  WRITE_DASHBOARD = .F.
+  WRITE_VTK_FILES  = .T.
+  VTK_VAR = 1 3 4 6
+  VTK_DT = 0.025
+  ! Use debug_1 to output particle-wall heat flux
+  VTK_DEBUG(1,1) = .TRUE.
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  2  NODESJ = 2  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .F.

@@ -1,0 +1,154 @@
+ ! Skewed Channel Simulation                
+ ! Run-control section                                                 
+ 
+   RUN_NAME              = 'SC20'           
+   DESCRIPTION           = 'Gas flow in a skewed channel (20 Deg) - NSW'
+   RUN_TYPE              = 'new'             
+   UNITS                 = 'SI'
+   TIME                  = 0.0                !start time
+   TSTOP                 = 10.0
+!   DT                    = 1.0E-3             !No time step specified --> Steady state solution
+   ENERGY_EQ             = .FALSE.            !do not solve energy eq
+   SPECIES_EQ            = .FALSE.    .FALSE. !do not solve species eq
+ 
+   MMAX                  = 0
+
+   GRAVITY               = 0.0
+
+   MOMENTUM_X_EQ(1) = .FALSE.
+   MOMENTUM_Y_EQ(1) = .FALSE.
+
+   CALL_USR = .TRUE.
+
+   TOL_RESID = 1.0E-6
+
+!===============================================================================
+! Cartesian Grid - Quadric definition:
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+!
+! Predefined quadrics: set QUADRIC_FORM to on eof the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!===============================================================================
+   CARTESIAN_GRID =  .TRUE.
+   N_QUADRIC = 1
+
+   lambda_x(1) =  1.00  
+   lambda_y(1) =  0.00 
+   lambda_z(1) =  1.00
+   dquadric(1) = -0.01
+
+   t_x(1)      =  0.1064178
+
+   theta_z(1)  =  -20.0   
+
+   BC_ID_Q(1)  =  3    
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+   WRITE_VTK_FILES  = .TRUE.
+   TIME_DEPENDENT_FILENAME = .FALSE.
+   VTK_DT = 1.0
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+   VTK_VAR = 2 3 
+
+ ! Geometry Section                                    
+ 
+   COORDINATES           = 'cartesian' 
+   XLENGTH               =  0.97296            ! length
+   IMAX                  =  64                 ! cells in i direction
+   YLENGTH               =  2.0067             ! height
+   JMAX                  =  112                ! cells in j direction
+   NO_K                  = .TRUE.              ! 2D, no k direction
+ 
+ ! Gas-phase Section                                                   
+   MU_g0                 = 0.12                ! constant gas viscosity
+   MW_avg                = 29.0
+
+ ! Solids-phase Section   
+   M_MAX = 0                                             
+ 
+! Initial Conditions Section 
+
+   IC_X_w(1)             =   0.0000    
+   IC_X_e(1)             =   0.97296    
+   IC_Y_s(1)             =   0.0000    
+   IC_Y_n(1)             =   2.0067    
+
+   IC_EP_g(1)            =   1.0    
+   IC_U_g(1)             =   0.0 !0.3420201  
+   IC_V_g(1)             =   0.0 !0.9396926    
+   IC_P_g(1)             =   101325.
+   IC_T_g(1)             =   298.0
+
+! Boundary conditions 
+ ! Inlet
+#
+   BC_X_w(1)             =   0.0000   
+   BC_X_e(1)             =   0.97296 
+   BC_Y_s(1)             =   0.0000 
+   BC_Y_n(1)             =   0.0000 
+   BC_TYPE(1)            =   'MI'  
+   BC_Ep_g(1)            =   1.0   
+   BC_U_g(1)             =   0.3420201	
+   BC_V_g(1)             =   0.9396926
+   BC_P_g(1)             =   101325.
+   BC_T_g(1)             =   298.0 
+
+ 
+! Outlet
+   BC_X_w(2)             =   0.73039    
+   BC_X_e(2)             =   0.94256    
+   BC_Y_s(2)             =   2.0067    
+   BC_Y_n(2)             =   2.0067    
+   BC_TYPE(2)            =  'PO'
+   BC_P_g(2)             =   101325.
+   BC_T_g(2)             =   298.0  
+
+ 
+! Free slip wall at cut cells
+   BC_TYPE( 3)  =   'CG_NSW'
+
+
+ !  Output Control                                              
+ 
+   OUT_DT                = 10.                 
+   RES_DT                = 1.0                 
+   NLOG                  = 25                  
+   FULL_LOG              = .TRUE.              
+ 
+   RESID_STRING = 'P0' 'U0' 'V0' 
+
+   SPX_DT = 9*100.0
+ 
+ !  Sweep Direction
+ 
+ LEQ_SWEEP(1) = 'ISIS' 
+ LEQ_SWEEP(2) = 'ISIS'  
+ LEQ_SWEEP(3) = 'ISIS' 
+ LEQ_SWEEP(4) = 'ISIS'  
+ LEQ_SWEEP(5) = 'ISIS'  
+ LEQ_SWEEP(6) = 'ISIS'  
+ LEQ_SWEEP(7) = 'ISIS' 
+ LEQ_SWEEP(8) = 'ISIS'  
+ LEQ_SWEEP(9) = 'ISIS'

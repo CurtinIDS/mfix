@@ -1,0 +1,196 @@
+!*******************************************************************************************************
+! MPPIC simulation of a small bubbling bed
+! 
+! 
+!*******************************************************************************************************
+  RUN_NAME 		= 'MPPIC_BUB'             
+  DESCRIPTION 		= 'bubbling bed'
+  RUN_TYPE 		= 'new'             
+  UNITS 		= 'cgs'
+  TIME  		= 0.0			!start time
+  TSTOP 		= 0.5 
+  DT 			= 5.E-5			!time step
+!  DT_FAC                = 1.0
+  DT_MAX                = 1.E-3
+ 
+  ENERGY_EQ 		= .FALSE.		!do not solve energy eq
+  SPECIES_EQ 		= .FALSE.    .FALSE. 	!do not solve species eq
+
+!  MOMENTUM_X_EQ(0) = .FALSE.
+!  MOMENTUM_Y_EQ(0) = .FALSE.
+!  MOMENTUM_Z_EQ(0) = .FALSE.
+
+  MOMENTUM_X_EQ(1) = .FALSE.
+  MOMENTUM_Y_EQ(1) = .FALSE.
+  MOMENTUM_Z_EQ(1) = .FALSE.
+
+  MAX_NIT = 250
+  TOL_RESID = 1.E-3
+
+  DISCRETIZE = 7*2
+  C(1)       = 0.    !1.57
+
+                                                               
+! Geometry Section                                                      
+  COORDINATES 		= 'cartesian' 
+  XLENGTH  		= 10	        !X length	
+  IMAX 			= 20		!cells in i direction
+  YLENGTH  		= 50.0	        !height
+  JMAX 			= 100           !cells in j direction
+  ZLENGTH               = 2
+  KMAX                  = 4
+   
+  GRAVITY = 980.
+                                                                             
+! Gas-phase Section                                                             
+  MU_g0                 = 1.8E-4		!constant gas viscosity
+  MU_gmax               = 1.8E-2
+  MW_AVG                = 28.8  
+
+ 
+! Solids-phase Section                                                  
+  RO_s0   		= 2.5	        	!solids density
+  D_p0    		= 0.1d0		!particle diameter
+  e       		= 0.97 			!restitution coefficient
+  Phi    		= 30.0			!angle of internal friction
+  EP_star 		= 0.38			!void fraction at minimum
+
+  SOLIDS_MODEL = 'PIC'
+  
+! Initial Conditions Section                                                    
+    ! 1. bed
+  IC_X_w(1)           	=  0.0	  0.			!domain
+  IC_X_e(1)           	=  10	  10.0	! 0 < x < 15, 0 < y < 30
+  IC_Y_s(1)          	=  0.0    0.
+  IC_Y_n(1)           	=  50.    20.
+  ic_z_b(1)             =  0.0    0.
+  ic_z_t(1)             =  2.     2.0
+                                	! initial values in the region
+  IC_EP_g(1)          	=  1.0    0.6  	! void fraction
+  IC_U_g(1)           	=  0.0	  0.0	! x-dir gas velocity
+  IC_V_g(1)          	=  1.     1.		! y-dir gas velocity
+  IC_W_g(1)          	=  0.0    0.		! z-dir gas velocity
+   
+  IC_U_s(1,1)           = 0.0     0.
+  IC_V_s(1,1)           = 0.0     0.
+  IC_W_s(1,1)           = 0.0     0.
+
+  IC_P_g(1)             = 1013250.   1013250.
+  IC_T_g(1)             = 298.     298.
+  IC_T_s(1,1)           = 298.     298. 
+  IC_PIC_CONST_NPC(1,1) =    0    5  
+  IC_theta_m(1,1)       =  0.0  0.d0 
+
+! Boundary Conditions Section
+      ! 1. bottom
+  BC_X_w(1)		= 0.0	
+  BC_X_e(1)		= 10	
+  BC_Y_s(1)		= 0.0
+  BC_Y_n(1)		= 0.0
+  BC_Z_b(1)		= 0.0
+  BC_Z_t(1)		= 2 
+  BC_TYPE(1)		= 'MI'		!specified mass inflow
+
+  BC_EP_g(1)		= 1.0
+  BC_U_g(1)		= 0.0
+  BC_V_g(1)		= 80.
+  BC_W_g(1)		= 0.0  
+  BC_P_g(1)		= 1013250.
+  BC_T_g(1)             = 298.
+  BC_T_s(1,1)           = 298.
+
+       ! 2. Exit
+  BC_X_w(4)		= 0.0		! top exit
+  BC_X_e(4)		= 10	      
+  BC_Y_s(4)		= 50.0
+  BC_Y_n(4)		= 50.0
+  BC_Z_b(4)		= 0.0
+  BC_Z_t(4)		= 2
+  BC_TYPE(4)		= 'PO' 	!specified pressure outflow
+  BC_P_g(4)		= 1013250.
+
+  BC_X_w(5)		=  0.0   0.    0.0     10.
+  BC_X_e(5)		=  10.0  10.   0.0     10.
+  BC_Y_s(5)		=  0.0   0.    0.0     0.
+  BC_Y_n(5)		=  50.0  50.   50.0    50.
+  BC_Z_b(5)		=  0.0   2.    0.0     0.
+  BC_Z_t(5)		=  0.0	 2.    2.      2.
+  BC_TYPE(5)		= 'FSW'	'FSW'  'FSW'  'FSW' 
+
+
+  MAX_INLET_VEL_FAC=100000
+
+! DES INPUT
+
+  PARTICLES  = 1280000  !Number of parcels used to intialize arrays
+! the actual number of parcels will be determined from the intial
+! conditions
+
+
+! First and second coefficients of restituion for the 
+! frictional stres in MPPIC model 
+! See the MPPIC model theory guide 
+
+  MPPIC_COEFF_EN1 = 0.5
+  MPPIC_COEFF_EN2 = 0.5  	    
+
+! Normal coefficient of friction for the parcel-wall 
+! collision in MPPIC model 
+  MPPIC_COEFF_EN_WALL = 0.5
+
+! CFL used to set the time-step size in parcel evoltion equations
+! under MPPIC model
+  CFL_PIC = 0.05
+
+! Des grid size used in DEM model for neighbor search. Althuough not 
+! needed in MPPIC, it is a good idea to declare this grid as a small
+! grid or else the solver might set a very high grid for coarse 
+! MPPIC model simulations. 
+  DESGRIDSEARCH_IMAX = 4
+  DESGRIDSEARCH_JMAX = 4
+  DESGRIDSEARCH_KMAX = 4
+
+! Flag to choose if the drag force on parcels (and as well
+! as on the Eulerian grid) is obtained by interpolation or not.
+  DES_INTERP_MEAN_FIELDS = .T.
+  DES_INTERP_ON = .T.
+  DES_INTERP_SCHEME = 'GARG_2012'
+
+
+! Flag to decide if initial parcel config is read in or 
+! generated by the code itself
+  GENER_PART_CONFIG = .t.
+
+
+! Drag type 
+  DRAG_TYPE             = 'GIDASPOW'
+
+
+
+  PRINT_DES_DATA        = .TRUE.
+
+! Output Control
+  OUT_DT 		= 0.05		!write text file BUB01.OUT
+					!  every 0.1s
+  RES_DT 		= 0.5		!write binary restart file
+					!  BUB01.RES every 0.01 s
+  NLOG   		= 25 		!write logfile BUB01.LOG
+					!every 25 time steps
+  FULL_LOG 		= .TRUE. 	!display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written.  Here BUB01.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, BUB01.SP2, which contains
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!
+        ! EP_g P_g    U_g  U_s  ROP_s     T_g  X_g
+        !      P_star V_g  V_s            T_s  X_s     Theta   Scalar 
+        !             W_g  W_s
+  SPX_DT = 0.01 0.01  0.5    0.5  100.  100. 100.   100.   100. 100.  100.
+ 
+                                                                               
+! The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+
+! Sweep Direction

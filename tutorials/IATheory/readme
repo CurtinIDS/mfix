@@ -1,0 +1,15 @@
+This tutorial uses a new kinetic theory developed by Iddir-Arastoopour (IA)
+for polydisperse systems (more than one solids phase). A simple 1-D channel
+flow between two parallel walls with a specified gas mass flow rate (Flux_g)
+is used to predict fully-developed gas/solids flow profiles. A binary mixture
+of powders of same density but different particle diameters (D_P0) is used.
+
+Several radial distribution functions at contact can be used with the keyword
+RDF_TYPE [default is Lebowitz] for polydisperse systems (see readme.pdf file
+for more explanation).
+
+Johnson-Jackson boundary condition for the solids slip velocity and granular
+temperature is enabled in this simulation by using BC_JJ_PS(WALL_ID) = 1 .
+
+A detailed theory document explaining IA theory will be provided under
+~mfix/doc with the new release of MFIX on Dec 2006. 

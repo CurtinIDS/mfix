@@ -1,0 +1,23 @@
+This file lists bug fixes committed to the 2016-1 Release, starting April, 2016.
+
+
+==================================================================================================
+Date (MM/DD/YYYY) | Description                           | Severity |  Modified File(s)    
+==================================================================================================
+  05/31/2016      | DEM mass inflow not correctly setting |          | model/des/set_bc_dem_mi.f
+                  | the particle_state.                   | Moderate |
+==================================================================================================
+  06/01/2016      | Fixed DEM output files overwriting    |          | model/output_manager.f
+                  | the last vtp file after restarting.   |   Minor  |
+==================================================================================================
+  06/01/2016      | Fixed DEM pvd file update after on    |          | model/des/vtp_mod.f
+                  | restart. (removed trace xml tags).    |   Minor  |
+==================================================================================================
+  08/05/2016      | Fixed Bugs for calculating gradients  |          | model/des/calc_grad_des.f
+                  | with blocked regions and converting   |   Minor  | model/des/stl_preproc_des_mod.f
+                  | default walls to STL in 2D            |          |
+==================================================================================================
+  10/26/2016      | Loops for momentum equations should   |          | model/des/gas_drag.f
+                  | reference flag_at_e/n/t and not       | Moderate | 
+                  | fluid_at to avolid overwriting BCs.   |          |
+==================================================================================================

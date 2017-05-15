@@ -1,0 +1,21 @@
+Thermochemical Properties
+
+The directory mfix/model/thermochemical contains the database of Burcat and Ruscic (2005) and the 
+reading routines.  With linkage to this database the users need not manually enter data for molecular weight, specific heat, and heats of reactions.  Instead the users will need to enter the names of the species (keyword species_name) in the datafile.  MFIX reads the necessary thermochemical data from files in the following order: 1. mfix.dat 2. BURCAT.THR file in the run directory 3. mfix/model/thermochemical/BURCAT.THR.  The species names are case sensitive and should match the names in BURCAT.THR exactly (except for trailing blanks and tabs); alternatively aliases can be defined for common species, such as O2, in read_therm.f.  See mfix/tests/thermo for a sample case.
+
+The format of BURCAT.THR file resembles CHEMKIN format, but with several notable differences.  All thermochemical data must start below a line that starts with THERMO DATA.  The examples (in parenthesis) refer to the sample dataset given at the end.  Each entry starts with the unique CAS identifier (74-82-8) for the species, followed by several lines of comments.  The data section starts with the species name in columns 1-18 (CH4   RRHO).  Common species names could be followed by strings (RRHO) that identify the method used to determine the coefficients.  The numbers toward the end of the line are the temperature limits (200 to 6000 K) where the property calculation is valid and the molecular weight (16.04246). Unlike CHEMKIN the common temperature for the high and low temperature branches are not recorded; it is always 1000 K.  The next three lines give the fourteen coefficients (seven each for high and low temperature branches) and the enthalpy of formation at 298 K (which is also not included in CHEMKIN format).  All the coefficients and the enthalpy of formation are normalized with the gas constant R.  The normalized specific heat is given by Cp/R = A5*T^4 + A4*T^3 + A3*T^2 + A2*T + A1.  For other details see Burcat and Ruscic (2005) report in the file mfix/modelthermochemical/intro.pdf.  The high (AH) and low (AL) temperature coefficients are stored in a fixed  format (E15.0) as follows:
+ AH1   AH2    AH3   AH4   Ah5
+ AH6   AH7    AL1   AL2   AL3
+ AL4   AL5    AL6   AL7   (Formation enthalpy at 298K/R)
+ 
+For a number of species the lower temperature limit is set at 300 K, 2 degrees above the reference temperature (298 K) used for formation enthalpy calculation.  For those species MFIX relaxes the lower limit for Cp calculations to 298 K (see read_database.f) to enable heat of reaction calculation. 
+
+
+Sample dataset: 
+74-82-8                                                                                
+CH4  METHANE  Same as the Anharmonic but calculated Using the RRHO method rather
+than the NRRAO2.  Max Lst Sq Error Cp @ 6000. K 0.62%.
+CH4   RRHO        g 8/99C  1.H  4.   0.   0.G   200.000  6000.000  B  16.04246 1
+ 1.91178600E+00 9.60267960E-03-3.38387841E-06 5.38797240E-10-3.19306807E-14    2
+-1.00992136E+04 8.48241861E+00 5.14825732E+00-1.37002410E-02 4.93749414E-05    3
+-4.91952339E-08 1.70097299E-11-1.02453222E+04-4.63322726E+00-8.97226656E+03    4

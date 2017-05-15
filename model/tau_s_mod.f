@@ -1,0 +1,8 @@
+      MODULE tau_s
+
+! summed cross terms
+      DOUBLE PRECISION, DIMENSION(:, :), ALLOCATABLE ::  TAU_U_s
+      DOUBLE PRECISION, DIMENSION(:, :), ALLOCATABLE ::  TAU_V_s
+      DOUBLE PRECISION, DIMENSION(:, :), ALLOCATABLE ::  TAU_W_s
+
+      END MODULE tau_s

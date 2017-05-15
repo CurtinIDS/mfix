@@ -1,0 +1,87 @@
+#
+#  Periodic flow with specified mass flux 
+  
+#
+# Run-control section
+#
+  RUN_NAME = 'COL01'
+  DESCRIPTION = 'developed laminar flow'
+  RUN_TYPE = 'new'  
+  UNITS = 'cgs'
+!   TIME  =0.0  TSTOP = 1.0   DT = 1.0e-4   DT_MAX = 1.0e-2 
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+  MOMENTUM_X_EQ(1) = .FALSE.
+  MOMENTUM_Y_EQ(1) = .FALSE.
+  LEQ_IT(1) = 20    
+  LEQ_IT(3) = 50
+  LEQ_IT(4) = 50    
+
+
+  GRAVITY = 0.0
+#
+# Geometry Section
+#
+  COORDINATES = 'cartesian'
+
+  XLENGTH  =  10.0    IMAX =  10 
+  YLENGTH  =  10.0    JMAX =  10
+
+  NO_K     = .TRUE.
+  
+  
+  CYCLIC_y_PD = .TRUE.
+  Flux_g = 1.0E-2       !mass flux (g/m^2.s) in the periodic direction with PD
+  delp_y = 0.5E-4     !When Flux_g is specified this is used as an initial guess.
+                      !A good initial guess is required to ensure convergence,
+		      !the convergence criterion for which is hard-wired in iterate.f 
+
+  MAX_NIT = 3000
+  TOL_RESID  = 1.E-4
+ 
+#
+# Gas-phase Section
+#
+  RO_g0 = 1.0
+  MU_g0 = 0.01
+  MW_avg = 29.
+#
+# Solids-phase Section (no solids)
+#
+  MMAX         = 0
+
+#
+# Initial Conditions Section
+#
+       !              
+  IC_X_w           =  0.0 
+  IC_X_e           =  10.0 
+  IC_Y_s           =  0.0 
+  IC_Y_n           =  10.0
+ 
+  IC_EP_g          =  1.0 
+ 
+  IC_U_g           =   0.0
+  IC_V_g           =  0.0
+
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 100. 0.1      0.1  100.  100.      100. 100.    100.   100. 100. 100.
+
+  NLOG   = 25
+  RESID_STRING = 'P0'  'U0' 'V0'
+   !FULL_LOG = .TRUE.
+  
+# DMP control
+  
+  NODESI = 1  NODESJ = 1   NODESK = 1
+
+

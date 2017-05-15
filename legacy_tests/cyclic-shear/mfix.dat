@@ -1,0 +1,240 @@
+! A 2D fully periodic case with dv/dx shear and a pressure gradient 
+! imposed in the y-direction
+
+! Author: S. Pannala, Feb. 2000
+
+! For more details see: Agrawal, K., Loezos, P. N., Syamlal, M., and
+! Sundaresan, S., "The role of meso-scale structurse in rapid gas-
+! solid flows," J. Fluid Mech., Vol. 445, 2001, pp. 151-185
+
+!*********************************************************************
+! Run Control
+!*********************************************************************
+  RUN_NAME = 'RISER'
+  DESCRIPTION = 'Gas-particle flow in a 2D periodic cell'
+  RUN_TYPE = 'new'
+
+  UNITS = 'cgs'
+
+  TIME = 0.0
+  TSTOP = 2.0
+  DT = 1E-3 
+  DT_MAX = 0.4E-4
+
+#  DT_FAC = 1.0      ! factor for adjusting the time step [0.9]
+                    ! value of 1 holds the time step constant
+
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+  MOMENTUM_X_EQ  =  .TRUE.   .TRUE.
+  MOMENTUM_Y_EQ  =  .TRUE.   .TRUE.
+  MOMENTUM_Z_EQ  = .FALSE.   .FALSE.
+
+! solve a granular energy transport equation(s) as opposed to an
+! algebraic equation?   [.FALSE.]
+  GRANULAR_ENERGY = .TRUE.
+
+! the kinetic theory model used to describe the solids phase(s)
+  KT_TYPE = 'LUN_1984'     
+
+! use the schaeffer model for frictional/plastic solids phase
+! stress?   [.TRUE.]  
+  SCHAEFFER = .TRUE.  
+
+! use the princeton model for frictional/plastic solids phase
+! stress?   [.FALSE.]
+! (this cannot be invoked simultaneously with schaeffer)
+#  FRICTION = .FALSE.
+
+! call specific user routines?  [.FALSE.]
+  CALL_USR =.FALSE.
+        
+
+!*********************************************************************
+! Numerical Parameters
+!*********************************************************************
+  MAX_NIT = 100
+  TOL_RESID = 1E-4
+
+! Discretization scheme
+!                [0] : First-order upwinding
+!                 1  : First-order upwinding (using down-wind factors)
+!                 2  : Superbee (recommended method)
+!                3-8 : see readme for details
+  DISCRETIZE = 9*2 
+
+! factor to normalize gas pressure/solids correction equation(s) 
+! residual 
+!  [undefined] : normalization uses residual from first iteration 
+!      0       : normalization based on dominate term in continuity eqn
+!  [defined]   : normalized by value provided
+  NORM_S = 0
+  NORM_G = 0
+
+! reduce time step if residuals sum does not decrease?  [.TRUE.]
+#  DETECT_STALL = .FALSE.
+
+! Number of iterations in the linear equation solver
+!      [LEQ_IT(1,2)=20]
+!      [LEQ_IT(3-5)=5]
+!      [LEQ_IT(6-9)=15]
+  LEQ_IT(1) = 9*200
+
+! the tolerance in the linear equation solver   [1.0E-4]
+  LEQ_TOL(1) = 9*1D-5
+
+! the preconditioner used for the sweeps in the linear equation 
+! solver   ['LINE']
+  LEQ_PC(1) = 9*'NONE'
+
+! the sweep direction for the linear equation solver
+!  LEQ_SWEEP(1) = 9*'ISIS'
+
+! Under relaxation factors 
+!      [UR_FAC(1,6,9)=0.8]
+!      [UR_FAC(2,3,4,5,8)=0.5]
+!      [UR_FAC(7)=1]
+!  UR_FAC(8) = 1.0
+
+! Use deferred correction method for implementing higher order
+! discretization.  Otherwise use down-wind factor method [.FALSE.]
+  DEF_COR = .TRUE.
+
+
+!*********************************************************************
+! Geometry 
+!*********************************************************************
+  COORDINATES = 'Cartesian'
+
+  XLENGTH =   1.0    IMAX = 16
+  YLENGTH =   4.0    JMAX = 64
+  NO_K = .TRUE.
+
+! make y direction cyclic w/ specified pressure drop
+  CYCLIC_Y_PD = .TRUE.    
+! the fluid pressure drop across ylength
+  DELP_Y =592.9885122     ! 299.0439851   (Bayre)
+
+! make x direction cyclic w/o pressure drop
+  CYCLIC_X    = .TRUE.   ! make x-direction cyclic
+
+! IMPORTANT NOTE: it is most likely that these keywords are no 
+! longer functional in MFIX. Best way to achieve shear is via wall
+! shear. use partial slip walls with specified wall velocity.
+
+! impose a mean shear on the flow field as linear function of the
+! x-coordinate.  Requires cyclic_x be set to true.
+  SHEAR=.TRUE.
+! the mean y velocity component at the eastern boundary. the mean
+! velocity at the western boundary is set as -V_sh.  This gives the
+! shear rate as dv/dx (2*V_sh/XLENGTH)
+  V_sh=5d0
+
+
+!*********************************************************************
+! Gas Phase
+!*********************************************************************
+  MU_g0 = 1.8E-4     ! constant gas viscosity (poise)
+! the molecular weight or density must be specified (or species names).
+! if density is specified then the molecular weight will be ignored.
+! specifying molecular weight allows for compressibility but requires
+! setting the pressure and temperature in IC and BC regions
+#  MW_avg = 29.0     ! average molecular weight of air (g/g-mol)
+  RO_g0 = 1.3E-3     ! constant gas density
+
+
+!*********************************************************************
+! Solid Phase
+!*********************************************************************
+  MMAX = 1     ! number of 'solids' phases [1]
+  SOLIDS_MODEL(1) = 'TFM'     ! set the model type for the indicated
+                              ! solids
+  RO_s0 = 1.5     ! material particle density
+  D_p0 = 0.0075     ! particle diameter (75 microns)
+  CLOSE_PACKED = .TRUE.      ! solids phase forms a packed bed with
+                             ! indicated void fraction ep_star
+
+  C_e     = 0.9      ! coefficient of restitution p-p
+
+  Phi     = 28.5     ! angle of internal friction (in degrees)
+  Phi_w   = 18.0     ! angle of internal friction at walls (in degrees)
+
+  EP_star = 0.15     ! packed bed void fraction 
+                     ! (this system is allowed to be very packed before
+                     !  plastic pressure is invoked)
+
+!*********************************************************************
+! Initial Conditions
+!********************************************************************* 
+! dilute solids system 
+! solids volume fraction (eps) of 0.1
+
+! domain --------------------
+  IC_X_w          =       0.0
+  IC_X_e          =       1.0
+  IC_Y_s          =       0.0
+  IC_Y_n          =       4.0
+ 
+  IC_EP_g         =       0.90
+ 
+  IC_U_g          =       0.0
+  IC_V_g          =       0.0
+
+! allows for slight compressibility if gas mw specified not density
+#  IC_P_g(1)       = 1013250.0     ! pressure (bayre)
+#  IC_T_g(1)       =     298.0     ! temperature (K)
+
+  IC_U_s          =       0.0
+  IC_V_s          =       0.0
+  IC_Theta_m      =       1.0    ! initial granular temperature
+                                 ! for LUN_1984 units are cm/s^2
+
+  IC_P_star       =       0.0    ! specifies initial 'plastic' pressure 
+                                 ! of solids
+
+!*********************************************************************
+! Boundary Conditions
+!*********************************************************************
+! A fully 2D periodic system with specified pressure drop imposed in
+! y-direction
+
+
+!*********************************************************************
+!  Output Control
+!*********************************************************************
+  RES_DT     =  0.005    ! Interval (s) to update restart (.RES) file 
+  OUT_DT     =  1.0      ! Interval (s) to update standard output (.OUT) file 
+
+! Interval (s) to update .SPX files 
+  SPX_DT(1)  =  2.0E-2   ! Void fraction (EP_g)
+  SPX_DT(2)  =  0.02     ! Gas and solids pressure (P_g, P_star)
+  SPX_DT(3)  =  0.02     ! Gas velocity (U_g, V_g, W_g)
+  SPX_DT(4)  =  0.02     ! Solids velocity (U_s, V_s, W_s)
+  SPX_DT(5)  =  0.02     ! Solids density (ROP_s)
+  SPX_DT(6)  =  1.0E+2   ! Gas and solids temp. (T_g, T_s1, T_s2)
+  SPX_DT(7)  =  1.0E+2   ! Gas and solids mass fractions (X_g, X_s)
+  SPX_DT(8)  =  0.02     ! Granular Temperature (G)
+  SPX_DT(9)  =  1.0E+2   ! User defined scalars
+
+! Display the residuals on the screen and messages about convergence
+! on the screen and in the .LOG file. [.FALSE.]
+  FULL_LOG = .TRUE.      
+
+! Specify residuals to be printed as 4-character strings.
+! The first character specifies the field variable.
+!     P: pressure    R: density     U: u-velocity,     V: v-velocity
+!     W: w-velocity  T: temperture  G: granular temp.
+!     X: species mass fraction
+! The second number specifies the phase.
+!     0: Gas    1: Solids phase 1    2: Solids phase 2, etc
+! The last two numbers specify the species index.
+  RESID_STRING  = 'P0' 'P1' 'U0' 'U1' 'V0' 'V1' 'G1'
+
+
+!*********************************************************************
+! Parallelization Controls
+!*********************************************************************
+! Number of grid blocks in X/Y/Z directions (i,j,k) for a distributed
+! memory parallel simulation   [1]
+  NODESI = 1   NODESJ = 1   NODESK = 1
+

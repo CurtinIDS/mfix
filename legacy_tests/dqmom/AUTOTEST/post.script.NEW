@@ -1,0 +1,41 @@
+R
+1
+F
+1 1
+ROP_s
+1
+2 16
+Y
+2 21
+N
+1 1
+POST_ROPS_1.dat
+1 1
+ROP_s
+2
+2 16
+Y
+2 21
+N
+1 1
+POST_ROPS_2.dat
+1 1
+Scalar
+1
+2 16
+Y
+2 21
+N
+1 1
+POST_DP_1.dat
+1 1
+Scalar
+2
+2 16
+Y
+2 21
+N
+1 1
+POST_DP_2.dat
+q
+0

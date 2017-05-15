@@ -1,0 +1,737 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>MFIX Tutorials Benchmarking</title>
+  <meta name="GENERATOR" content="OpenOffice.org 2.0  (Linux)">
+  <meta name="CREATED" content="20061119;14583800">
+  <meta name="CHANGEDBY" content="Sreekanth Pannala">
+  <meta name="CHANGED" content="20061119;15172300">
+  <style type="text/css">
+	<!--
+		TD P { color: #000000 }
+		P { color: #000000 }
+		A:link { color: #0000ff }
+		A:visited { color: #ff0000 }
+	-->
+	</style>
+</head>
+<body dir="ltr" bgcolor="#33ccff" lang="en-US" link="#0000ff"
+ text="#000000" vlink="#ff0000">
+<p style="margin-bottom: 0in;">Simulations in tutorials directory</p>
+<table style="width: 1663px; height: 785px;" border="1" cellpadding="2"
+ cellspacing="3">
+  <col width="209"> <col width="40"> <col width="49"> <col width="81">
+  <col width="54"> <col width="60"> <col width="50"> <col width="40">
+  <col width="68"> <col width="39"> <col width="47"> <col width="112">
+  <col width="112"> <col width="112"> <col width="112"> <col
+ width="112"> <col width="112"> <col width="108"> <tbody>
+    <tr>
+      <td width="209">
+      <p>Name </p>
+      </td>
+      <td width="40">
+      <p>Fluid </p>
+      </td>
+      <td width="49">
+      <p>Solids </p>
+      </td>
+      <td width="81">
+      <p>Moment </p>
+      </td>
+      <td width="54">
+      <p>Energy </p>
+      </td>
+      <td width="60">
+      <p>Species </p>
+      </td>
+      <td width="50">
+      <p>Cyclic </p>
+      </td>
+      <td width="40">
+      <p>Rxns </p>
+      </td>
+      <td width="68">
+      <p>Transient</p>
+      </td>
+      <td width="39">
+      <p><br>
+      <br>
+K_Eps</p>
+      </td>
+      <td width="47">
+      <p><br>
+DES <br>
+for <br>
+Solids</p>
+      </td>
+      <td valign="top" width="112">
+      <p>Linux P IV 1.7 GHz<br>
+06/07/02<br>
+-Lina</p>
+      </td>
+      <td valign="top" width="112">
+      <p>Linux P IV 1.7 GHz<br>
+09/01/03<br>
+-Sreekanth</p>
+      </td>
+      <td width="112">
+      <p>Linux P IV 3 GHz<br>
+ifort 8.034 <br>
+06/25/04<br>
+-Jay Boyalakuntla</p>
+      </td>
+      <td width="112">
+      <p>Linux PIV 3 GHz <br>
+ifort 8.1 <br>
+(08/02/2005) - Sreekanth<br>
+      <font color="#ff0000">Not Dedicated using Intel Compiler</font></p>
+      </td>
+      <td width="112">
+      <p>Linux PIV 3 GHz <br>
+ifort 8.1 <br>
+(09/02/2005) - Sreekanth<br>
+      <font color="#ff0000">Not Dedicated using Intel Compiler</font></p>
+      </td>
+      <td width="112">
+      <p>Linux P IV 3 GHz<br>
+ifort 8.1<br>
+12/10.05<br>
+-Jay Boyalakuntla<font color="#ff0000">&nbsp;</font> </p>
+      </td>
+      <td width="108">
+      <p>Linux AMD Opteron 270<br>
+ifort 9.0<br>
+11/18/2006<br>
+-Sreekanth<font color="#ff0000">&nbsp;</font></p>
+      </td>
+      <td>Linux AMD Opteron 270<br>
+ifort 9.0<br>
+12/21/2007<br>
+-Sreekanth<font color="#ff0000"> <br>
+      </font></td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>3dCFB </p>
+      </td>
+      <td width="40">
+      <p>X </p>
+      </td>
+      <td width="49">
+      <p>X </p>
+      </td>
+      <td width="81">
+      <p>X </p>
+      </td>
+      <td width="54">
+      <p>. </p>
+      </td>
+      <td width="60">
+      <p>. </p>
+      </td>
+      <td width="50">
+      <p>X </p>
+      </td>
+      <td width="40">
+      <p>. </p>
+      </td>
+      <td width="68">
+      <p>X</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td valign="top" width="112">
+      <p>45897 secs</p>
+      </td>
+      <td valign="top" width="112">
+      <p>46969 secs</p>
+      </td>
+      <td width="112">
+      <p>23919 secs</p>
+      </td>
+      <td width="112">
+      <p>27395 secs</p>
+      </td>
+      <td width="112">
+      <p>11091 secs<br>
+(Triggered Norm_g=0 and Norm_s=0) </p>
+      </td>
+      <td width="112">
+      <p>39680.26 s</p>
+      </td>
+      <td width="108">
+      <p>8224 s</p>
+      </td>
+      <td>8418 s<br>
+      </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>3dFluidbed </p>
+      </td>
+      <td width="40">
+      <p>X </p>
+      </td>
+      <td width="49">
+      <p>X </p>
+      </td>
+      <td width="81">
+      <p>X </p>
+      </td>
+      <td width="54">
+      <p>. </p>
+      </td>
+      <td width="60">
+      <p>. </p>
+      </td>
+      <td width="50">
+      <p>X </p>
+      </td>
+      <td width="40">
+      <p>. </p>
+      </td>
+      <td width="68">
+      <p>X</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td valign="top" width="112">
+      <p>4108.72 secs</p>
+      </td>
+      <td valign="top" width="112">
+      <p>3885.26 secs</p>
+      </td>
+      <td width="112">
+      <p>1859 secs</p>
+      </td>
+      <td width="112">
+      <p>1376 secs</p>
+      </td>
+      <td width="112">
+      <p>1311 secs</p>
+      </td>
+      <td width="112">
+      <p>1255.395</p>
+      </td>
+      <td width="108">
+      <p>1332 s</p>
+      </td>
+      <td>1234 s<br>
+      </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>FluidBEd_DES</p>
+      </td>
+      <td width="40">
+      <p>X</p>
+      </td>
+      <td width="49">
+      <p>X</p>
+      </td>
+      <td width="81">
+      <p>X</p>
+      </td>
+      <td width="54">
+      <p>.</p>
+      </td>
+      <td width="60">
+      <p>.</p>
+      </td>
+      <td width="50">
+      <p>.</p>
+      </td>
+      <td width="40">
+      <p>.</p>
+      </td>
+      <td width="68">
+      <p>X</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>49.18 secs</p>
+      </td>
+      <td width="112">
+      <p>55.98 secs</p>
+      </td>
+      <td width="112">
+      <p>49.14 secs</p>
+      </td>
+      <td width="112">
+      <p>42.14 s</p>
+      </td>
+      <td width="108">
+      <p>2323 s (10 second simulation time)</p>
+      </td>
+      <td>2462 s </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>Fluidbed1 </p>
+      </td>
+      <td width="40">
+      <p>X </p>
+      </td>
+      <td width="49">
+      <p>X </p>
+      </td>
+      <td width="81">
+      <p>X </p>
+      </td>
+      <td width="54">
+      <p>. </p>
+      </td>
+      <td width="60">
+      <p>. </p>
+      </td>
+      <td width="50">
+      <p>X </p>
+      </td>
+      <td width="40">
+      <p>. </p>
+      </td>
+      <td width="68">
+      <p>X</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td valign="top" width="112">
+      <p>529.835 secs</p>
+      </td>
+      <td valign="top" width="112">
+      <p>670 secs</p>
+      </td>
+      <td width="112">
+      <p>263 secs</p>
+      </td>
+      <td width="112">
+      <p>343&nbsp; secs </p>
+      </td>
+      <td width="112">
+      <p>249 secs</p>
+      </td>
+      <td width="112">
+      <p>221.90 s</p>
+      </td>
+      <td width="108">
+      <p>222 s</p>
+      </td>
+      <td>230 s<br>
+      </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>Fluidbed2 </p>
+      </td>
+      <td width="40">
+      <p>X </p>
+      </td>
+      <td width="49">
+      <p>X </p>
+      </td>
+      <td width="81">
+      <p>X </p>
+      </td>
+      <td width="54">
+      <p>. </p>
+      </td>
+      <td width="60">
+      <p>. </p>
+      </td>
+      <td width="50">
+      <p>X </p>
+      </td>
+      <td width="40">
+      <p>. </p>
+      </td>
+      <td width="68">
+      <p>X</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td valign="top" width="112">
+      <p>708.460 secs</p>
+      </td>
+      <td valign="top" width="112">
+      <p>883 secs</p>
+      </td>
+      <td width="112">
+      <p>352 secs</p>
+      </td>
+      <td width="112">
+      <p>407 secs</p>
+      </td>
+      <td width="112">
+      <p>328 secs</p>
+      </td>
+      <td width="112">
+      <p>326.22 s</p>
+      </td>
+      <td width="108">
+      <p>298 s</p>
+      </td>
+      <td>311 s<br>
+      </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>reactor1a </p>
+      </td>
+      <td width="40">
+      <p>X </p>
+      </td>
+      <td width="49">
+      <p>X </p>
+      </td>
+      <td width="81">
+      <p>X(Only Y-gas) </p>
+      </td>
+      <td width="54">
+      <p>. </p>
+      </td>
+      <td width="60">
+      <p>X </p>
+      </td>
+      <td width="50">
+      <p>. </p>
+      </td>
+      <td width="40">
+      <p>X </p>
+      </td>
+      <td width="68">
+      <p>.</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td valign="top" width="112">
+      <p>0.540 secs<br>
+75 iters</p>
+      </td>
+      <td valign="top" width="112">
+      <p>0.54 secs<br>
+27 iters</p>
+      </td>
+      <td width="112">
+      <p>0.18 secs</p>
+      </td>
+      <td width="112">
+      <p>&nbsp;0.14 secs<br>
+16 iters</p>
+      </td>
+      <td width="112">
+      <p>0.14 secs<br>
+18 iters</p>
+      </td>
+      <td width="112">
+      <p>0.049 s</p>
+      </td>
+      <td width="108">
+      <p>0.047s</p>
+      </td>
+      <td>0.005 s<br>
+      </td>
+    </tr>
+    <tr>
+      <td valign="top" width="209">
+      <p>reactor1b</p>
+      </td>
+      <td valign="top" width="40">
+      <p>X</p>
+      </td>
+      <td valign="top" width="49">
+      <p>X</p>
+      </td>
+      <td valign="top" width="81">
+      <p>X(Only Y-gas)</p>
+      </td>
+      <td valign="top" width="54">
+      <p>.</p>
+      </td>
+      <td valign="top" width="60">
+      <p>X</p>
+      </td>
+      <td valign="top" width="50">
+      <p>.</p>
+      </td>
+      <td valign="top" width="40">
+      <p>X</p>
+      </td>
+      <td valign="top" width="68">
+      <p>.</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td valign="top" width="112">
+      <p>0.484 secs<br>
+72 iters</p>
+      </td>
+      <td valign="top" width="112">
+      <p>0.22 secs<br>
+27 iters</p>
+      </td>
+      <td width="112">
+      <p>0.17 secs</p>
+      </td>
+      <td width="112">
+      <p>0.14 secs<br>
+16 iters</p>
+      </td>
+      <td width="112">
+      <p>0.14 secs<br>
+16 iters</p>
+      </td>
+      <td width="112">
+      <p>0.044 s</p>
+      </td>
+      <td width="108">
+      <p>0.051s</p>
+      </td>
+      <td>0.005 s </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>SpoutedBedCombustor</p>
+      </td>
+      <td width="40">
+      <p>X</p>
+      </td>
+      <td width="49">
+      <p>X</p>
+      </td>
+      <td width="81">
+      <p>X</p>
+      </td>
+      <td width="54">
+      <p>X</p>
+      </td>
+      <td width="60">
+      <p>X</p>
+      </td>
+      <td width="50">
+      <p>.</p>
+      </td>
+      <td width="40">
+      <p>.</p>
+      </td>
+      <td width="68">
+      <p>X</p>
+      </td>
+      <td width="39">
+      <p>.</p>
+      </td>
+      <td width="47">
+      <p>.</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>80.65 secs</p>
+      </td>
+      <td width="112">
+      <p>675 secs</p>
+      </td>
+      <td width="112">
+      <p>74 secs</p>
+      </td>
+      <td width="112">
+      <p>1176.63 s</p>
+      </td>
+      <td width="108">
+      <p>746 s</p>
+      </td>
+      <td>133 s {there was a problem with previous versions where the
+mass inflow used incorrect MW) </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>Fully_Developed_With_AhmadiModel</p>
+      </td>
+      <td width="40">
+      <p><br>
+      </p>
+      </td>
+      <td width="49">
+      <p><br>
+      </p>
+      </td>
+      <td width="81">
+      <p><br>
+      </p>
+      </td>
+      <td width="54">
+      <p><br>
+      </p>
+      </td>
+      <td width="60">
+      <p><br>
+      </p>
+      </td>
+      <td width="50">
+      <p><br>
+      </p>
+      </td>
+      <td width="40">
+      <p><br>
+      </p>
+      </td>
+      <td width="68">
+      <p><br>
+      </p>
+      </td>
+      <td width="39">
+      <p><br>
+      </p>
+      </td>
+      <td width="47">
+      <p><br>
+      </p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>585 secs</p>
+      </td>
+      <td width="112">
+      <p>523 secs</p>
+      </td>
+      <td width="112">
+      <p>736.74 s</p>
+      </td>
+      <td width="108">
+      <p>738 s</p>
+      </td>
+      <td>794 s<br>
+      </td>
+    </tr>
+    <tr>
+      <td width="209">
+      <p>Gidaspow_fbed_With_SimoninModel</p>
+      </td>
+      <td width="40">
+      <p><br>
+      </p>
+      </td>
+      <td width="49">
+      <p><br>
+      </p>
+      </td>
+      <td width="81">
+      <p><br>
+      </p>
+      </td>
+      <td width="54">
+      <p><br>
+      </p>
+      </td>
+      <td width="60">
+      <p><br>
+      </p>
+      </td>
+      <td width="50">
+      <p><br>
+      </p>
+      </td>
+      <td width="40">
+      <p><br>
+      </p>
+      </td>
+      <td width="68">
+      <p><br>
+      </p>
+      </td>
+      <td width="39">
+      <p><br>
+      </p>
+      </td>
+      <td width="47">
+      <p><br>
+      </p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>X</p>
+      </td>
+      <td width="112">
+      <p>32765 secs</p>
+      </td>
+      <td width="112">
+      <p>13481 secs<br>
+(Relaxed dt_max criterion and triggered Norm_g=0 and Norm_s=0)</p>
+      </td>
+      <td width="112">
+      <p>16874.60 s</p>
+      </td>
+      <td width="108">
+      <p>9933 s</p>
+      </td>
+      <td>9298 s<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</p>
+</body>
+</html>

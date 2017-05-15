@@ -1,0 +1,223 @@
+!                                                                               
+!  Bubbling Fluidized Bed Simulation                                            
+!                                                                               
+!  bub02 - uniform fluidization 
+
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'BUB02'             
+  DESCRIPTION           = 'uniform fluidization'          
+  RUN_TYPE              = 'new'             
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                           !start time
+  TSTOP                 = 0.1                           ! increase to 2.0 sec for actual run
+  DT                    = 1.0E-4                        !time step
+  ENERGY_EQ             = .FALSE.                       !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.            !do not solve species eq
+
+
+!===============================================================================
+! Cartesian Grid - Quadric definition:
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+!
+! Predefined quadrics: set QUADRIC_FORM to on eof the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!===============================================================================
+  CARTESIAN_GRID = .TRUE.
+  N_QUADRIC = 1
+
+  QUADRIC_FORM(1) = 'Y_CYL_INT'
+  RADIUS(1)       = 7.0 
+
+! First Quadric:  
+!  lambda_x(1) =  1.0
+!  lambda_y(1) =  0.0
+!  lambda_z(1) =  1.0
+!  dquadric(1) = -49.0
+
+  t_x(1) = 7.0               ! Translation in x direction
+  t_z(1) = 7.0               ! Translation in z direction
+
+  BC_ID_Q(1) = 10
+
+! cut-cell boundary condition
+  BC_TYPE(10)           = 'CG_FSW'
+
+  N_GROUP = 1
+
+  GROUP_SIZE(1) = 1
+  GROUP_Q(1,1) = 1
+
+  TOL_SNAP = 0.05
+  TOL_DELH = 0.10
+  TOL_SMALL_AREA = 0.05
+
+  PG_OPTION = 0
+
+  FAC_DIM_MAX_CUT_CELL = 1.0
+
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+  F_DASHBOARD = 1
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.01
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3 4 101
+
+                                                                               
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'CARTESIAN' 
+  XLENGTH               =   14.0                         !radius
+  IMAX                  =   14                           !cells in i direction
+  YLENGTH               =  100.0                         !height
+  JMAX                  =  100                           !cells in j direction
+  ZLENGTH               =   14.0                         !radius
+  KMAX                  =   14                           !cells in k direction
+
+
+                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-4                        !constant gas viscosity
+  RO_g0                 = 1.2E-3                        !constant gas density
+
+ 
+! Solids-phase Section                                                          
+  
+  RO_s0                 = 2.0                           !solids density
+  D_p0                  = 0.04                          !particle diameter     
+  e                     = 0.8                           !restitution coefficient
+  Phi                   =30.0                           !angle of internal friction
+  EP_star               = 0.42                          !void fraction at minimum
+                                                        !  fluidization
+
+  
+! Initial Conditions Section                                                    
+  
+    ! 1. bed                                      
+  IC_X_w(1)             =  0.0                          !lower half of the domain
+  IC_X_e(1)             = 14.0                          
+  IC_Y_s(1)             =  0.0
+  IC_Y_n(1)             = 50.0
+  IC_Z_b(1)             =  0.0                         
+  IC_Z_t(1)             = 14.0                         
+ 
+                                                        !initial values in the region
+  IC_EP_g(1)            =  0.42                         !void fraction  
+  IC_U_g(1)             =  0.0                          !x gas velocity
+  IC_V_g(1)             = 61.7                          !y gas velocity
+  IC_W_g(1)             =  0.0                          !z gas velocity
+  IC_U_s(1,1)           =  0.0                          !x solids velocity 
+  IC_V_s(1,1)           =  0.0                          !y solids velocity
+  IC_W_s(1,1)           =  0.0                          !z solids velocity
+
+    !  2. Freeboard                                       
+  IC_X_w(2)             =   0.0                         !upper half of the domain 
+  IC_X_e(2)             =  14.0                         
+  IC_Y_s(2)             =  50.0
+  IC_Y_n(2)             = 100.0
+  IC_Z_b(2)             =  0.0                         
+  IC_Z_t(2)             = 14.0                         
+                                  
+  IC_EP_g(2)            =   1.0                                  
+  IC_U_g(2)             =   0.0
+  IC_V_g(2)             =  25.9                                 
+  IC_W_g(2)             =   0.0
+  IC_U_s(2,1)           =   0.0
+  IC_V_s(2,1)           =   0.0                                  
+  IC_W_s(2,1)           =   0.0                                                 
+
+!  Boundary Conditions Section                                                  
+
+       ! 1. Distributor flow                                       
+  BC_X_w(1)             =  0.0                          !gas distributor plate
+  BC_X_e(1)             = 14.0 
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0 
+  BC_Z_b(1)             =  0.0 
+  BC_Z_t(1)             =  14.0
+
+
+  BC_TYPE(1)            = 'MI'                          !specified mass inflow 
+
+  BC_EP_g(1)            =  1.0 
+  BC_U_g(1)             =  0.0 
+  BC_V_g(1)             =  40.0 
+  BC_W_g(1)             =  0.0 
+  BC_P_g(1)             =  0.0                  
+
+                                           
+       ! 2. Exit
+  BC_X_w(2)             =   0.0                         !top exit
+  BC_X_e(2)             =  14.0                         
+  BC_Y_s(2)             = 100.0
+  BC_Y_n(2)             = 100.0
+  BC_Z_b(2)             =   0.0
+  BC_Z_t(2)             =  14.0
+
+  BC_TYPE(2)            =  'PO'                         !specified pressure outflow
+  BC_P_g(2)             =  0.0                                 
+                                                                                
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                           !write text file BUB02.OUT
+                                                        !  every 10 s
+  RES_DT                = 0.01                          !write binary restart file
+                                                        !  BUB02.RES every 0.01 s
+  NLOG                  = 25                            !write logfile BUB02.LOG 
+                                                        !every 25 time steps
+  FULL_LOG              = .TRUE.                        !display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written.  Here BUB02.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, BUB02.SP2, which contains
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.01 0.01     0.01 0.01  100.      100. 100.   100.0     100.        
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+!  Sweep Direction
+
+LEQ_SWEEP(1) = 'ISIS' 
+LEQ_SWEEP(2) = 'ISIS'  
+LEQ_SWEEP(3) = 'ISIS' 
+LEQ_SWEEP(4) = 'ISIS'  
+LEQ_SWEEP(5) = 'ISIS'  
+LEQ_SWEEP(6) = 'ISIS'  
+LEQ_SWEEP(7) = 'ISIS' 
+LEQ_SWEEP(8) = 'ISIS'  
+LEQ_SWEEP(9) = 'ISIS'
+

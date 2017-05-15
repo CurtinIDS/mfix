@@ -1,0 +1,7 @@
+ # DE Norms for 1D Steady heat conduction:
+ # imax=           40  jmax=           2
+ # 1st line: L1 Norms, 2nd line: L2 Norms, 3rd line: Linf Norms
+ # Columns: T_g
+  0.74134408097607929     
+  0.81195956392118629     
+   1.1117828748655825     

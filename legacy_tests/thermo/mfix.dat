@@ -1,0 +1,280 @@
+!  Test case for verifying that the thermo tables and heat
+!  of reaction calculations work. Note that this case will
+!  most likely fail if tstop is set to anything other than
+!  zero because the case wasn't designed to actually run.
+!
+!  Author: E.F. Modeler               Date: 9-28-94
+!  Modified: J. Musser                Date: 9-17-12
+!    ,
+  RUN_NAME  = 'Thermo test'
+  DESCRIPTION  = 'Reaction Thermodynamics Test'
+
+#_______________________________________________________________
+# RUN CONTROL SECTION
+
+  UNITS    = 'cgs'
+  RUN_TYPE = 'new'
+  TIME     = 0.0
+  TSTOP    = 0.0
+  DT       = 1.0E-4
+
+  GRAVITY  = 980.7
+
+  ENERGY_EQ  = .T.
+
+  SPECIES_EQ     = .T.  .T.  .T.  .T.
+  MOMENTUM_X_EQ  = .F.  .F.  .F.  .F.
+  MOMENTUM_Y_EQ  = .F.  .F.  .F.  .F.
+  MOMENTUM_Z_EQ  = .F.  .F.  .F.  .F.
+
+  CALL_USR = .TRUE.
+
+#_______________________________________________________________
+# NUMERICAL SECTION
+
+  NORM_G  = 0.0
+  NORM_S  = 0.0
+
+#_______________________________________________________________
+# GEOMETRY SECTION 
+
+  COORDINATES = 'cartesian'
+
+  XLENGTH  = 1.0   IMAX =  1
+  ZLENGTH  = 1.0   KMAX =  1
+  YLENGTH  = 1.0   JMAX = 10
+
+
+#_______________________________________________________________
+# MATERIAL SECTION
+
+# GAS SECTION
+#------------------------------------------//
+
+  NMAX_g = 9
+
+  SPECIES_g(1) = 'N2  REF ELEMENT   '   SPECIES_ALIAS_g(1) = 'N2'
+  SPECIES_g(2) = 'O2 REF ELEMENT    '   SPECIES_ALIAS_g(2) = 'O2'
+  SPECIES_g(3) = 'H2O'                  SPECIES_ALIAS_g(3) = 'H2O'
+  SPECIES_g(4) = 'CO'                   SPECIES_ALIAS_g(4) = 'CO'
+  SPECIES_g(5) = 'CO2'                  SPECIES_ALIAS_g(5) = 'CO2'
+  SPECIES_g(6) = 'H2 REF ELEMENT    '   SPECIES_ALIAS_g(6) = 'H2'
+  SPECIES_g(7) = 'CH4'                  SPECIES_ALIAS_g(7) = 'CH4'
+  SPECIES_g(8) = 'Tar'                  SPECIES_ALIAS_g(8) = 'TAR'
+  SPECIES_g(9) = 'Fixed Carbon'         SPECIES_ALIAS_g(9) = 'GSOOT'
+ 
+!  MW_g - Obtained from Burcat and Ruscic databse
+!  MW_AVG - Calculated from individual species
+
+# PARTICLE SECTION
+#------------------------------------------//
+
+  MMAX = 3  ! Number of solids phases
+
+! Solids phase 1
+!------------------------------------------//
+  D_p0(1)  = 0.1   ! (cm)
+  RO_s0(1) = 1.0   ! (g/cm)
+
+  NMAX_s(1) = 4
+
+  SPECIES_s(1,1) = 'Fixed Carbon'      SPECIES_ALIAS_s(1,1) = 'FC1'
+  SPECIES_s(1,2) = 'Volatile Matter'   SPECIES_ALIAS_s(1,2) = 'VM'
+  SPECIES_s(1,3) = 'H2O(L)'            SPECIES_ALIAS_s(1,3) = 'MOISTURE'
+  SPECIES_s(1,4) = 'Coal Ash'          SPECIES_ALIAS_s(1,4) = 'ASH1'
+
+
+! Solids phase 2
+!------------------------------------------//
+  D_p0(2)  = 0.1   ! (cm)
+  RO_s0(2) = 1.0   ! (g/cm)
+
+  NMAX_s(2) = 2
+  SPECIES_s(2,1) = 'Fixed Carbon'   SPECIES_ALIAS_s(2,1) = 'FC2'
+  SPECIES_s(2,2) = 'Coal Ash'       SPECIES_ALIAS_s(2,2) = 'ASH2'
+
+! Solids phase 2
+!------------------------------------------//
+  D_p0(3)  = 0.1   ! (cm)
+  RO_s0(3) = 1.0   ! (g/cm)
+
+  NMAX_s(3) = 2
+  SPECIES_s(3,1) = 'Fixed Carbon'   SPECIES_ALIAS_s(3,1) = 'SSOOT'
+  SPECIES_s(3,2) = 'Coal Ash'       SPECIES_ALIAS_s(3,2) = 'FLYASH'
+
+
+  EP_star = 0.50    ! Packed bed void fraction
+  e       = 0.8
+  C_f     = 0.1
+  Phi     = 30.0
+
+  YU_STANDISH = .TRUE. ! compute ep_star using Yu_Standish correlation
+
+
+#_______________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1) = 0.0
+  IC_X_e(1) = 1.0
+
+  IC_Y_s(1) = 0.0
+  IC_Y_n(1) = 1.0
+
+  IC_Z_b(1) = 0.0
+  IC_Z_t(1) = 1.0
+
+  IC_P_g(1)  = 1.01325d6 ! -> 1atm
+
+! Gas phase
+!------------------------------------------//
+  IC_EP_g(1) = 0.7
+
+  IC_X_g(1,1) = 0.2d0   ! N2 
+  IC_X_g(1,2) = 0.1d0   ! O2
+  IC_X_g(1,3) = 0.1d0   ! H2O
+  IC_X_g(1,4) = 0.1d0   ! CO
+  IC_X_g(1,5) = 0.1d0   ! CO2
+  IC_X_g(1,6) = 0.1d0   ! H2
+  IC_X_g(1,7) = 0.1d0   ! CH4
+  IC_X_g(1,8) = 0.1d0   ! Tar
+  IC_X_g(1,9) = 0.1d0   ! Soot
+
+  IC_T_g(1)  = 500.0     ! (K)
+
+  IC_U_g(1) = 0.0   ! (cm/sec)
+  IC_V_g(1) = 0.0   ! (cm/sec)
+  IC_W_g(1) = 0.0   ! (cm/sec)
+
+! Solids phase 1
+!------------------------------------------//
+  IC_ROP_s(1,1) = 0.1
+
+  IC_X_s(1,1,1) = 0.25 ! Fixed Carbon
+  IC_X_s(1,1,2) = 0.25 ! Volatile Matter
+  IC_X_s(1,1,3) = 0.25 ! Moistuer
+  IC_X_s(1,1,4) = 0.25 ! Ash
+
+  IC_T_s(1,1)  = 500.0 ! (K) -> 30C
+
+  IC_U_s(1,1) = 0.0   ! (cm/sec)
+  IC_V_s(1,1) = 0.0   ! (cm/sec)
+  IC_W_s(1,1) = 0.0   ! (cm/sec)
+
+! Solids phase 2
+!------------------------------------------//
+  IC_ROP_s(1,2) = 0.1
+
+  IC_X_s(1,2,1) = 0.50 ! Fixed Carbon
+  IC_X_s(1,2,2) = 0.50 ! Ash
+
+  IC_T_s(1,2)  = 400.0 ! (K)
+
+  IC_U_s(1,2) = 0.0   ! (cm/sec)
+  IC_V_s(1,2) = 0.0   ! (cm/sec)
+  IC_W_s(1,2) = 0.0   ! (cm/sec)
+
+! Solids phase 3
+!------------------------------------------//
+  IC_ROP_s(1,3) = 0.1
+
+  IC_X_s(1,3,1) = 0.50 ! Fixed Carbon (Soot)
+  IC_X_s(1,3,2) = 0.50 ! Ash (FlyAsh)
+
+  IC_T_s(1,3)  = 600.0 ! (K)
+
+  IC_U_s(1,3) = 0.0   ! (cm/sec)
+  IC_V_s(1,3) = 0.0   ! (cm/sec)
+  IC_W_s(1,3) = 0.0   ! (cm/sec)
+
+#_______________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  @(RXNS)
+
+    Char_Combustion1 { chem_eq = "2FC1 + O2 --> 2CO"}
+
+    Char_Combustion2 { chem_eq = "2FC2 + O2 --> 2CO"}
+
+    Char_Combustion3 { chem_eq = '2.2FC1 + O2 --> 2CO + 0.2sSoot'}
+
+    CH4_Combustion { chem_eq = "CH4 + 2O2 --> CO2 + 2H2O" }
+
+    CH4_Catalytic1 { chem_eq = "CH4 + 2O2 + 0.FC1 --> CO2 + 2H2O" }
+
+    CH4_Catalytic2 { chem_eq = "CH4 + 2O2 --> CO2 + 2H2O + 0.FC1" }
+
+    CH4_Catalytic3 { chem_eq = "CH4 + 2O2 + 0.FC1 --> CO2 + 2H2O + 0.FC1" }
+
+    Char_to_Char { chem_eq = 'FC1 --> FC2' }  ! Hot --> Cold
+
+    Ash_to_Ash { chem_eq = 'Ash2 --> FlyAsh' } ! Cold --> Hot
+
+    Skippy_RxN { chem_eq = 'None' }
+
+  @(END)
+
+
+#_______________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  OUT_DT = 0.10
+  RES_DT = 0.01
+
+  SPX_DT(1)  = 0.05   ! EP_g 
+  SPX_DT(2)  = 0.05   ! P_g, P_star 
+  SPX_DT(3)  = 0.05   ! U_g, V_g, W_g
+  SPX_DT(4)  = 0.05   ! U_s, V_s, W_s
+  SPX_DT(5)  = 0.05   ! ROP_s
+  SPX_DT(6)  = 0.05   ! T_g, T_s
+  SPX_DT(7)  = 0.05   ! X_g, X_s
+  SPX_DT(8)  = 100.   ! theta
+  SPX_DT(9)  = 100.   ! Scalar
+  SPX_DT(10) = 0.01   ! Reaction Rates
+
+  RESID_STRING  = 'P0' 'V0', 'V1', 'V2', 'T0', 'T1', 'T2'
+
+  nRR = 7 ! Number of reaction rates to write to .SPA
+
+  NLOG = 100
+  FULL_LOG = .T.
+  WRITE_DASHBOARD = .T.
+
+! Use to check mass balance for debugging. Slows down simulation and
+! should not be used for production runs.
+  Report_Mass_Balance_Dt = 0.05
+
+
+#_______________________________________________________________
+# PARALLELIZATION CONTROLS
+
+  NODESI  = 1     NODESJ  = 1     NODESK  = 1
+
+
+#_______________________________________________________________
+THERMO DATA
+
+Fixed Carbon               WARNING!       0.S   200.000  6000.000  B  12.01100 1
+-7.94079328E-01 8.09779756E-03-6.56398654E-06 1.84781958E-09 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00-7.94079328E-01 8.09779756E-03-6.56398654E-06    3
+ 1.84781958E-09 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+Volatile Matter            WARNING!       0.S   200.000  6000.000  B  56.00000 1
+ 4.91181845E+00 2.28260066E-02 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 4.91181845E+00 2.28260066E-02 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+H2O(L)            L 8/89H  2.O  1.   0.   0.L   273.150  6000.000  C  18.01528 1
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 7.25575005E+01-6.62445402E-01 2.56198746E-03    3
+-4.36591923E-06 2.78178981E-09-4.18865499E+04-2.88280137E+02-3.43772513E+04    4
+
+Coal Ash                   WARNING!       0.S   200.000  6000.000  B  56.00000 1
+ 8.70769880E+00 8.45407650E-03 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 8.70769880E+00 8.45407650E-03 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+Tar                        WARNING!       0.S   200.000  6000.000  B 144.00000 1
+ 3.26085808E+01 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 3.26085808E+01 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 9.87654321E-99    4
+

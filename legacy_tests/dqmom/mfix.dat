@@ -1,0 +1,187 @@
+!                                                                               
+!  Binary size  distribution  compared with experiment                                          
+! !                                                                               
+!   
+                          
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'R'             
+  DESCRIPTION           = 'Binary size distribution'          
+  RUN_TYPE              = 'NEW'             
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                         !start time
+  TSTOP                 = 1.0
+  DT                    = 1.0E-5
+                           
+  CLOSE_PACKED 	= .TRUE.  .TRUE.
+  ENERGY_EQ             = .FALSE.                       !do not solve energy eq
+  SPECIES_EQ            = .F. .F. .F.             !do not solve species eq
+  MAX_NIT = 50
+!  TOL_RESID = 1.0E-3
+  
+!  TOL_DIVERGE = 1.0e15
+    DEF_COR =.TRUE.
+    CALL_USR=.F.
+    CALL_DQMOM=.T.
+!   DETECT_STALL=.F. 
+!   UR_FAC(2)             =0.20 
+   DISCRETIZE            =7*2                                                   
+   DISCRETIZE(9)         =2                         
+! Geometry Section                                                              
+                                                                             
+  COORDINATES           = 'cartesian' 
+  XLENGTH               = 10.1                         !radius
+  IMAX                  = 15                           !cells in i direction
+  YLENGTH               = 50.0                         !height
+  JMAX                  = 50                          !cells in j direction
+  NO_K                  = .TRUE.                        !2D, no k direction
+
+  Segregation_slope_coefficient=0.3 ! see Gera et al. Int. J. multiphase flow 30 (2004) 419.
+  aggregation_eff=0.001
+  breakage_eff=0.0001
+
+!  FEDORS_LANDEL = .TRUE.                        !compute ep_star using Fedors_landel correlation
+  YU_STANDISH = .TRUE.                          !compute ep_star using Yu_Standish correlation
+!
+
+!  C(11)=3.0
+
+!    C(10)=0.0d0
+!    C(11)=0.0d0                                                                               
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-4                        !constant gas viscosity
+  MW_avg                = 29.0                           
+
+ 
+! Scalar
+  Nscalar               = 2
+  phase4scalar(1)       = 1
+  phase4scalar(2)       = 2
+  
+! Solids-phase Section                                                          
+  MMAX                  = 2
+  RO_s0(1)              = 2.53d0                         !solids density
+  RO_s0(2)              = 2.53d0
+  C_f                   = 0.1
+  D_p0(1)                = 0.0164536d0
+  D_P0(2)                = 0.0408151d0                       !particle diameter     
+  
+  e                     = 0.80d0       
+!  e_w                   = 0.97d0                                 
+                                                       !restitution coefficient
+  Phi                   = 30.0                          !angle of internal friction
+  EP_star               = 0.376d0                            !void fraction at minimum
+                                                          !  fluidization
+
+  
+! Initial Conditions Section                                                    
+  
+    ! 1. bed                                      
+  IC_X_w(1)             =   0.0                          !lower half of the domain
+  IC_X_e(1)             =   10.1                          ! 0 < x < 7, 0 < y < 50
+  IC_Y_s(1)             =   0.0
+  IC_Y_n(1)             =   15.9
+                                                        !initial values in the region
+  IC_EP_g(1)            =  0.37                         !void fraction  
+  IC_ROP_s(1,1)         =  0.6903
+  IC_ROP_s(1,2)         =  0.9036
+  IC_Scalar(1,1)        =  0.0164536d0
+  IC_Scalar(1,2)        =  0.0408151d0
+  IC_U_g(1)             =  0.0                          !radial gas velocity
+  IC_V_g(1)             =  @(20.0/0.37)                          !axial gas velocity
+  IC_U_s(1,1)           =  0.0                          !radial solids velocity 
+  IC_V_s(1,1)           =  0.0                          !axial solids velocity
+  
+  IC_U_s(1,2)           =  0.0                          !radial solids velocity 
+  IC_V_s(1,2)           =  0.0
+
+!  IC_U_s(1,3)           =  0.0                          !radial solids velocity 
+!  IC_V_s(1,3)           =  0.0   
+
+  IC_P_g(1)              =1010000 
+  IC_T_g(1)                =298
+    !  2. Freeboard                                       
+  IC_X_w(2)             =   0.0                         !upper half of the domain 
+  IC_X_e(2)             =   10.1                         ! 0 < x < 7, 50 < y < 100
+  IC_Y_s(2)             =  15.9
+  IC_Y_n(2)             =  50
+                                  
+  IC_EP_g(2)            =   1.0d0
+  IC_Scalar(2,1)        =  0.0164536d0
+  IC_Scalar(2,2)        =  0.0408151d0                            
+  IC_U_g(2)             =   0.0
+  IC_V_g(2)             =   20.0                           
+  IC_U_s(2,1)           =   0.0
+  IC_V_s(2,1)           =   0.0
+  IC_U_s(2,2)           =   0.0
+  IC_V_s(2,2)           =   0.0
+!  IC_U_s(2,3)           =   0.0
+!  IC_V_s(2,3)           =   0.0
+
+  IC_P_g(2)             =1010000                                  
+  IC_T_g(2)             =   298                                                                              
+!  Boundary Conditions Section                                                  
+            
+       ! 1. Distributor flow                                       
+  BC_X_w(1)             =  0.0                          !gas distributor plate
+  BC_X_e(1)             =  10.1                          ! 0 < x < 15, y = 0
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0
+
+  BC_TYPE(1)            = 'MI'                          !specified mass inflow 
+
+  BC_EP_g(1)            =  1.0 
+  BC_U_g(1)             =  0.0 
+  BC_V_g(1)             =  20.0
+  BC_P_g(1)             = 1010000                 
+  BC_T_g(1)             =  298
+  BC_Scalar(1,1)        = 0    
+  BC_Scalar(1,2)        = 0 
+                                            
+       ! 2. Exit
+  BC_X_w(2)             =   0.0                         !top exit
+  BC_X_e(2)             =   10.1                        ! 0 < x < 7, y = 100
+  BC_Y_s(2)             =  50
+  BC_Y_n(2)             =  50
+
+  BC_TYPE(2)            =  'PO'                         !specified pressure outflow
+  BC_P_g(2)             =  1010000                                 
+  BC_T_g(2)             =  298                                               
+  BC_Scalar(2,1)        =  0
+  BC_scalar(2,2)        =  0                             
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                           !write text file BUB02.OUT
+                                                        !  every 10 s
+  RES_DT                = 0.01                          !write binary restart file
+                                                        !  BUB02.RES every 0.01 s
+  NLOG                  = 25                            !write logfile BUB02.LOG 
+                                                        !every 25 time steps
+  FULL_LOG              = .true.                        !display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written.  Here BUB02.SP1, which
+!contains void fraction (EP_g), is written every 0.01 s, BUB02.SP2, which contains
+! gas and solids pressure (P_g, P_star), is written every 0.1 s, and so forth.
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.1 0.1      0.1  0.1  0.1      100. 100.     0.1     0.1        
+                                                                                
+
+!  Sweep Direction
+
+  LEQ_SWEEP(1) = 'ISIS'
+  LEQ_SWEEP(2) = 'ISIS'
+  LEQ_SWEEP(3) = 'ISIS'
+  LEQ_SWEEP(4) = 'ISIS'
+  LEQ_SWEEP(5) = 'ISIS' 
+  LEQ_SWEEP(6) = 'ISIS'
+  LEQ_SWEEP(7) = 'ISIS'
+  LEQ_SWEEP(8) = 'ISIS'
+  LEQ_SWEEP(9) = 'ISIS'
+
+ NODESI=1 NODESJ=1 NODESK=1

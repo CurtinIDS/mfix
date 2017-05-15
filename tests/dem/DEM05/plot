@@ -1,0 +1,156 @@
+#                     DATA INDEX
+#                    EULER    A-B 
+#  > Kn 1.0*10^4         
+#    * En = 0.9    --  01      20
+#    * En = 0.8    --  02      21
+#    * En = 0.7    --  03      22
+#    * En = 0.6    --  04      23
+#                        
+#  > Kn 2.5*10^4         
+#    * En = 1.0    --  05      24
+#    * En = 0.9    --  06      25
+#    * En = 0.8    --  07      26
+#    * En = 0.7    --  08      27
+#    * En = 0.6    --  09      28
+#                        
+#  > Kn 5.0*10^4         
+#    * En = 1.0    --  10      29
+#    * En = 0.9    --  11      30
+#    * En = 0.8    --  12      31
+#    * En = 0.7    --  13      32
+#    * En = 0.6    --  14      33
+#                        
+#  > Kn 1.0*10^5         
+#    * En = 1.0    --  15      34
+#    * En = 0.9    --  16      35
+#    * En = 0.8    --  17      36
+#    * En = 0.7    --  18      37
+#    * En = 0.6    --  19      38
+
+
+
+# color definitions
+set border linewidth 1.5
+set style line 1 lt 1 lc rgb '#000000' lw 1 # black
+set style line 2 lt 1 lc rgb '#9400d3' lw 1 # purple
+set style line 3 lt 1 lc rgb '#ff4500' lw 1 # orange-1
+set style line 4 lt 1 lc rgb '#006400' lw 1 # green
+set style line 5 lt 1 lc rgb '#ffa500' lw 1 # yellow
+set style line 6 lt 1 lc rgb '#0000ff' lw 1 # blue
+set style line 7 lt 1 lc rgb '#800000' lw 1 # brown
+set style line 8 lt 1 lc rgb '#ff0000' lw 1 # orange-2
+
+set style line 11 lt 2 lc rgb '#000000' lw 1 # black
+set style line 12 lt 2 lc rgb '#9400d3' lw 1 # purple
+set style line 13 lt 2 lc rgb '#ff4500' lw 1 # orange-1
+set style line 14 lt 2 lc rgb '#006400' lw 1 # green
+set style line 15 lt 2 lc rgb '#ffa500' lw 1 # yellow
+set style line 16 lt 2 lc rgb '#0000ff' lw 1 # blue
+set style line 17 lt 2 lc rgb '#800000' lw 1 # brown
+set style line 18 lt 2 lc rgb '#ff0000' lw 1 # orange-2
+
+
+set xlabel "Impact Angle (degrees)"
+set xrange [0.0 : 70.0]
+set xtics nomirror 0, 10.0, 70.0
+
+
+#-------------------------------------------------------------------------------------
+
+
+#set terminal wxt 1 size 1100,350 enhanced dashed
+set terminal pngcairo size 1100,400 enhanced font 'Verdana, 10' dashed
+set output "DEM05_PP.png"
+
+set multiplot layout 1,3 title "Particle-particle collision"
+
+set ylabel "Rebound Angle (degrees)"
+set yrange [0.0 : 70.]
+set ytics nomirror 0.0,10.0,70.0
+
+set key left top inside reverse
+
+#set title
+plot 'POST_ALPHA.dat' index 0 using 1:2 w points ls 1 pointtype 4 title "Experimental", \
+     'POST_ALPHA.dat' index 1 using 1:2 w lines ls 1 title "Linear", \
+     'POST_ALPHA.dat' index 2 using 1:2 w lines ls 11 title "Hertzian"
+
+
+set ylabel "Tangential restitution coefficient, e_t"
+set yrange [0.45 : 1.0]
+set ytics nomirror 0.45,0.1,1.0
+
+set nokey
+
+#set title
+plot 'POST_COEFF.dat' index 0 using 1:2 w points ls 1 pointtype 4 title "Experimental", \
+     'POST_COEFF.dat' index 1 using 1:2 w lines ls 1 title "Linear", \
+     'POST_COEFF.dat' index 2 using 1:2 w lines ls 11 title "Hertzian"
+
+
+
+set ylabel "Angular Velocity (rad.sec^{-1})"
+set yrange [0.0 : 750.]
+set ytics nomirror 0.0,150.0,750.0
+
+set nokey
+
+#set title
+plot 'POST_OMEGA.dat' index 0 using 1:2 w points ls 1 pointtype 4 title "Experimental", \
+     'POST_OMEGA.dat' index 1 using 1:2 w lines ls 1 title "Linear", \
+     'POST_OMEGA.dat' index 2 using 1:2 w lines ls 11 title "Hertzian"
+
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 2 size 1100,350 enhanced dashed
+set terminal pngcairo size 1100,400 enhanced font 'Verdana, 10' dashed
+set output "DEM05_PW.png"
+
+set multiplot layout 1,3 title "Particle-wall collision"
+
+set ylabel "Rebound Angle (degrees)"
+set yrange [0.0 : 70.]
+set ytics nomirror 0.0,10.0,70.0
+
+set key left top inside reverse
+
+#set title
+plot 'POST_ALPHA.dat' index 0 using 1:2 w points ls 1 pointtype 4 title "Experimental", \
+     'POST_ALPHA.dat' index 1 using 1:3 w lines ls 1 title "Linear", \
+     'POST_ALPHA.dat' index 2 using 1:3 w lines ls 11 title "Hertzian"
+
+
+set ylabel "Tangential restitution coefficient, e_t"
+set yrange [0.45 : 1.0]
+set ytics nomirror 0.45,0.1,1.0
+
+set nokey
+
+#set title
+plot 'POST_COEFF.dat' index 0 using 1:2 w points ls 1 pointtype 4 title "Experimental", \
+     'POST_COEFF.dat' index 1 using 1:3 w lines ls 1 title "Linear", \
+     'POST_COEFF.dat' index 2 using 1:3 w lines ls 11 title "Hertzian"
+
+
+
+set ylabel "Angular Velocity (rad.sec^{-1})"
+set yrange [0.0 : 750.]
+set ytics nomirror 0.0,150.0,750.0
+
+set nokey
+
+#set title
+plot 'POST_OMEGA.dat' index 0 using 1:2 w points ls 1 pointtype 4 title "Experimental", \
+     'POST_OMEGA.dat' index 1 using 1:3 w lines ls 1 title "Linear", \
+     'POST_OMEGA.dat' index 2 using 1:3 w lines ls 11 title "Hertzian"
+
+
+unset multiplot
+
+
+

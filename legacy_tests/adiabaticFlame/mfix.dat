@@ -1,0 +1,126 @@
+#
+# Calculate adiabatic flame temperature to verify thermochemical package
+# Smith and Van Ness p. 147
+# 	Initial		Final
+#CH4	0.046290939	0
+#O2	0.222196505	0.037032751
+#CO2	0		0.127300081
+#H2O	0		0.104154612
+#N2	0.731512556	0.731512556
+#P, atm 1.0             1.0
+#Temp, oC  298.15	    	2038.15
+# The thermochemical data in MFIX is different from that used 
+# by Smith and Van Ness. So the match may not be exact.
+#
+#  M. Syamlal                   04-12-07
+#
+# Run-control section
+#
+  RUN_NAME = 'Af'
+  DESCRIPTION = 'Adiabatic flame temperature'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+  TIME  =0.0
+  TSTOP = 100.0
+  DT = 1.0e-3  
+  ENERGY_EQ = .True.
+  SPECIES_EQ = .True.    .False.
+  MOMENTUM_X_EQ = .FALSE.    .FALSE.
+  MOMENTUM_Y_EQ = .FALSE.    .False.
+  MOMENTUM_Z_EQ = .FALSE.    .FALSE.
+  
+  TOL_RESID_X = 1.0E-5
+
+  Norm_g = 1.
+  DISCRETIZE = 7*0
+  gravity = 0.
+  CALL_USR = .TRUE.
+#
+# Geometry Section
+#
+  COORDINATES = 'Cartesian'
+
+  XLENGTH  = 10.0    IMAX = 1
+  YLENGTH  = 10.0    JMAX = 1
+  
+  NO_K     = .TRUE.
+
+  MAX_NIT = 500
+  TOL_RESID_T  = 1.E-6
+#
+# Gas-phase Section
+#
+  MU_g0 = 0.01
+
+  NMAX_g = 5
+  SPECIES_g(1) = 'CH4'                  SPECIES_ALIAS_g(1) = 'CH4'
+  SPECIES_g(2) = 'O2 REF ELEMENT    '   SPECIES_ALIAS_g(2) = 'O2'
+  SPECIES_g(3) = 'CO2'                  SPECIES_ALIAS_g(3) = 'CO2'
+  SPECIES_g(4) = 'H2O'                  SPECIES_ALIAS_g(4) = 'H2O'
+  SPECIES_g(5) = 'N2  REF ELEMENT   '   SPECIES_ALIAS_g(5) = 'N2'
+
+
+  C(1) = 200000.  #reaction rate coefficient  
+#
+# Solids-phase Section
+#
+  MMAX         = 0
+
+#
+# Initial Conditions Section
+#
+       !              
+  IC_X_w           =  0.0
+  IC_X_e           = 10.0
+  IC_Y_s           =  0.0
+  IC_Y_n          =  10.0
+ 
+  IC_EP_g          =  1.
+
+ 
+  IC_U_g           =  0.0
+  IC_V_g           =  0.0
+  IC_W_g           =  0.0
+
+  IC_P_g          =  1.01E6
+  IC_T_g           = 298.15
+
+  IC_X_g(1,1)      =  0.046290939
+  IC_X_g(1,2)      =  0.222196505
+  IC_X_g(1,3)      =  0.0
+  IC_X_g(1,4)      =  0.0
+  IC_X_g(1,5)      =  0.731512556
+   
+
+#_______________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  @(RXNS)
+
+    CH4_Comb { chem_eq = "CH4 + 2O2 --> CO2 + 2H2O" }
+
+  @(END)
+
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 1.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 100.  .1      100.  100.  100.     0.1  0.1    100.  100.
+
+  USR_DT = 0.1
+  
+  NLOG   = 25
+  FULL_LOG = .TRUE.
+  RESID_STRING = 'T0' 'P0' 'X001'
+
+
+# DMP control
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+

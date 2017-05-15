@@ -1,0 +1,290 @@
+########################################################################
+# O3 benchmark problem                                                 #
+#                                                                      #
+# Author:  Sreekanth Pannala                           Date: 10-26-06  #
+# Modified: J. Musser                                  Date: 06-04-14  #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_NAME = 'O3'
+  DESCRIPTION = 'O3 benchmark problem'
+
+  RUN_TYPE = 'NEW'
+  UNITS = 'CGS'
+
+  TIME =  0.0
+  TSTOP = 1.0d-2
+
+  DT = 5.0d-4
+
+  ENERGY_EQ =  .F.
+  SPECIES_EQ = .T. .F.
+
+  GRANULAR_ENERGY = .T.
+
+  SCHAEFFER = .F.
+
+  FRICTION = .T.
+  Savage = 2
+
+  C(1) = 30. !reaction rate constant
+  C_NAME(1) = 'RXN Rate Constant'
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  DISCRETIZE = 8*2  ! Superbee
+
+  DEF_COR = .T.
+
+  Norm_g = 0.
+
+  TOL_RESID_TH = 1.0d-3
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  =    8.0   IMAX =   8 !   16
+  ZLENGTH  =    8.0   KMAX =   8 !   16
+  YLENGTH  = 1024.0   JMAX = 512 ! 1024
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  MU_g0 = 1.663E-4  ! Constant Viscosity
+
+  NMAX_g = 3
+
+  SPECIES_g(1) = 'O3'    SPECIES_ALIAS_g(1) = 'O3'
+  SPECIES_g(2) = 'O2'    SPECIES_ALIAS_g(2) = 'O2'
+  SPECIES_g(3) = 'N3'    SPECIES_ALIAS_g(3) = 'N3'
+
+
+! Particle Section:
+!---------------------------------------------------------------------//
+  e =        0.8     ! part-part restitution coefficient
+  e_w =      0.7     ! part-wall restitution coefficient
+  Phi =     40.0     ! angle of internal friction
+  Phi_w =   11.3     ! angle of internal friction
+
+  Phip =     1.0d-5
+
+  EP_star =  0.4     ! void fraction at maximum packing
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  RO_s0 =   1.00
+  D_p0 =    0.02
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1) =            0.0  ! (cm)
+  IC_X_e(1) =            8.0
+  IC_Z_b(1) =            0.0
+  IC_Z_t(1) =            8.0
+  IC_Y_s(1) =            0.0
+  IC_Y_n(1) =         1024.0
+
+  IC_EP_g(1) =           0.99
+  IC_P_g(1) =            9.1E6
+
+  IC_U_g(1) =            0.0
+  IC_V_g(1) =          500.0
+  IC_W_g(1) =            0.0
+
+  IC_T_g(1) =         1108.0
+
+  IC_X_g(1,1) =          0.1000
+  IC_X_g(1,2) =          0.2097
+  IC_X_g(1,3) =          0.6903
+
+  IC_U_s(1,1) =          0.0
+  IC_V_s(1,1) =        420.0
+  IC_W_s(1,1) =          0.0
+
+  IC_Theta_m(1,1) =   1000.0
+
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! Bottom inlet: Gas/Solids
+!---------------------------------------------------------------------//
+  BC_X_w(1) =            2.0
+  BC_X_e(1) =            6.0
+  BC_Z_b(1) =            2.0
+  BC_Z_t(1) =            6.0
+  BC_Y_s(1) =            0.0
+  BC_Y_n(1) =            0.0
+
+  BC_TYPE(1) =           'MI'
+
+  BC_EP_g(1) =           0.95
+  BC_P_g(1) =            9.1E6
+
+  BC_MASSFLOW_g(1) =   148.0
+  BC_U_g(1) =            0.0
+  BC_W_g(1) =            0.0
+
+  BC_T_g(1) =          553.0
+  BC_X_g(1,1) =          0.1
+  BC_X_g(1,2) =          0.2097
+  BC_X_g(1,3) =          0.6903
+
+  BC_MASSFLOW_s(1,1) = 560.0
+  BC_U_S(1,1) =          0.0
+  BC_W_S(1,1) =          0.0
+
+  BC_Theta_m(1,1) =    100.0
+
+
+! Side Exit:
+!---------------------------------------------------------------------//
+  BC_X_w(2) =            8.0
+  BC_X_e(2) =            8.0
+  BC_Z_b(2) =            2.0
+  BC_Z_t(2) =            6.0
+  BC_Y_s(2) =         1010.0
+  BC_Y_n(2) =         1014.0
+
+  BC_TYPE(2) =           'PO'
+  BC_P_g(2) =            9.1E6
+  BC_T_g(2) =          553.0
+
+
+!Side inlet: secondary air
+!---------------------------------------------------------------------//
+  BC_X_w(3) =            0.0
+  BC_X_e(3) =            0.0
+  BC_Y_s(3) =           40.0
+  BC_Y_n(3) =           42.0
+  BC_Z_b(3) =            3.0
+  BC_Z_t(3) =            5.0
+
+  BC_TYPE(3) =          'MI'
+
+  BC_EP_g(3) =           1.0
+  BC_P_g(3) =            9.1E6
+
+  BC_MASSFLOW_g(3) =    16.8
+  BC_V_g(3) =            0.0
+  BC_W_g(3) =            0.0
+
+  BC_T_g(3) =          553.0
+
+  BC_X_g(3,1) =          0.1
+  BC_X_g(3,2) =          0.2097
+  BC_X_g(3,3) =          0.6903
+
+
+! Side inlet: gas/solids
+!---------------------------------------------------------------------//
+  BC_X_w(4) =            3.0
+  BC_X_e(4) =            5.0
+  BC_Y_s(4) =          236.0
+  BC_Y_n(4) =          238.0
+  BC_Z_b(4) =            0.0
+  BC_Z_t(4) =            0.0
+
+  BC_TYPE(4) =           'MI'
+
+  BC_EP_g(4) =           0.97
+  BC_P_g(4) =            9.1E6
+
+  BC_MASSFLOW_g(4) =    20.0
+  BC_U_g(4) =            0.0
+  BC_V_g(4) =            0.0
+
+  BC_T_g(4) =          300.0
+  BC_X_g(4,1) =          0.1
+  BC_X_g(4,2) =          0.2097
+  BC_X_g(4,3) =          0.6903
+
+  BC_MASSFLOW_s(4,1) =  56.0
+  BC_U_S(4,1) =          0.0
+  BC_V_S(4,1) =          0.0
+
+  BC_Theta_m(4,1) =    100.0
+
+
+! Walls: (FSW for gas, Johnson and Jackson for solids)
+!---------------------------------------------------------------------//
+!                   Bottom   West   Top   East   South  North
+  BC_X_w(10:15) =     0.0    0.0    0.0    8.0    0.0    0.0
+  BC_X_e(10:15) =     8.0    0.0    8.0    8.0    8.0    8.0
+  BC_Z_b(10:15) =     0.0    0.0    8.0    0.0    0.0    0.0
+  BC_Z_t(10:15) =     0.0    8.0    8.0    8.0    8.0    8.0
+  BC_Y_s(10:15) =     0.0    0.0    0.0    0.0    0.0 1024.0
+  BC_Y_n(10:15) =  1024.0 1024.0 1024.0 1024.0    0.0 1024.0
+
+  BC_TYPE(10:15)  =     6*'FSW'
+  BC_JJ_PS(10:15) =      6*1
+
+  BC_hw_X_g(10:15,1) =   6*0.0
+  BC_hw_X_g(10:15,2) =   6*0.0
+  BC_hw_X_g(10:15,3) =   6*0.0
+
+  BC_C_X_g(10:15,1) =    6*0.0
+  BC_C_X_g(10:15,2) =    6*0.0
+  BC_C_X_g(10:15,3) =    6*0.0
+
+  BC_Thetaw_m(10:15,1) = 6*0.0
+
+  BC_Uw_s(10:15,1) =     6*0.0
+  BC_Vw_s(10:15,1) =     6*0.0
+  BC_Ww_s(10:15,1) =     6*0.0
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  STIFF_CHEMISTRY = .F.
+
+  @(RXNS)
+
+    Ozone_Decomp { chem_eq = "O3 --> 1.5O2" }
+
+  @(END)
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  RES_DT = 0.05
+
+  SPX_DT(1) = 0.10   ! EP_g 
+  SPX_DT(2) = 0.10   ! P_g, P_star 
+  SPX_DT(3) = 0.10   ! U_g, V_g, W_g
+  SPX_DT(4) = 0.10   ! U_s, V_s, W_s
+  SPX_DT(5) = 100.   ! ROP_s
+  SPX_DT(6) = 100.   ! T_g, T_s
+  SPX_DT(7) = 0.10   ! X_g, X_s
+  SPX_DT(8) = 0.10   ! theta
+  SPX_DT(9) = 100.   ! Scalar
+
+  RESID_STRING = 'P0', 'P1', 'V0', 'V1', 'G1'
+
+  NLOG = 100
+  FULL_LOG = .T.
+
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  1  NODESJ =  4  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .F.
+
+

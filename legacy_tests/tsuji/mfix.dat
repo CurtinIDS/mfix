@@ -1,0 +1,195 @@
+# Tsuji's case
+#                                                                               
+  RUN_NAME = 'T'                                                             
+  DESCRIPTION = 'TSUJI'                                                   
+  RUN_TYPE = 'NEW'                                                              
+  UNITS = 'CGS'                                                                 
+  TIME  = 0.0
+  TSTOP = 1.0
+  DT = 0.5d-4
+  DT_MAX		= 1d-4			!max time-step
+  DT_MIN		= 1d-8			!min time-step
+#
+  ENERGY_EQ = .FALSE.      ! isothermal      
+  SPECIES_EQ = 2*.FALSE.   ! no chemical reactions, only hydrodynamics
+  GRANULAR_ENERGY = .TRUE. ! solve for granular energy
+  K_EPSILON = .TRUE.       ! not necessary to set if Simonin model is set.
+  SIMONIN   = .TRUE.       ! model described in my AIChE J. paper Oct. 2007.
+
+  DISCRETIZE = 9*2        ! using 2nd order superbee scheme.
+  DEF_COR = .TRUE.
+  MAX_NIT = 100
+
+  LEQ_IT = 9*200          ! linear equation solver.
+  LEQ_TOL = 9*1D-06
+                            
+ 
+#  
+############################################### 
+#                                                                               
+# Geometry Section  
+#
+###############################################
+#                                                                               
+  COORDINATES = 'CYLINDRICAL'
+           
+  XLENGTH  =  4.0     IMAX = 20
+            
+  YLENGTH  =  200.0   JMAX = 400 
+  
+  ZLENGTH  = @(2*PI)  KMAX = 2  ! This is pseudo-2D, increase it for more resolution in 
+                                ! theta direction. Or use no_k = .t. for axisymmetry.
+
+###############################################
+#                                                                               
+# Gas-phase Section                                                             
+#
+###############################################
+##
+#
+# Gas-phase Section
+#
+#  RO_g0 = 1.2d-3     ! if this not set, code will use ideal gas law.
+  MU_g0 = 1.8E-4
+  MW_AVG = 29.
+
+  Mu_gmax		= 1.E+03
+  
+  GRAVITY = 981.0
+  
+###############################################
+#
+# Solids-phase Section
+# 
+###############################################  
+  DRAG_TYPE  = 'WEN_YU'
+  RO_s0   = 1.038            ! particle density
+  D_p0    = 0.0406           ! particle diameter
+  e       = 0.9              ! part-part restitution coefficient
+  e_w     = 0.9              ! part-wall rest. coef.
+  Phi     = 30.0             ! angle of internal friction (degrees)
+  PHIP    = 1d-2             ! Specularite coef. for use with JJ BC.
+  EP_star = 0.38             ! void fraction at maximum packing
+  phi_w   = 11.31            ! particle-wall angle of internal fric. (deg)
+############################################### 
+#                                                                               
+# Initial Conditions Section                                                    
+#
+############################################### 
+  IC_X_w(1)             =       0.0 
+  IC_X_e(1)             =       4.0 
+  IC_Y_s(1)             =       0.0 
+  IC_Y_n(1)             =       200. 
+  IC_Z_b(1)            =       0. 
+  IC_Z_t(1)            =       @(2*PI)                                         
+  
+  IC_EP_g(1)            =       0.9999                                    
+
+  IC_U_g(1)             =       0.0    
+  IC_V_g(1)             =       1600.0
+  IC_W_g(1)             =       0.0 
+  IC_U_s(1,1)             =       0.0
+  IC_V_s(1,1)             =       1500.
+  IC_W_s(1,1)             =       0.0 
+  IC_P_g(1)             =   1.013E6                                         
+  IC_T_g(1)             =     297.0 
+  IC_Theta_m(1,1)     = 1000.  ! granular temperature
+  IC_K_Turb_G(1)      = 100.   ! K
+  IC_E_Turb_G(1)      = 1000.  ! Epsilon
+###############################################
+#                                                                               
+#  Boundary Conditions Section                                                  
+#                                                                               
+
+############### EXIT ########################## 
+#                                
+  BC_X_w(2)            =        0.0                               
+  BC_X_e(2)            =        4.                              
+  BC_Y_s(2)            =     200.                           
+  BC_Y_n(2)            =     200.   
+  BC_Z_b(2)            =       0. 
+  BC_Z_t(2)            =       @(2*PI)                       
+  BC_TYPE(2)           =       'PO'    ! this is presssure outlet BC
+  BC_P_g(2)            =  1.013E6  
+  BC_T_g(2)            =     297.0
+#
+################ WALL BC ######################
+# wall-function for gas-phase and Johnson-Jackson for solids
+#
+  BC_X_w(3)            =       4.0
+  BC_X_e(3)            =       4.0
+  BC_Y_s(3)            =       0. 
+  BC_Y_n(3)            =       200. 
+  BC_Z_b(3)            =       0. 
+  BC_Z_t(3)            =       @(2*PI) 
+  
+  BC_TYPE(3)           =       'PAR_SLIP_WALL'
+
+  BC_Uw_s(3,1) = 0.0 	
+  BC_Vw_s(3,1) = 0.0
+  BC_hw_s(3,1) = 0.0
+  BC_Uw_g(3) = 0.0
+  BC_Vw_g(3) = 0.0
+  BC_Ww_g(3) = 0.0
+  BC_Ww_s(3,1) = 0.0
+  BC_Thetaw_m(3,1) = 0. 
+  BC_C_Theta_m(3,1) = 0.   
+  BC_hw_Theta_m(3,1) = 0. 	    
+  BC_JJ_PS(3) = 1
+#
+###############################################
+#
+#          Gas-Solids Inlet Boundary
+###############################################
+#
+#
+  BC_X_w(4)            =        0.0                                     
+  BC_X_e(4)            =        4.0                                    
+  BC_Y_s(4)            =        0.0                                  
+  BC_Y_n(4)            =        0.0
+  BC_Z_b(4)            =        0.0
+  BC_Z_t(4)            =       @(2*PI) 
+  BC_TYPE(4)           =       'MI' 
+ 
+  BC_EP_g(4)           =        0.9998888888889 
+                                                  
+  BC_V_g(4)            =        1600.0
+  BC_V_s(4,1)          =        1440.0
+  BC_U_g(4)            =           0.0  
+  BC_U_s(4,1)          =           0.0 
+  BC_W_g(4)            =           0.0  
+  BC_W_s(4,1)          =           0.0 
+  
+  BC_THETA_M(4,1)     = 1000.   ! granular temperature
+  BC_K_Turb_G(4)      = 1000.   ! K
+  BC_E_Turb_G(4)      = 10000.  ! Epsilon
+
+                                                         
+  !BC_MASSFLOW_g(4)     =       5.04 
+  !BC_MASSFLOW_s(4,1)   =       0.
+
+  BC_P_g(4)            =    1.013E6 
+  BC_T_g(4)            =  297.0
+###############################################
+#                                                                     
+#  Output Control                                                               
+#
+###############################################
+#                                                                               
+  RES_DT = 0.01      
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s  T_g  X_g  theta  scalar rrate k_epsilon
+        !      P_star    V_g  V_s         T_s1 X_s
+        !                W_g  W_s         T_s2
+  SPX_DT = 0.01 0.01   0.01  0.01   100.   100. 100. 0.01   100  100.    0.01
+                                                                                
+  NLOG   = 25                                                                  
+  full_log = .true. 
+  RESID_STRING     = 'P0' 'P1' 'u0' 'v0' 'u1' 'v1' 'K0' 'G1'
+  
+# DMP control
+  
+  NODESI = 1  NODESJ = 1   NODESK = 1
+                                                                                
+
+

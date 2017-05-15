@@ -1,0 +1,3 @@
+Contains nonuniform grid spacings for 3d grids.
+Merge the contents of these files to the input file (mfix.dat) within
+each mms case folder for tests on nonuniform grids.

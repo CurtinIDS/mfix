@@ -1,0 +1,199 @@
+#
+#  developed flow -- 2-D using cyclic condition
+#
+#  S. Benyahia                  12-05-2006
+#
+#  Gas/solids flow in fully developed 1-D channel Iddir-Arastoopour
+#  theory along with Johnson-Jackson BC for a binary mixture of powders
+#  
+# Run-control section
+#
+  RUN_NAME = 'R'
+  DESCRIPTION = 'Binary mixture using IA theory'
+  RUN_TYPE = 'NEW'
+  UNITS = 'cgs'
+  TIME  =0.0
+  TSTOP = 200.0
+  DT = 1.0e-4 
+  DT_MIN = 1.0e-8
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.     .FALSE. .FALSE.
+  
+  MOMENTUM_X_eq(1) = .false. ! by not solving x-mom we obtain a steady-state.
+  momentum_y_eq(1) = .true.
+  MOMENTUM_X_eq(2) = .false.
+  momentum_y_eq(2) = .true.
+  MOMENTUM_X_eq(0) = .false.
+  momentum_y_eq(0) = .true.
+
+  GRANULAR_ENERGY = .TRUE.
+  
+  KT_TYPE = 'IA_NONEP'   ! using IA polydisperse kinetic theory
+  
+  RDF_TYPE = 'LEBOWITZ'  ! this is default radial distribution function
+
+  LEQ_SWEEP = 9*'NONE'
+
+  Flux_g = 0.65226 !for superficial gas velocity of 550 cm/s
+
+   GRAVITY = 981
+   
+   TOL_RESID  = 1d-4
+   NORM_g = 0.0d0
+   NORM_s = 0.0d0
+   MAX_NIT = 50
+   LEQ_IT = 9*300
+   LEQ_TOL = 9*1D-06
+
+   
+#
+# Geometry Section
+#
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  =   10.0    IMAX =  80  ! coarse grid.
+  YLENGTH  = 10.0    JMAX = 1
+
+  NO_K     = .TRUE.
+  CYCLIC_Y_PD = .TRUE.
+  delp_y = 800.
+
+#
+# Gas-phase Section                                                            
+ 
+  MU_g0 = 1.8E-4			!constant gas viscosity
+  MW_avg = 29.
+  MU_gmax = 1000.
+
+#
+# Solids-phase Section
+#
+  
+  DRAG_TYPE             = 'WEN_YU' 
+  
+!  FRICTION = .T.
+!  SAVAGE = 2
+   SCHAEFFER = .F. !no frictional viscosity will be used in this simulation
+
+  MMAX = 2
+  RO_s0        = 2*2.4d0
+  D_p0(1)         = 0.02
+  D_p0(2)         = 0.012
+!
+ 
+  CLOSE_PACKED = 2*.TRUE.
+
+  C_e       = 0.95  !  particle-particle collisions
+  e_w       = 0.7   !  particle-wall collisions
+  C_f       = 0.0d0
+  
+  PHIP    = 0.2     ! high specularity for steady-state simulation              
+  
+  Phi     = 30
+  EP_star = 0.44d0
+
+  ep_s_max(1)		   = 0.56d0
+  ep_s_max(2)		   = 0.56d0
+#
+# Initial Conditions Section
+#
+
+  IC_X_w(1)           =  0.0 
+  IC_X_e(1)           =  10.0 
+  IC_Y_s(1)           =  0.0 
+  IC_Y_n(1)           = 10.0
+ 
+  IC_EP_g(1)          = 0.97d0
+  IC_ROP_s(1,1)         =  @(0.015d0*2.4d0)
+  IC_ROP_s(1,2)         =  @(0.015d0*2.4d0)
+ 
+  IC_U_g(1)           =   0.0
+  IC_V_g(1)           =  550         
+  IC_P_g(1) = 1013250.        
+  IC_T_g(1) = 298.
+
+  IC_U_s(1,1)      = 0.0
+  IC_V_s(1,1)     = 520.0
+  IC_Theta_m(1,1)  = 1.0d0 ! Warning! theta includes mass of particle
+  IC_U_s(1,2)      = 0.0
+  IC_V_s(1,2)     = 520.0
+  IC_Theta_m(1,2)  = 1.0d0
+                        
+                               
+#
+#  Boundary Conditions Section
+#
+
+
+       !            South wall  
+  BC_X_w(5)      =   0.0 
+  BC_X_e(5)      =   0.0 
+  BC_Y_s(5)      =   0.0
+  BC_Y_n(5)      =  10.
+  
+  BC_TYPE(5)       =  'PSW' 
+  BC_JJ_PS(5)      =    1    !Johnson-Jackson slip bc
+  BC_Uw_s(5,1)     =    0.0   
+  BC_Vw_s(5,1)     =    0.0d0 
+  BC_Ww_s(5,1)     =    0.0
+  BC_Uw_s(5,2)     =    0.0   
+  BC_Vw_s(5,2)     =    0.0d0 
+  BC_Ww_s(5,2)     =    0.0
+  BC_hw_s(5, 1)     =    0.0
+  BC_hw_s(5, 2)     =    0.0
+  BC_Uw_g(5)     =    0.0 
+  BC_Vw_g(5)     =    0.0 
+  BC_Ww_g(5)     =    0.0
+  BC_hw_g(5)     =    0.0
+  BC_Thetaw_m(5,1) =    0.0 
+  BC_C_Theta_m(5,1) =      0.0
+#  BC_Hw_Theta_m(5,1) =      0.0 
+  BC_Thetaw_m(5,2) =    0.0 
+  BC_C_Theta_m(5,2) =      0.0
+#  BC_Hw_Theta_m(5,2) =      0.0 
+
+       !                North wall
+  BC_X_w(6)      =        10.0
+  BC_X_e(6)      =        10.0
+  BC_Y_s(6)      =        0.0
+  BC_Y_n(6)      =        10.0
+ 
+  BC_TYPE(6)       =    'PSW' 
+  BC_JJ_PS(6)      =    1      !Johnson-Jackson slip bc
+  BC_Uw_s(6,1)     =      0.0
+  BC_Vw_s(6,1)     =      0.0d0
+  BC_Ww_s(6,1)     =      0.0
+  BC_Uw_s(6,2)     =      0.0
+  BC_Vw_s(6,2)     =      0.0d0
+  BC_Ww_s(6,2)     =      0.0
+  BC_hw_s(6, 1)     =    0.0
+  BC_hw_s(6, 2)     =    0.0
+  BC_Uw_g(6)     =    0.0 
+  BC_Vw_g(6)     =    0.0 
+  BC_Ww_g(6)     =    0.0
+  BC_hw_g(6)     =    0.0
+  BC_Thetaw_m(6,1) =      0.0
+  BC_C_Theta_m(6,1) =      0.0
+#  BC_Hw_Theta_m(6,1) =      0.0
+  BC_Thetaw_m(6,2) =      0.0
+  BC_C_Theta_m(6,2) =      0.0
+#  BC_Hw_Theta_m(6,2) =      0.0
+
+
+#
+#  Output Control
+#
+  RES_DT = 0.001
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g   Theta_m
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.1 0.1   0.1  0.1  0.1  100. 100.  0.1        100.
+
+#  FULL_LOG = .TRUE.
+  RESID_STRING  = 'P0' 'U1' 'V1' 'U2' 'V0' 'G1' 'G2'
+  
+# DMP control
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1

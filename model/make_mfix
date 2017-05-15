@@ -1,0 +1,153 @@
+#!/bin/bash
+#
+# MFIX script file for obtaining user-defined files and
+# executing 'make'
+#  Usage:
+#     1) on unix machines     :  sh    mfix/model/make_mfix
+#     2) on NT using PGI bash :  bash  mfix/model/make_mfix
+
+input=$@
+
+MFIX_VERSION="2016-1"
+EXEC_FILE=mfix.exe
+MAKEFILE="Makefile"
+DPO_BASE="build"
+DPO="OBJ"
+OBJ_EXT="o"
+FORTRAN_EXT="f"
+
+RUN_DIR=
+MFIX_SRC=
+MFIX_CONFIG=
+MFIX_TOOLS=
+MFIX_POST=
+
+# Set some of the folder paths.
+RUN_DIR=$(pwd) #$(pwd | sed 's/ /\\ /g')
+MFIX_SRC=$(cd $(dirname $0); pwd)
+MFIX_HOME=$(dirname ${MFIX_SRC})
+MFIX_CONFIG=${MFIX_HOME}/config
+
+DPO_BASE=${MFIX_HOME}/${DPO_BASE}
+mkdir -p ${DPO_BASE} || exit
+
+# This sets absolute paths.
+. ${MFIX_CONFIG}/sys_info.sh
+
+# Request variables.
+REQ_MODE=1
+REQ_OPT=1
+REQ_COMP=1
+
+# Collected from the user
+USE_TAU=0
+USE_NETCDF=0
+EXPERT=0
+FORCE_COMPILE=0
+USE_DEBUG=0
+
+# SMP/DMP Variables
+USE_SMP=0
+USE_DMP=0
+
+# Auto-compile
+#  0 : User provides all input
+#  1 : Use last build
+AUTOCOMPILE=0
+
+CLEAN_OBJS=0
+
+# Set based upon user input.
+COMP_FILE=
+FORT_FLAGS=
+FORT_FLAGS2=
+FORT_FLAGS3=
+LINK_CMD=
+LINK_FLAGS=
+LIB_FLAGS=
+FORTRAN_CMD=
+MODULE_CODE=
+
+# Subdirectories to be checked.
+FOLDER_LIST="."
+FOLDER_LIST=${FOLDER_LIST}" cartesian_grid"
+FOLDER_LIST=${FOLDER_LIST}" chem"
+FOLDER_LIST=${FOLDER_LIST}" des"
+FOLDER_LIST=${FOLDER_LIST}" dmp_modules"
+FOLDER_LIST=${FOLDER_LIST}" dqmom"
+FOLDER_LIST=${FOLDER_LIST}" GhdTheory"
+FOLDER_LIST=${FOLDER_LIST}" qmomk"
+FOLDER_LIST=${FOLDER_LIST}" thermochemical"
+FOLDER_LIST=${FOLDER_LIST}" check_data"
+
+EXT_LIST="f F inc"
+
+# Import functions for MPI setup
+. $MFIX_CONFIG/mpi_fun.sh
+
+# Parse user arguments.
+. $MFIX_CONFIG/parse_args.sh
+
+if [[ ${USE_MKL} && ! ${COMP_FILE} =~ .*intel.* ]]; then
+    echo "  Error: --mkl option only works with the Intel Fortran Compiler"
+    exit -1
+fi
+
+# Load compiler and library information.
+if test ${AUTOCOMPILE} -ne 1; then
+
+# Collect user information.
+# > Build options
+  . $MFIX_CONFIG/req_usr.sh
+
+# > Compiler
+  . $MFIX_CONFIG/sys_comp.sh
+
+# Set the compiler flags.
+  . $COMP_FILE
+
+# Set NetCDF library flags
+  . ${MFIX_CONFIG}/netcdf.sh
+# Set Trilinos library flags
+
+fi # End of Autocompile <= 1
+
+if [[ -n $USE_MIC ]]; then
+    EXEC_FILE=${EXEC_FILE}.mic
+fi
+
+ARGS=
+[[ ${USE_SMP} -eq 1 ]] && ARGS="${ARGS} --enable-smp"
+[[ ${USE_DMP} -eq 1 ]] && ARGS="${ARGS} --enable-dmp"
+
+FC=${FORTRAN_CMD}
+
+[[ ${USE_DMP} -eq 1 ]] && [[ ${COMP_FILE} =~ "intel_default.sh" ]] && FC="mpiifort"
+
+[[ ${OPT} -eq 0 ]] && FCFLAGS="-O0"
+[[ ${OPT} -eq 1 ]] && FCFLAGS="-O1"
+[[ ${OPT} -eq 2 ]] && FCFLAGS="-O2"
+[[ ${OPT} -eq 3 ]] && FCFLAGS="-O3"
+
+[[ ${USE_DEBUG} -eq 1 ]] && FCFLAGS="${FCFLAGS} -g"
+
+[[ ${USE_MIC} -eq 1 ]] && LDFLAGS="-mmic"
+[[ ${USE_MIC} -eq 1 ]] && FCFLAGS="${FCFLAGS} -mmic"
+[[ ${USE_MIC} -eq 1 ]] && ARGS="${ARGS} --host x86_64-intelmic"
+
+[[ ${USE_NETCDF} -eq 1 ]] && FCFLAGS="${FCFLAGS} -DNETCDF"
+
+CMD="$MFIX_HOME/configure_mfix ${ARGS} FC=${FC} FCFLAGS=\"${FCFLAGS}\""
+
+[[ -n ${LDFLAGS} ]] && CMD="${CMD} LDFLAGS=\"${LDFLAGS}\""
+
+echo
+echo "********************************************************"
+echo "make_mfix is deprecated."
+echo "Now use the equivalent autotools command to build MFIX:"
+echo 
+echo "${CMD} && make ${MAKE_ARGS}"
+echo
+echo "********************************************************"
+
+exit -1

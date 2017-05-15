@@ -1,0 +1,145 @@
+! A top wall driven cavity with only fluid phase present in the
+! absence of gravitational forces
+
+! Author: M. Syamlal, Dec. 1999
+
+!*********************************************************************
+! Run Control
+!*********************************************************************
+  RUN_NAME = 'driv_cav'
+  DESCRIPTION = 'Top wall driven cavity w/ gas'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+
+! Commented for steady state calculation
+#  TIME = 0.0  
+#  TSTOP = 1.0E-4 
+#  DT = 1.0e-4 
+#  DT_MAX = 1.0e-4 
+#  OUT_DT = 1.0e-4
+
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+
+  MOMENTUM_X_EQ(1) = .FALSE.
+  MOMENTUM_Y_EQ(1) = .FALSE.
+  MOMENTUM_Z_EQ(1) = .FALSE.
+
+
+!*********************************************************************
+! Numerical Parameters
+!*********************************************************************
+  MAX_NIT = 5000
+
+  DISCRETIZE = 7*0
+
+  TOL_RESID  = 1.E-5
+
+! Under relaxation factors 
+!      [UR_FAC(1,6,9)=0.8]
+!      [UR_FAC(2,3,4,5,8)=0.5]
+!      [UR_FAC(7)=1]
+  ur_fac(1) = 0.8    ! pressure
+  ur_fac(3) = 0.5    ! u-velocity
+  ur_fac(4) = 0.5    ! v-velocity
+
+!*********************************************************************
+! Geometry 
+!*********************************************************************
+  COORDINATES = 'Cartesian'
+
+  XLENGTH = 1.0    IMAX = 98
+  YLENGTH = 1.0    JMAX = 98
+  NO_K = .TRUE.
+
+! gravitational acceleration (y-direction)  
+  GRAVITY = 0.0     ! no graviational body forces present
+
+
+!*********************************************************************
+! Fluid Phase
+!*********************************************************************
+  MU_g0 = 9.E-3     ! constant viscosity (poise)
+  RO_g0 = 1.0     ! constant density
+
+
+!*********************************************************************
+! Solid Phase
+!*********************************************************************
+  MMAX = 0   ! number of 'solids' phases [1]
+
+
+!*********************************************************************
+! Initial Conditions
+!********************************************************************* 
+! cavity  --------------------
+  IC_X_w          =       0.0 
+  IC_X_e          =       1.0
+  IC_Y_s          =       0.0 
+  IC_Y_n          =       1.0 
+ 
+  IC_EP_g         =       1.0
+ 
+  IC_U_g          =       0.0
+  IC_V_g          =       0.0
+
+
+!*********************************************************************
+! Boundary Conditions
+!*********************************************************************
+! By default outside boundaries are initialized as no slip walls 
+! No gas inlet/outlets.
+! The top wall is set to shear the system through the partial slip
+! wall boundary condition.
+
+! Setup specified wall velocity for gas momentum with shear rate of
+! du/dy=0.1. for set wall velocity bc leave hw undefined and set uw
+! accordingly (note that uw=0 would be no slip).
+  BC_X_w(4)       =       0.0 
+  BC_X_e(4)       =       1.0
+  BC_Y_s(4)       =       1.0
+  BC_Y_n(4)       =       1.0
+  BC_TYPE(4)      =      'PSW'
+
+  BC_Uw_g(4)      =       0.1
+  BC_Vw_g(4)      =       0.0 
+
+
+!*********************************************************************
+!  Output Control
+!*********************************************************************
+  RES_DT     =  0.01     ! Interval (s) to update restart (.RES) file 
+  OUT_DT     = 10.0      ! Interval (s) to update standard output (.OUT) 
+                         ! file 
+
+! Interval (s) to update .SPX files 
+  SPX_DT(1)  =  1.0E-2   ! Void fraction (EP_g)
+  SPX_DT(2)  =  0.1      ! Gas and solids pressure (P_g, P_star)
+  SPX_DT(3)  =  0.1      ! Gas velocity (U_g, V_g, W_g)
+  SPX_DT(4)  =  100.0    ! Solids velocity (U_s, V_s, W_s)
+  SPX_DT(5)  =  1.0E+2   ! Solids density (ROP_s)
+  SPX_DT(6)  =  1.0E+2   ! Gas and solids temp. (T_g, T_s1, T_s2)
+  SPX_DT(7)  =  1.0E+2   ! Gas and solids mass fractions (X_g, X_s)
+  SPX_DT(8)  =  1.0E+2   ! Granular Temperature (G)
+  SPX_DT(9)  =  1.0E+2   ! User defined scalars
+
+! Display the residuals on the screen and messages about convergence
+! on the screen and in the .LOG file. [.FALSE.]
+  FULL_LOG  = .TRUE.
+
+! Interval in number of time steps at which .LOG file is written. [25]
+  NLOG  = 25
+
+! Specify residuals to be printed as 4-character strings.
+  RESID_STRING = 'P0' 'U0' 'V0'
+  
+
+!*********************************************************************
+! Parallelization Controls
+!*********************************************************************
+! Number of grid blocks in X/Y/Z directions (i,j,k) for a distributed
+! memory parallel simulation   [1]
+  NODESI = 1
+  NODESJ = 1
+  NODESK = 1
+

@@ -1,0 +1,29 @@
+2
+0
+400
+0.2
+2.7
+10
+15
+0.4
+
+! 
+! This is a sample input file for the particle generator
+!
+! The above inputs are as follows:
+! ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+! 	dimension 
+! 	random distribution (if 1) or alligned distribution (if 0)
+! 	number of particles
+! 	particle radius
+! 	particle density
+! 	xlenth of the domain
+! 	ylenth of the domain
+! 	zlenth of the domain (if 2D enter 2*radius
+
+! NOTE:
+! ^^^^
+! 1. This is a basic particle generator code for DES
+!    input and can be further improved as desired.
+! 2. Random packing consumes more space than in the
+!    case of alligned packing

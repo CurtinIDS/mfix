@@ -1,0 +1,389 @@
+########################################################################
+#  Silane Pyrolysis                                                    #
+#                                                                      #
+# Author:  Chris Guenther                           Date: 2001         #
+# Modified: J. Musser                               Date: Jul-16-2013  #
+#                                                                      #
+# Approximate Run time: 50.9 Min                                       #
+#                                                                      #
+#  References:                                                         #
+#                                                                      #
+#  C.Guenther, T.OBrien, and M.Syamlal. A numerical model of silane    #
+#     pyrolysis in a gas-solis fluidized bed. Conference on Multi-     #
+#     phase Flow, pp.1, New Orleans, Louisiana, 2001.                  #
+#                                                                      #
+#  B.Caussat, M.Hemati, and J.P.Couderc. Silicon deposition from       #
+#     silane or disilane in a fluidized bed - Part 1: Experimental     #
+#     study. Chemical Engineering Science,  Vol. 50, No. 22,           #
+#     pp. 3615-3624, 1995.                                             #
+#                                                                      #
+#  T.Furusawa, T.Kojima, and H.Hiroha. Chemical vapor deposition and   #
+#     homogeneous nucleation in monosilane pyrolysis within inter-     #
+#     particle spaces - Application of fines formation analysis to     #
+#     fluidized bed CVD. Chemical Engineering Science, Vol. 43, No. 8, #
+#     pp. 2037-2042, 1988.                                             #
+#                                                                      #
+#  G.Katzer, M.Ernst, A.Sax, and J.Kalcher. Computational Thermo-      #
+#     chemistry of medium-sized silicon hydrides. Journal of Physical  #
+#     Chemistry A. Vol. 101, No. 21, pp. 3942-3958, 1997.              #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  Run_name    = 'SP'
+  Description = 'Silane Pyrolysis'
+  Units       = 'cgs'
+  Run_type    = 'new'
+
+  Time   =   0.0
+  Tstop  =   0.1     ! Simulation length
+  DT     =   1.0E-4  ! Initial time step-size
+  DT_MAX =   1.0E-2  ! Maximum time step-size
+  DT_MIN =   1.0E-8  ! Minimum time step-size
+
+  ENERGY_EQ  = .T.
+  SPECIES_EQ = .T.   .T.
+
+  CALL_USR = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+! Normalize gas phase continuity residual
+  NORM_g = 0.
+
+! Normalize solids phase continuity residuals
+  NORM_s = 0.
+
+#_______________________________________________________________________
+# GEOMETRY SECTION 
+
+  COORDINATES = 'cartesian'
+
+  XLENGTH = 10.0   IMAX = 20  ! Width
+  ZLENGTH = 10.0   KMAX = 20  ! Depth
+  YLENGTH = 50.0   JMAX = 25  ! Height
+
+  CARTESIAN_GRID = .T.
+
+  ITERMAX_INT = 50000
+  TOL_F          = 1.0d-6
+  FAC_DIM_MAX_CUT_CELL  = 0.75
+
+  TOL_SNAP       = 0.05
+  TOL_SMALL_CELL = 0.00
+  TOL_SMALL_AREA = 0.05
+  TOL_DELH       = 0.05
+
+  N_QUADRIC = 4
+  N_GROUP = 2
+
+! Reactor Walls:
+!---------------------------------------------------------------------//
+  QUADRIC_FORM(1)= 'Y_CYL_INT'     'C2C'       'Y_CYL_INT'
+  RADIUS(1)      =    2.65          0.0           5.00
+
+  t_x(1)         =    5.00         -2.65          5.00
+  t_z(1)         =    5.00         -2.65          5.00
+
+  PIECE_YMIN(2)  =                 -1.0          30.00
+  PIECE_YMAX(1)  =   18.00
+
+  CLIP_YMAX(3)   =                               45.00
+
+  BC_ID_Q(1)     =   10            15            15
+
+  GROUP_SIZE(1) = 3
+  GROUP_Q(1,1)  = 1
+  GROUP_Q(1,2)  = 2
+  GROUP_Q(1,3)  = 3
+
+  GROUP_RELATION(1) = 'PIECEWISE'
+
+
+! Reactor Outlet:
+!---------------------------------------------------------------------//
+  QUADRIC_FORM(4)=   'Y_CYL_INT'
+  RADIUS(4)      =    1.50
+
+  t_x(4)         =    5.00
+  t_z(4)         =    5.00
+
+  BC_ID_Q(4)     =    15
+
+
+  GROUP_SIZE(2) = 1
+  GROUP_Q(2,1)  = 4
+
+  RELATION_WITH_PREVIOUS(2) = 'OR'
+
+  FLUID_IN_CLIPPED_REGION(1) = 4*.F.
+
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  NMAX_g = 5
+
+  SPECIES_g(1) = 'SiH4  Silane'     SPECIES_ALIAS_g(1) = 'SiH4'
+  SPECIES_g(2) = 'SiH2  Silylene'   SPECIES_ALIAS_g(2) = 'SiH2'
+  SPECIES_g(3) = 'H2 REF ELEMENT'   SPECIES_ALIAS_g(3) = 'H2'
+  SPECIES_g(4) = 'SI2H6  Disilane'  SPECIES_ALIAS_g(4) = 'Si2H6'
+  SPECIES_g(5) = 'N2'               SPECIES_ALIAS_g(5) = 'N2'
+
+
+! Particle Section
+!---------------------------------------------------------------------//
+
+  EP_star = 0.5246
+  e       = 0.8
+  C_f     = 0.1
+  Phi     = 40.0
+
+  MMAX = 1
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  D_p0(1) = 0.0082
+  RO_s0(1) = 3.90
+
+  NMAX_s(1)      = 2
+  SPECIES_s(1,1) = 'Si'       SPECIES_ALIAS_s(1,1) = 'Si'
+  SPECIES_s(1,2) = 'AL2O3'    SPECIES_ALIAS_s(1,2) = 'Inert'
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+! Bed
+!---------------------------------------------------------------------//
+  IC_X_w(1) =       0.0     ! (cm)
+  IC_X_e(1) =      10.0     ! (cm)
+  IC_Z_b(1) =       0.0     ! (cm)
+  IC_Z_t(1) =      10.0     ! (cm)
+
+  IC_Y_s(1) =       0.0     ! (cm)
+  IC_Y_n(1) =      12.0     ! (cm)
+
+  IC_EP_g(1) =      0.5246  ! (-)
+  IC_P_Star(1) =    0.0     ! (dyne/cm^2)
+
+  IC_T_g(1)   =   882.45    ! (K)
+  IC_T_s(1,1) =   882.45    ! (K)
+
+  IC_U_g(1) =      0.00     ! (cm/sec)
+  IC_V_g(1) =     15.04     ! (cm/sec)
+  IC_W_g(1) =      0.00     ! (cm/sec)
+
+  IC_X_g(1,1) =    0.00     ! SiH4
+  IC_X_g(1,2) =    0.00     ! SiH2
+  IC_X_g(1,3) =    0.00     ! H2
+  IC_X_g(1,4) =    0.00     ! Si2H6
+  IC_X_g(1,5) =    1.00     ! N2
+
+  IC_U_s(1,1)  =   0.0      ! (cm/sec)
+  IC_V_s(1,1)  =   0.0      ! (cm/sec)
+  IC_W_s(1,1)  =   0.0      ! (cm/sec)
+
+  IC_X_s(1,1,1) =  0.0      ! Si
+  IC_X_s(1,1,2) =  1.0      ! Al2O3
+
+
+! Freeboard
+!---------------------------------------------------------------------//
+  IC_X_w(2) =       0.0     ! (cm)
+  IC_X_e(2) =      10.0     ! (cm)
+  IC_Z_b(2) =       0.0     ! (cm)
+  IC_Z_t(2) =      10.0     ! (cm)
+
+  IC_Y_s(2) =      12.0     ! (cm)
+  IC_Y_n(2) =      50.0     ! (cm)
+
+  IC_EP_g(2) =      1.0     ! (-)
+  IC_P_Star(2) =    0.0     ! (dyne/cm^2)
+
+  IC_T_g(2)   =   882.45    ! (K)
+  IC_T_s(2,1) =   882.45    ! (K)
+
+  IC_U_g(2) =      0.00     ! (cm/sec)
+  IC_V_g(2) =      7.89     ! (cm/sec)
+  IC_W_g(2) =      0.00     ! (cm/sec)
+
+  IC_X_g(2,1) =    0.00     ! SiH4
+  IC_X_g(2,2) =    0.00     ! SiH2
+  IC_X_g(2,3) =    0.00     ! H2
+  IC_X_g(2,4) =    0.00     ! Si2H6
+  IC_X_g(2,5) =    1.00     ! N2
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! Gas Inlet
+!---------------------------------------------------------------------//
+  BC_X_w(1) =       0.0     ! (cm)
+  BC_X_e(1) =      10.0     ! (cm)
+  BC_Z_b(1) =       0.0     ! (cm)
+  BC_Z_t(1) =      10.0     ! (cm)
+
+  BC_Y_s(1) =       0.0     ! (cm)
+  BC_Y_n(1) =       0.0     ! (cm)
+
+  BC_TYPE(1) =      'MI'
+
+  BC_EP_g(1) =      1.0     ! (-)
+
+  BC_P_g(1) =       1.01d6  ! (1 dyne/cm^2) -> 1 atm
+  BC_T_g(1) =     882.45    ! (K)
+
+  BC_U_g(1) =       0.00    ! (cm/sec)
+  BC_V_g(1) =       7.89    ! (cm/sec)
+  BC_W_g(1) =       0.00    ! (cm/sec)
+
+  BC_X_g(1,1) =    0.1573   ! SiH4
+  BC_X_g(1,2) =    0.00     ! SiH2
+  BC_X_g(1,3) =    0.00     ! H2
+  BC_X_g(1,4) =    0.00     ! Si2H6
+  BC_X_g(1,5) =    0.8427   ! N2
+
+! Pressure Outlet
+!---------------------------------------------------------------------//
+  BC_X_w(2) =       0.0     ! (cm)
+  BC_X_e(2) =      10.0     ! (cm)
+  BC_Z_b(2) =       0.0     ! (cm)
+  BC_Z_t(2) =      10.0     ! (cm)
+
+  BC_Y_s(2) =      50.0     ! (cm)
+  BC_Y_n(2) =      50.0     ! (cm)
+
+  BC_TYPE(2) =      'PO'
+
+  BC_P_g(2) =       1.01d6  ! (1 dyne/cm^2) -> 1 atm
+  BC_T_g(2) =     882.45    ! (K)
+  BC_T_s(2,1) =   882.45    ! (K)
+
+
+! Heated Walls
+!---------------------------------------------------------------------//
+  BC_TYPE(10)   = 'CG_NSW'
+
+  BC_Tw_g(10)   = 882.45  ! (K)
+  BC_Tw_s(10,1) = 882.45  ! (K)
+
+  BC_Hw_X_g(10,1) = 0.0       BC_C_X_g(10,1) = 0.0
+  BC_Hw_X_g(10,2) = 0.0       BC_C_X_g(10,2) = 0.0
+  BC_Hw_X_g(10,3) = 0.0       BC_C_X_g(10,3) = 0.0
+  BC_Hw_X_g(10,4) = 0.0       BC_C_X_g(10,4) = 0.0
+  BC_Hw_X_g(10,5) = 0.0       BC_C_X_g(10,5) = 0.0
+
+  BC_Hw_X_s(10,1,1) = 0.0     BC_C_X_s(10,1,1) = 0.0
+  BC_Hw_X_s(10,1,2) = 0.0     BC_C_X_s(10,1,2) = 0.0
+
+
+! Adibatic walls:
+!---------------------------------------------------------------------//
+  BC_TYPE(15)   = 'CG_NSW'
+
+  BC_Hw_T_g(15)   = 0.0       BC_C_T_g(15)   = 0.0
+  BC_Hw_X_g(15,1) = 0.0       BC_C_X_g(15,1) = 0.0
+  BC_Hw_X_g(15,2) = 0.0       BC_C_X_g(15,2) = 0.0
+  BC_Hw_X_g(15,3) = 0.0       BC_C_X_g(15,3) = 0.0
+  BC_Hw_X_g(15,4) = 0.0       BC_C_X_g(15,4) = 0.0
+  BC_Hw_X_g(15,5) = 0.0       BC_C_X_g(15,5) = 0.0
+
+  BC_Hw_T_s(15,1)   = 0.0     BC_C_T_s(15,1)   = 0.0
+  BC_Hw_X_s(15,1,1) = 0.0     BC_C_X_s(15,1,1) = 0.0
+  BC_Hw_X_s(15,1,2) = 0.0     BC_C_X_s(15,1,2) = 0.0
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  STIFF_CHEMISTRY = .T.
+
+  @(RXNS)
+
+    RX1F { chem_eq = "SiH4 --> SiH2 + H2"}
+    RX1R { chem_eq = "SiH2 + H2 --> SiH4"}
+
+    RX2F { chem_eq = "Si2H6 --> SiH4 + SiH2"}
+    RX2R { chem_eq = "SiH4 + SiH2 --> Si2H6"}
+
+    RX3  { chem_eq = "SiH4 --> Si + 2H2"}
+
+    RX4  { chem_eq = "SiH2 --> Si + H2"}
+
+  @(END)
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  OUT_DT = 0.10
+  RES_DT = 0.01
+
+  SPX_DT(1)  = 0.05   ! EP_g 
+  SPX_DT(2)  = 0.05   ! P_g, P_star 
+  SPX_DT(3)  = 0.05   ! U_g, V_g, W_g
+  SPX_DT(4)  = 0.05   ! U_s, V_s, W_s
+  SPX_DT(5)  = 0.05   ! ROP_s
+  SPX_DT(6)  = 0.05   ! T_g, T_s
+  SPX_DT(7)  = 0.05   ! X_g, X_s
+  SPX_DT(8)  = 100.   ! theta
+  SPX_DT(9)  = 100.   ! Scalar
+  SPX_DT(10) = 0.05   ! Reaction Rates
+
+  RESID_STRING  = 'P0' 'V0', 'V1', 'T0', 'T1'
+
+  NLOG = 100
+  FULL_LOG = .T.
+  WRITE_DASHBOARD = .T.
+
+
+  WRITE_VTK_FILES  = .T.
+  TIME_DEPENDENT_FILENAME = .T.
+  VTK_DT = 0.05
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 10 : Reaction Rates
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 3 4 5 6 7 10
+
+
+#_______________________________________________________________________
+# DMP Parallel
+
+  NODESI=1
+  NODESJ=1
+  NODESK=1   
+                                                                             
+  CHK_BATCHQ_END = .T.
+  BATCH_WALLCLOCK = 7200  ! 2.0 Hrs
+  TERM_BUFFER =     1800  ! 0.5 Hrs  ! Exit at 1.5 Hours
+                                                                               
+#_______________________________________________________________________
+THERMO DATA
+
+SiH2  Silylene    tpis91SI 1.H  4.   0.   0.G   200.000  6000.000  B  30.10140 1
+ 4.73544601E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 4.73544601E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 3.28102532E+04    4
+
+AL2O3             coda89AL 2.O  3.   0.   0.S   200.000  1800.000  B 101.96128 1
+ 2.60994032E+00 3.76023553E-02-4.63474789E-05 2.73301680E-08-6.21672705E-12    2
+-2.03702845E+05-1.83258490E+01-8.37648940E+00 1.09323686E-01-2.25731157E-04    3
+ 2.29482917E-07-9.22595951E-11-2.02316511E+05 2.94431298E+01-2.01539237E+05    4

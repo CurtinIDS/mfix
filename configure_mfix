@@ -1,0 +1,65 @@
+#!/bin/bash -e
+#
+#  Wrapper script for running autoreconf (if necessary), running configure, and copying Makefile.usr to $PWD/Makefile
+#
+
+for target in mfix postmfix libmfix.a Makefile; do
+    [ -d ${target} ] && echo "ERROR:  A directory exists named:  ${target}"
+    [ -d ${target} ] && echo "ERROR:  "
+    [ -d ${target} ] && echo "ERROR:  configure_mfix must be run in a directory containing only mfix.dat (and optional *usr*.f files)"
+    [ -d ${target} ] && exit -1
+done
+
+# config.log is always in BUILD_DIR, but it may have been copied to RUN_DIR if the
+# previous configure command failed.
+rm -f config.log
+
+# Set some of the folder paths.
+RUN_DIR=$(pwd)
+MFIX_HOME=$(cd $(dirname $0); pwd)
+
+cd "${MFIX_HOME}"
+[ -f configure ] || autoreconf -i
+args=("${@/--dmp/--enable-dmp}")
+args=("${args[@]/--smp/--enable-smp}")
+args=("${args[@]/--python/--enable-python}")
+
+if [ "${MFIX_HOME}" == "${RUN_DIR}" ]; then
+    # building in MFIX_HOME, no need to copy Makefile.usr
+    "${MFIX_HOME}/configure" "${args[@]}" || exit $?
+else
+    # Create BUILD_DIR
+    args_dir_name=$( echo "${args[@]}" | tr -c '[[:alnum:]].-' '_' )
+    trunc_args_dir_name=$( echo "${args_dir_name}" | cut -c 1-250 )
+    BUILD_DIR="${MFIX_HOME}/build/${trunc_args_dir_name}"
+    [ "${args_dir_name}" != "${trunc_args_dir_name}" ] && rm -rf "${BUILD_DIR}"
+    mkdir -p "${BUILD_DIR}"
+
+    # configure in BUILD_DIR
+    cd "${BUILD_DIR}"
+    set +e
+    if [[ -f config.status && -z ${RECONFIGURE} ]]; then
+        "${BUILD_DIR}/config.status"
+    else
+        "${MFIX_HOME}/configure" "${args[@]}"
+    fi
+    exit_code=$?
+    set -e
+    if [[ $exit_code != 0 ]]; then
+        cp "${BUILD_DIR}/config.log" "${RUN_DIR}/"
+        exit $exit_code
+    fi
+
+    # copy Makefile to RUN_DIR
+    MAKEFILE="${RUN_DIR}/Makefile"
+    MAKEFILE_USR="${BUILD_DIR}/build-aux/Makefile.usr"
+    if [ -f "${MAKEFILE_USR}" ]; then
+        cp "${MAKEFILE_USR}" "${MAKEFILE}"
+    fi
+        cp ${MAKEFILE_USR} ${MAKEFILE}
+    fi
+    FDEP=${MFIX_HOME}/build-aux/fdep
+    FDEP_USR=${BUILD_DIR}/build-aux/fdep
+    if [ -f ${FDEP_USR} ] ; then
+        cp ${FDEP_USR} ${FDEP}
+fi

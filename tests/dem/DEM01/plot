@@ -1,0 +1,614 @@
+#                     DATA INDEX
+#                    EULER    A-B 
+#  > Kn 1.0*10^4         
+#    * En = 0.9    --  01      20
+#    * En = 0.8    --  02      21
+#    * En = 0.7    --  03      22
+#    * En = 0.6    --  04      23
+#                        
+#  > Kn 2.5*10^4         
+#    * En = 1.0    --  05      24
+#    * En = 0.9    --  06      25
+#    * En = 0.8    --  07      26
+#    * En = 0.7    --  08      27
+#    * En = 0.6    --  09      28
+#                        
+#  > Kn 5.0*10^4         
+#    * En = 1.0    --  10      29
+#    * En = 0.9    --  11      30
+#    * En = 0.8    --  12      31
+#    * En = 0.7    --  13      32
+#    * En = 0.6    --  14      33
+#                        
+#  > Kn 1.0*10^5         
+#    * En = 1.0    --  15      34
+#    * En = 0.9    --  16      35
+#    * En = 0.8    --  17      36
+#    * En = 0.7    --  18      37
+#    * En = 0.6    --  19      38
+
+
+
+# color definitions
+set border linewidth 1.5
+set style line 1 lt 2 lc rgb '#000000' lw 1 # black
+set style line 2 lt 1 lc rgb '#9400d3' lw 1 # purple
+set style line 3 lt 1 lc rgb '#ff4500' lw 1 # orange-1
+set style line 4 lt 1 lc rgb '#006400' lw 1 # green
+set style line 5 lt 1 lc rgb '#ffa500' lw 1 # yellow
+set style line 6 lt 1 lc rgb '#0000ff' lw 1 # blue
+set style line 7 lt 1 lc rgb '#800000' lw 1 # brown
+set style line 8 lt 1 lc rgb '#ff0000' lw 1 # orange-2
+
+set style line 11 lt 2 lc rgb '#000000' lw 1 # black
+set style line 12 lt 2 lc rgb '#9400d3' lw 1 # purple
+set style line 13 lt 2 lc rgb '#ff4500' lw 1 # orange-1
+set style line 14 lt 2 lc rgb '#006400' lw 1 # green
+set style line 15 lt 2 lc rgb '#ffa500' lw 1 # yellow
+set style line 16 lt 2 lc rgb '#0000ff' lw 1 # blue
+set style line 17 lt 2 lc rgb '#800000' lw 1 # brown
+set style line 18 lt 2 lc rgb '#ff0000' lw 1 # orange-2
+
+set xlabel "time (sec)"
+set xrange [0.0 : 0.5]
+set xtics nomirror 0,0.1,0.5
+
+
+scaled(x,val) = ( scld = x*val, scld)
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 1 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn01POS.png"
+
+set multiplot layout 1,2 title "1.0*10^4 Spring constant"
+
+set ylabel "particle center position (m)"
+set yrange [0.0 : 0.5]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside left bottom
+
+set title
+plot 'POST_POS.dat' index 1 using 1:3 w lines ls 3 title 'e_n = 0.90', \
+     'POST_POS.dat' index 1 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_POS.dat' index 2 using 1:3 w lines ls 4 title 'e_n = 0.80', \
+     'POST_POS.dat' index 2 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_POS.dat' index 3 using 1:3 w lines ls 5 title 'e_n = 0.70', \
+     'POST_POS.dat' index 3 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_POS.dat' index 4 using 1:3 w lines ls 6 title 'e_n = 0.60', \
+     'POST_POS.dat' index 4 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_POS.dat' index 1 using 1:5 w linespoints ls 3 title 'e_n = 0.90', \
+     'POST_POS.dat' index 2 using 1:5 w linespoints ls 4 title 'e_n = 0.80', \
+     'POST_POS.dat' index 3 using 1:5 w linespoints ls 5 title 'e_n = 0.70', \
+     'POST_POS.dat' index 4 using 1:5 w linespoints ls 6 title 'e_n = 0.60'
+
+
+unset multiplot
+
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 2 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn01VEL.png"
+
+set multiplot layout 1,2 title "1.0*10^4 Spring constant"
+
+set ylabel "particle velocity (m/sec)"
+set yrange [-3.0 : 3.5]
+set ytics nomirror -3,1,3.0
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index 1 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_VEL.dat' index 1 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_VEL.dat' index 2 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_VEL.dat' index 2 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_VEL.dat' index 3 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_VEL.dat' index 3 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_VEL.dat' index 4 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_VEL.dat' index 4 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0.0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_VEL.dat' index 1 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 2 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 3 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 4 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+
+
+unset multiplot
+
+
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 3 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn02POS.png"
+
+set multiplot layout 1,2 title "2.5*10^4 Spring constant"
+
+set ylabel "particle center position (m)"
+set yrange [0.0 : 0.5]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside left bottom
+
+set title
+plot 'POST_POS.dat' index 5 using 1:3 w lines ls 2 title 'e_n = 1.0',\
+     'POST_POS.dat' index 5 every 3 using 1:4 w points ls 2 notitle, \
+     'POST_POS.dat' index 6 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_POS.dat' index 6 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_POS.dat' index 7 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_POS.dat' index 7 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_POS.dat' index 8 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_POS.dat' index 8 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_POS.dat' index 9 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_POS.dat' index 9 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_POS.dat' index 5 using 1:5 w linespoints ls 2 title 'e_n = 1.0', \
+     'POST_POS.dat' index 6 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_POS.dat' index 7 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_POS.dat' index 8 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_POS.dat' index 9 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+
+unset multiplot
+
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 4 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn02VEL.png"
+
+set multiplot layout 1,2 title "2.5*10^4 Spring constant"
+
+set ylabel "particle velocity (m/sec)"
+set yrange [-3.0 : 3.5]
+set ytics nomirror -3,1,3.0
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index 5 using 1:3 w lines ls 2 title 'e_n = 1.0',\
+     'POST_VEL.dat' index 5 every 3 using 1:4 w points ls 2 notitle, \
+     'POST_VEL.dat' index 6 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_VEL.dat' index 6 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_VEL.dat' index 7 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_VEL.dat' index 7 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_VEL.dat' index 8 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_VEL.dat' index 8 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_VEL.dat' index 9 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_VEL.dat' index 9 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0.0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_VEL.dat' index 5 using 1:5 w linespoints ls 2 title 'e_n = 1.0', \
+     'POST_VEL.dat' index 6 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 7 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 8 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 9 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+unset multiplot
+
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 5 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn05POS.png"
+
+set multiplot layout 1,2 title "5.0*10^4 Spring constant"
+
+set ylabel "particle center position (m)"
+set yrange [0.0 : 0.5]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside left bottom
+
+set title
+plot 'POST_POS.dat' index 10 using 1:3 w lines ls 2 title 'e_n = 1.0',\
+     'POST_POS.dat' index 10 every 3 using 1:4 w points ls 2 notitle, \
+     'POST_POS.dat' index 11 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_POS.dat' index 11 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_POS.dat' index 12 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_POS.dat' index 12 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_POS.dat' index 13 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_POS.dat' index 13 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_POS.dat' index 14 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_POS.dat' index 14 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_POS.dat' index 10 using 1:5 w linespoints ls 2 title 'e_n = 1.0', \
+     'POST_POS.dat' index 11 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_POS.dat' index 12 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_POS.dat' index 13 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_POS.dat' index 14 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+
+unset multiplot
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 6 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn05VEL.png"
+
+set multiplot layout 1,2 title "5.0*10^4 Spring constant"
+
+set ylabel "particle velocity (m/sec)"
+set yrange [-3.0 : 3.5]
+set ytics nomirror -3,1,3.0
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index 10 using 1:3 w lines ls 2 title 'e_n = 1.0',\
+     'POST_VEL.dat' index 10 every 3 using 1:4 w points ls 2 notitle, \
+     'POST_VEL.dat' index 11 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_VEL.dat' index 11 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_VEL.dat' index 12 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_VEL.dat' index 12 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_VEL.dat' index 13 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_VEL.dat' index 13 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_VEL.dat' index 14 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_VEL.dat' index 14 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0.0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_VEL.dat' index 10 using 1:5 w linespoints ls 2 title 'e_n = 1.0', \
+     'POST_VEL.dat' index 11 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 12 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 13 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 14 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+unset multiplot
+
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 7 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn10POS.png"
+
+set multiplot layout 1,2 title "1.0*10^5 Spring constant"
+
+set ylabel "particle center position (m)"
+set yrange [0.0 : 0.5]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside left bottom
+
+set title
+plot 'POST_POS.dat' index 15 using 1:3 w lines ls 2 title 'e_n = 1.0',\
+     'POST_POS.dat' index 15 every 3 using 1:4 w points ls 2 notitle, \
+     'POST_POS.dat' index 16 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_POS.dat' index 16 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_POS.dat' index 17 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_POS.dat' index 17 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_POS.dat' index 18 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_POS.dat' index 18 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_POS.dat' index 19 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_POS.dat' index 19 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_POS.dat' index 15 using 1:5 w linespoints ls 2 title 'e_n = 1.0', \
+     'POST_POS.dat' index 16 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_POS.dat' index 17 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_POS.dat' index 18 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_POS.dat' index 19 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 8 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM01_Kn10VEL.png"
+
+set multiplot layout 1,2 title "1.0*10^5 Spring constant"
+
+set ylabel "particle velocity (m/sec)"
+set yrange [-3.0 : 3.5]
+set ytics nomirror -3,1,3.0
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index 15 using 1:3 w lines ls 2 title 'e_n = 1.0',\
+     'POST_VEL.dat' index 15 every 3 using 1:4 w points ls 2 notitle, \
+     'POST_VEL.dat' index 16 using 1:3 w lines ls 3 title 'e_n = 0.9',\
+     'POST_VEL.dat' index 16 every 3 using 1:4 w points ls 3 notitle, \
+     'POST_VEL.dat' index 17 using 1:3 w lines ls 4 title 'e_n = 0.8',\
+     'POST_VEL.dat' index 17 every 3 using 1:4 w points ls 4 notitle, \
+     'POST_VEL.dat' index 18 using 1:3 w lines ls 5 title 'e_n = 0.7',\
+     'POST_VEL.dat' index 18 every 3 using 1:4 w points ls 5 notitle, \
+     'POST_VEL.dat' index 19 using 1:3 w lines ls 6 title 'e_n = 0.6',\
+     'POST_VEL.dat' index 19 every 3 using 1:4 w points ls 6 notitle
+
+
+set ylabel "abs error (%)"
+set yrange [0.0 : 15.0]
+set ytics nomirror 0.0,3.0,15.0
+
+set key reverse inside left top
+
+set title
+
+plot 'POST_VEL.dat' index 15 using 1:5 w linespoints ls 2 title 'e_n = 1.0', \
+     'POST_VEL.dat' index 16 using 1:5 w linespoints ls 3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 17 using 1:5 w linespoints ls 4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 18 using 1:5 w linespoints ls 5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 19 using 1:5 w linespoints ls 6 title 'e_n = 0.6'
+
+unset multiplot
+
+
+#-------------------------------------------------------------------------------------
+
+
+#set terminal wxt 10 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM01_Kn01DIFF.png"
+
+set multiplot layout 1,2 title "1.0*10^4 Spring constant"
+
+set ylabel "Difference in position (m)*10^3"
+set yrange [-3.0 : 3.0]
+set ytics nomirror -3,1,3.
+
+set key reverse inside left top
+
+
+set title
+plot 'POST_POS.dat' index  1 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.90', \
+     'POST_POS.dat' index 20 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_POS.dat' index  2 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.80', \
+     'POST_POS.dat' index 21 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_POS.dat' index  3 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.70', \
+     'POST_POS.dat' index 22 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_POS.dat' index  4 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.60', \
+     'POST_POS.dat' index 23 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+
+set ylabel "Difference in velocity (m/sec)*10^3"
+set yrange [-25.0 : 25.0]
+set ytics nomirror -25,5,25
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index  1 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.90', \
+     'POST_VEL.dat' index 20 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index  2 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.80', \
+     'POST_VEL.dat' index 21 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_VEL.dat' index  3 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.70', \
+     'POST_VEL.dat' index 22 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_VEL.dat' index  4 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.60', \
+     'POST_VEL.dat' index 23 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 11 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM01_Kn02DIFF.png"
+
+set multiplot layout 1,2 title "2.5*10^4 Spring constant"
+
+set ylabel "Difference in position (m)*10^3"
+set yrange [-3.0 : 3.0]
+set ytics nomirror -3,1,3.
+
+set key reverse inside left top
+
+
+set title
+plot 'POST_POS.dat' index  5 using 1:(scaled(column(6),1000)) w lines ls  2 title 'e_n = 1.0', \
+     'POST_POS.dat' index 24 using 1:(scaled(column(6),1000)) w lines ls 12 notitle, \
+     'POST_POS.dat' index  6 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.9', \
+     'POST_POS.dat' index 25 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_POS.dat' index  7 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.8', \
+     'POST_POS.dat' index 26 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_POS.dat' index  8 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.7', \
+     'POST_POS.dat' index 27 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_POS.dat' index  9 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.6', \
+     'POST_POS.dat' index 28 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+
+set ylabel "Difference in velocity (m/sec)*10^3"
+set yrange [-25.0 : 25.0]
+set ytics nomirror -25,5,25
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index  5 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 1.0', \
+     'POST_VEL.dat' index 24 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index  6 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 25 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index  7 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 26 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_VEL.dat' index  8 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 27 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_VEL.dat' index  9 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.6', \
+     'POST_VEL.dat' index 28 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+unset multiplot
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 12 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM01_Kn05DIFF.png"
+
+set multiplot layout 1,2 title "5.0*10^4 Spring constant"
+
+set ylabel "Difference in position (m)*10^3"
+set yrange [-3.0 : 3.0]
+set ytics nomirror -3,1,3.
+
+set key reverse inside left top
+
+
+set title
+plot 'POST_POS.dat' index 10 using 1:(scaled(column(6),1000)) w lines ls  2 title 'e_n = 1.0', \
+     'POST_POS.dat' index 29 using 1:(scaled(column(6),1000)) w lines ls 12 notitle, \
+     'POST_POS.dat' index 11 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.9', \
+     'POST_POS.dat' index 30 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_POS.dat' index 12 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.8', \
+     'POST_POS.dat' index 31 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_POS.dat' index 13 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.7', \
+     'POST_POS.dat' index 32 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_POS.dat' index 14 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.6', \
+     'POST_POS.dat' index 33 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+
+set ylabel "Difference in velocity (m/sec)*10^3"
+set yrange [-25.0 : 25.0]
+set ytics nomirror -25,5,25
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index 10 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 1.0', \
+     'POST_VEL.dat' index 29 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index 11 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 30 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index 12 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 31 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_VEL.dat' index 13 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 32 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_VEL.dat' index 14 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.6', \
+     'POST_VEL.dat' index 33 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+unset multiplot
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 13 size 900,400 enhanced dashed
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10' dashed
+set output "DEM01_Kn10DIFF.png"
+
+set multiplot layout 1,2 title "1.0*10^5 Spring constant"
+
+set ylabel "Difference in position (m)*10^3"
+set yrange [-3.0 : 3.0]
+set ytics nomirror -3,1,3.
+
+set key reverse inside left top
+
+
+set title
+plot 'POST_POS.dat' index 15 using 1:(scaled(column(6),1000)) w lines ls  2 title 'e_n = 1.0', \
+     'POST_POS.dat' index 34 using 1:(scaled(column(6),1000)) w lines ls 12 notitle, \
+     'POST_POS.dat' index 16 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.9', \
+     'POST_POS.dat' index 35 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_POS.dat' index 17 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.8', \
+     'POST_POS.dat' index 36 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_POS.dat' index 18 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.7', \
+     'POST_POS.dat' index 37 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_POS.dat' index 19 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.6', \
+     'POST_POS.dat' index 38 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+
+set ylabel "Difference in velocity (m/sec)*10^3"
+set yrange [-25.0 : 25.0]
+set ytics nomirror -25,5,25
+
+set key reverse inside left top
+
+set title
+plot 'POST_VEL.dat' index 15 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 1.0', \
+     'POST_VEL.dat' index 34 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index 16 using 1:(scaled(column(6),1000)) w lines ls  3 title 'e_n = 0.9', \
+     'POST_VEL.dat' index 35 using 1:(scaled(column(6),1000)) w lines ls 13 notitle, \
+     'POST_VEL.dat' index 17 using 1:(scaled(column(6),1000)) w lines ls  4 title 'e_n = 0.8', \
+     'POST_VEL.dat' index 36 using 1:(scaled(column(6),1000)) w lines ls 14 notitle, \
+     'POST_VEL.dat' index 18 using 1:(scaled(column(6),1000)) w lines ls  5 title 'e_n = 0.7', \
+     'POST_VEL.dat' index 37 using 1:(scaled(column(6),1000)) w lines ls 15 notitle, \
+     'POST_VEL.dat' index 19 using 1:(scaled(column(6),1000)) w lines ls  6 title 'e_n = 0.6', \
+     'POST_VEL.dat' index 38 using 1:(scaled(column(6),1000)) w lines ls 16 notitle
+
+unset multiplot
+
+

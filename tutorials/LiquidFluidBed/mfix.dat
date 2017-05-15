@@ -1,0 +1,193 @@
+!                                                                               
+!  Liquid (water) Bubbling Fluidized Bed Simulation                                            
+!
+                          
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'R'             
+  DESCRIPTION           = 'uniform fluidization'          
+  RUN_TYPE              = 'new'             
+  UNITS                 = 'cgs'
+  TIME                  = 0.0                           !start time
+  TSTOP                 = 20.0
+  DT                    = 1.0E-4                        !time step
+  DT_MAX                = 1.0d-2                       !max. time step
+  DT_MIN                = 1.0d-8                       !min. time step
+  ENERGY_EQ             = .FALSE.                       !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.            !do not solve species eq
+  GRANULAR_ENERGY       = .TRUE.                    ! solve full granular energy eq
+  FRICTION              = .TRUE.              ! frictional model based on this paper:
+  SAVAGE                = 2                   ! Powder Technol. 129 (2003) 72-85
+  SCHAEFFER = .FALSE.
+                                                                               
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'CARTESIAN' 
+  XLENGTH               =   10.0 
+  IMAX                  =   10 
+  YLENGTH               = 100.0
+  JMAX                  = 100 
+  NO_K                  = .TRUE.
+                          
+! Numerical parameters   
+  
+  DISCRETIZE            =  9*2
+  DEF_COR               =  .TRUE.
+  
+  LEQ_TOL               =  9*1d-12
+  LEQ_IT                =  9*200
+!  NORM_G                = 0.0      ! uncomment this keyword in case simulation 
+                                    ! reaches steady-state and can't converge further
+  
+  MAX_NIT               = 50        ! maximum number of non-linear iterations per time-step
+
+                                                                               
+! Gas-phase Section                                                             
+! using simple turbulence theory based on fixed length scale to remove 
+! large fluid velocity (large tornadic eddies)
+  MU_g0                 = 1.0E-2                        !constant water viscosity
+  RO_g0                 = 1.0                           !constant water density
+  L_scale0              = 1.0                           !turbulence length scale
+  Mu_gmax               = 1000.0                        !maximum fluid turb. viscosity
+
+ 
+! Solids-phase Section                                                          
+  
+  DRAG_TYPE             = 'WEN_YU'  
+  RO_s0                 = 2.4                           !glass-beads density
+  D_p0                  = 0.02                          !200-micron particle diameter     
+  e                     = 0.999                         !restitution coefficient
+  Phi                   =30.0                           !angle of internal friction
+  
+  EP_star               = 0.4                           !void fraction at minimum
+                                                        !  fluidization
+
+  PHIP     =        0.0001 !Specularite coef. for use with JJ BC
+  phi_w    =       11.31 ! wall-particle angle of internal friction
+  e_w      =        0.99  ! wall-particle restitution coef.
+  eps_f_min=        0.5   ! minimum solids fraction where friction occurs
+
+  
+! Initial Conditions Section                                                    
+  
+    ! 1. bed                                      
+  IC_X_w(1)             =  0.0 
+  IC_X_e(1)             = 10.0 
+  IC_Y_s(1)             =  0.0
+  IC_Y_n(1)             = 50.0 
+                                                        !initial values in the region
+  IC_EP_g(1)            =  0.5                          !void fraction  
+  IC_U_g(1)             =  0.0 
+  IC_V_g(1)             =  0.66 
+  IC_U_s(1,1)           =  0.0 
+  IC_V_s(1,1)           =  0.0                 
+  
+  IC_Theta_m(1,1)     = 100.0
+
+
+    !  2. Freeboard                                       
+  IC_X_w(2)             =   0.0
+  IC_X_e(2)             =  10.0 
+  IC_Y_s(2)             =  50.0
+  IC_Y_n(2)             = 100.0
+                                  
+  IC_EP_g(2)            =   1.0                                  
+  IC_U_g(2)             =   0.0
+  IC_V_g(2)             =   0.33                                 
+  IC_U_s(2,1)           =   0.0
+  IC_V_s(2,1)           =   0.0   
+
+  IC_Theta_m(2,1)     = 100.0                               
+                                                                                
+!  Boundary Conditions Section                                                  
+            
+       ! 1. Bottom Distributor flow                                       
+  BC_X_w(1)             =  0.0 
+  BC_X_e(1)             = 10.0 
+  BC_Y_s(1)             =  0.0 
+  BC_Y_n(1)             =  0.0
+
+  BC_TYPE(1)            = 'MI'                          !specified mass inflow 
+
+  BC_EP_g(1)            =  1.0 
+  BC_U_g(1)             =  0.0 
+  BC_V_g(1)             =  0.33    ! @ 10*Umf or 1/10 Ut (terminal velocity) from Wen-Yu 
+  BC_P_g(1)             =  0.0                  
+
+                                            
+       ! 2. Top Exit
+  BC_X_w(2)             =   0.0
+  BC_X_e(2)             =  10.0 
+  BC_Y_s(2)             = 100.0
+  BC_Y_n(2)             = 100.0
+
+  BC_TYPE(2)            =  'PO'                         !specified pressure outflow
+  BC_P_g(2)             =  0.0       
+#
+# Defining left-side wall
+#
+  BC_X_w(3) = 0.
+  BC_X_e(3) = 0.
+  BC_Y_s(3) = 0.
+  BC_Y_n(3) = 100.0
+  BC_TYPE(3) = 'PSW'
+  !
+  BC_Uw_g(3) = 0.
+  BC_Vw_g(3) = 0.
+  BC_Uw_s(3,1) = 0.
+  BC_Vw_s(3,1) = 0.
+  BC_Thetaw_m(3,1) = 0.
+  BC_JJ_PS(3) = 1
+#
+# Defining right-side wall
+#
+  BC_X_w(4) = 10.0
+  BC_X_e(4) = 10.0
+  BC_Y_s(4) = 0.
+  BC_Y_n(4) = 100.0
+  BC_TYPE(4) = 'PSW'
+  !
+  BC_Uw_g(4) = 0.
+  BC_Vw_g(4) = 0.
+  BC_Uw_s(4,1) = 0.
+  BC_Vw_s(4,1) = 0.
+  BC_Thetaw_m(4,1) = 0.
+  BC_JJ_PS(4) = 1
+
+!
+###############################################                          
+                                                                                
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.  
+                                
+  RES_DT                = 0.01 
+                                
+  NLOG                  = 25    
+                                  
+  FULL_LOG              = .TRUE.                        !display residuals on screen
+
+
+!SPX_DT values determine how often SPx files are written. 
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.01 0.01   0.01  0.01  100.      100. 100.   0.01     100.  
+  
+  RESID_STRING = 'P0' 'P1' 'U0' 'V0' 'U1' 'V1' 'G1'
+                                                                                
+
+!  Sweep Direction
+
+LEQ_SWEEP(1) = 'ISIS'
+LEQ_SWEEP(2) = 'ISIS'
+LEQ_SWEEP(3) = 'ISIS'
+LEQ_SWEEP(4) = 'ISIS'
+LEQ_SWEEP(5) = 'ISIS'
+LEQ_SWEEP(6) = 'ISIS'
+LEQ_SWEEP(7) = 'ISIS'
+LEQ_SWEEP(8) = 'ISIS'
+LEQ_SWEEP(9) = 'ISIS'
+

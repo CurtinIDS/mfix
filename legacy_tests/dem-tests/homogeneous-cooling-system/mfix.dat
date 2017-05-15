@@ -1,0 +1,153 @@
+########################################################################
+#  Author: J.Carney                                 Date:   2010-04-10 #
+#                                                                      #
+#  Purpose: Homomgeneous cooling system of DEM particles.              #
+#                                                                      #
+########################################################################
+
+  RUN_NAME = 'DEM_GB'
+  DESCRIPTION = 'DEM TEST: homogeneous cooling system'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_TYPE = 'NEW'
+  UNITS = 'CGS'
+
+  TIME =  0.0
+  TSTOP = 5.0
+
+  DT = 1.0d-4
+  DT_MAX = 2.0d-4
+
+  ENERGY_EQ = .F.
+
+  SPECIES_EQ(0:1) = .F. .F.
+
+  MOMENTUM_X_EQ(1) = .FALSE.
+  MOMENTUM_Y_EQ(1) = .FALSE.
+  MOMENTUM_Z_EQ(1) = .FALSE.
+
+  GRAVITY=0.0d0
+
+  CALL_USR = .T.
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  DISCRETIZE = 9*2
+  DEF_COR  = .TRUE.
+
+  MAX_NIT = 50
+  TOL_RESID = 1.0E-3
+
+  LEQ_IT = 9*100
+  LEQ_TOL = 9*1E-6
+
+  LEQ_SWEEP = 9*'ISIS'
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH  =   8.0    IMAX =  4
+  YLENGTH  =   8.0    JMAX =  4
+  ZLENGTH  =   8.0    KMAX =  4
+
+
+! Grid partition for DES grid
+  DESGRIDSEARCH_IMAX = 3
+  DESGRIDSEARCH_JMAX = 3
+  DESGRIDSEARCH_KMAX = 3
+
+  CYCLIC_X = .TRUE.
+  CYCLIC_Y = .TRUE.
+  CYCLIC_Z = .TRUE.
+
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! GAS SECTION
+!---------------------------------------------------------------------//
+
+  RO_g0 = 0.0        ! g/cm^3
+  MU_g0 = 1.8d-4     ! g/(cm.s)
+
+
+! PARTICLE SECTION
+!---------------------------------------------------------------------//
+  MMAX = 1
+
+  PARTICLES = 195              ! Number of partiles
+
+! Particle-particle:
+  KN =   1.0d6                 ! Normal collision spring constant
+  MEW =  0.0                   ! Friction coefficient
+
+! Particle-wall
+  KN_W =  1.0d6                ! Normal collision spring constant
+  MEW_W = 0.0                  ! Friction coefficient
+
+! Restitution coefficients
+
+  DES_EN_INPUT = 1.0           ! e11
+  DES_EN_WALL_INPUT = 1.0      ! e1w
+
+  DES_NEIGHBOR_SEARCH = 4      ! Grid based neighbor search
+  NEIGHBOR_SEARCH_N   = 1      ! Steps between neighbor search
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  D_p0(1) =   1.0   ! (cm)
+  RO_s0(1)=   1.0   ! (g/cm)
+
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+  IC_X_w(1) =     0.0
+  IC_X_e(1) =     8.0
+  IC_Y_s(1) =     0.0
+  IC_Y_n(1) =     8.0
+  IC_Z_b(1) =     0.0
+  IC_Z_t(1) =     8.0
+
+  IC_EP_g(1) =    1.0
+
+  IC_U_g(1) =     0.0
+  IC_V_g(1) =     0.0
+  IC_W_g(1) =     0.0
+
+  IC_P_g(1) =     0.0
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! No boundary conditions needed. The domain is fully periodic.
+
+
+#_______________________________________________________________________
+# OUTPUT CONROL SECTION
+
+  RES_DT = 0.1       ! Restart (.RES) file write frequency
+
+  NLOG = 25          ! time steps between updates to (.LOG) file
+  FULL_LOG = .T.     ! display residuals on screen
+
+  GROUP_RESID = .T.  ! Group residuals by equation
+
+! Interval at which .SPX files are written
+  SPX_DT(1:9) = 9*1.0d3
+  SPX_DT(1) = 0.1 ! Volume fraction/Particle data
+
+! Flag to write DES VTP files
+  PRINT_DES_DATA = .T.
+
+  USR_DT(1) = 0.05  ! User specified output

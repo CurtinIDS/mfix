@@ -1,0 +1,135 @@
+#
+#  Packed bed
+#
+#  F.B. Modeler                  9-6-94
+#
+# Run-control section
+#
+  RUN_NAME = 'PACK01'
+  DESCRIPTION = 'Steady packed bed'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+  TIME  =0.0
+  TSTOP = 1.
+  DT = 1.0e-4  
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+  MOMENTUM_X_EQ = .FALSE.    .FALSE.
+  MOMENTUM_Y_EQ = .FALSE.    .TRUE.
+  MOMENTUM_Z_EQ = .FALSE.    .FALSE.
+
+  DISCRETIZE = 7*0
+#
+# Geometry Section
+#
+  COORDINATES = 'Cartesian'
+
+  XLENGTH  =   7.0    IMAX =   4
+  YLENGTH  = 100.0    JMAX = 80
+  
+
+  UR_FAC(2) = .5
+
+  NO_K     = .TRUE.
+
+  MAX_NIT = 500
+  TOL_RESID_T  = 1.E-6
+#
+# Gas-phase Section
+#
+  RO_g0 = 0.0   !1.2E-3
+  MU_g0 = 0.01
+  MW_avg = 29.
+#
+# Solids-phase Section
+#
+  MMAX         = 1
+  RO_s0        =100000.0
+  D_p0         = 0.05 
+  CLOSE_PACKED = .TRUE.
+
+  e       = 0.8
+  Phi     = 0.0
+  EP_star = 0.4               
+
+#
+# Initial Conditions Section
+#
+       !              
+  IC_X_w           =  0.0
+  IC_X_e           = 7.0
+  IC_Y_s           =  0.0
+  IC_Y_n          =  40.0
+ 
+  IC_EP_g          =  0.38
+
+ 
+  IC_U_g           =  0.0
+  IC_V_g           =  0.0
+  IC_W_g           =  0.0
+  IC_U_s(1,1)           =  0.0
+  IC_V_s(1,1)           =  0.0
+  IC_W_s(1,1)           =  0.0
+
+  IC_P_g          =  0.0
+  IC_T_g           = 273. 
+
+       !              
+  IC_X_w(2)           =  0.0
+  IC_X_e(2)           = 7.0
+  IC_Y_s(2)           = 40.0
+  IC_Y_n(2)          =  100.0
+ 
+  IC_EP_g(2)          =  1.
+ 
+  IC_U_g(2)           =  0.0
+  IC_V_g(2)           =  0.0
+  IC_W_g(2)           =  0.0
+
+  IC_P_g(2)         =  0.0
+  IC_T_g(2)          = 273. 
+
+#
+#  Boundary Conditions Section
+#
+       !              bottom          Top
+  BC_X_w            =  0.0        0.0
+  BC_X_e            =  7.0         7.0
+  BC_Y_s            =  0.0        100.0
+  BC_Y_n            =  0.0        100.0
+#  BC_Z_b           =  0.0        100.0
+#  BC_Z_t           =  0.0        100.0
+ 
+  BC_TYPE          =  'MI'     'PO'
+
+  BC_EP_g          =  1.0 
+
+  BC_U_g           =  0.0 
+  BC_V_g           =  1.0 
+  BC_W_g           =  0.0
+
+  BC_P_g           = 2*0
+
+
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 1.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.1  .1      100.  .1    100.     100.  100.    100.  100.
+
+  USR_DT = 0.1
+  
+  NLOG   = 25
+  FULL_LOG = .TRUE.
+  RESID_STRING = 'P0' 'P1' 'V1'
+
+
+# DMP control
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+

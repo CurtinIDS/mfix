@@ -1,0 +1,343 @@
+########################################################################
+#  Spouted Bed Combustor                                               #
+#                                                                      #
+# Author:  E.F. Modeler                                Date:  9-28-94  #
+# Modified: J. Musser                                  Date: 10-10-12  #
+#                                                                      #
+# Approximate Run time: 2.5 Hours                                      #
+#                                                                      #
+########################################################################
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  Run_name    = 'sbc01'
+  Description = 'Spouted Bed Combustor'
+  Units       = 'cgs'
+  Run_type    = 'new'
+
+  Time  = 0.0
+  Tstop = 0.10
+  DT    = 1.0E-4
+
+  ENERGY_EQ  = .T.
+  SPECIES_EQ = .T.   .T.   .T.
+
+  CALL_USR = .T.
+
+  C(1) =  0.9     C_NAME(1) = 'Ash fraction amount'
+  C(2) =  1.0E2   C_NAME(2) = 'Pseudo reaction cst.'
+
+  PAFC =  0.6 ! Proximate analysis - Fixed Carbon
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+! Normalize gas phase continuity residual
+  NORM_g = 0.
+
+! Normalize solids phase continuity residuals
+  NORM_s = 0.
+
+! Under relaxation factors
+  UR_FAC(1) = 0.7  ! gas pressure
+  UR_FAC(3) = 0.3  ! gas and solids u-momentum
+  UR_FAC(4) = 0.3  ! gas and solids v-momentum
+
+! Compute ep_star using Yu_Standish correlation
+  YU_STANDISH = .T.
+
+#_______________________________________________________________________
+# GEOMETRY SECTION 
+
+  Coordinates = 'Cylindrical'
+
+  IMAX = 19
+  DX = 4*0.5, .59, .69, .81, .91, 11*1.0
+
+  JMAX    = 60
+  YLENGTH = 150.0
+
+  NO_K = .T.
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  NMAX_g = 5
+
+  SPECIES_g(1) = 'O2'             SPECIES_ALIAS_g(1) = 'O2'
+  SPECIES_g(2) = 'CO'             SPECIES_ALIAS_g(2) = 'CO'
+  SPECIES_g(3) = 'CO2'            SPECIES_ALIAS_g(3) = 'CO2'
+  SPECIES_g(4) = 'N2'             SPECIES_ALIAS_g(4) = 'N2'
+  SPECIES_g(5) = 'Fixed Carbon'   SPECIES_ALIAS_g(5) = 'Soot'
+
+! Particle Section
+!---------------------------------------------------------------------//
+
+  EP_star = 0.5
+  e       = 0.8
+  C_f     = 0.1
+  Phi     = 30.0
+
+  MMAX = 2
+
+! Solids phase 1
+!---------------------------------------------------------------------//
+  D_p0(1) = 0.1
+  RO_s0(1)       = 1.0
+
+  NMAX_s(1)      = 2
+  SPECIES_s(1,1) = 'Fixed Carbon'   SPECIES_ALIAS_s(1,1) = 'FC1'
+  SPECIES_s(1,2) = 'Coal Ash'       SPECIES_ALIAS_s(1,2) = 'Ash1'
+
+! Solids phase 2
+!---------------------------------------------------------------------//
+
+  D_p0(2) = 0.1
+  RO_s0(2) = 1.0
+
+  NMAX_s(2) = 2
+  SPECIES_s(2,1) = 'Fixed Carbon'   SPECIES_ALIAS_s(2,1) = 'FC2'
+  SPECIES_s(2,2) = 'Coal Ash'       SPECIES_ALIAS_s(2,2) = 'Ash2'
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+! Bed
+!---------------------------------------------------------------------//
+  IC_X_w(1) = 0.0
+  IC_X_e(1) = 16.0
+
+  IC_Y_s(1) = 0.0
+  IC_Y_n(1) = 50.0
+
+  IC_EP_g(1) = 0.5
+
+  IC_P_Star = 0.0
+
+  IC_ROP_s(1,1) = 0.5
+  IC_ROP_s(1,2) = 0.0
+
+  IC_T_g(1)   = 1050.0 ! (K)
+  IC_T_s(1,1) = 1050.0 ! (K)
+  IC_T_s(1,2) = 1050.0 ! (K)
+
+  IC_U_g(1) = 0.0    ! (cm/sec)
+  IC_V_g(1) = 30.0   ! (cm/sec)
+
+  IC_X_g(1,1) = 0.00   ! O2
+  IC_X_g(1,2) = 0.00   ! CO
+  IC_X_g(1,3) = 0.00   ! CO2
+  IC_X_g(1,4) = 1.00   ! N2
+  IC_X_g(1,5) = 0.00   ! Soot
+
+  IC_U_s(1,1)  = 0.0
+  IC_v_s(1,1)  = 1.0
+
+  IC_X_s(1,1,1) = 0.10 ! Fixed Carbon
+  IC_X_s(1,1,2) = 0.90 ! Ash
+
+
+! Freeboard
+!---------------------------------------------------------------------//
+  IC_X_w(2) = 0.0
+  IC_X_e(2) = 16.0
+
+  IC_Y_s(2) = 50.0
+  IC_Y_n(2) = 150.0
+
+  IC_EP_g(2) = 1.0
+
+  IC_T_g(2) = 1050.0 ! (K)
+
+  IC_U_g(2) = 0.0    ! (cm/sec)
+  IC_V_g(2) = 30.0   ! (cm/sec)
+
+  IC_X_g(2,1) = 0.00   ! O2
+  IC_X_g(2,2) = 0.00   ! CO
+  IC_X_g(2,3) = 0.00   ! CO2
+  IC_X_g(2,4) = 1.00   ! N2
+  IC_X_g(2,5) = 0.00   ! Soot
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+! Gas Inlet           Jet      Annulus
+!---------------------------------------------------------------------//
+  BC_X_w(1)          = 0.0       1.0
+  BC_X_e(1)          = 1.0       6.0
+  BC_Y_s(1)          = 0.0       0.0
+  BC_Y_n(1)          = 0.0       0.0
+
+  BC_TYPE(1)         = 'MI'      'MI'
+
+!                       Gas/      Gas
+!                      Solids     Only
+  BC_EP_g(1)         =  0.9       1.0
+
+  BC_P_g(1)          = 3.04d7    3.04d7 ! (Barye) -> ~30 atm
+  BC_T_g(1)          = 300.0     300.0  ! (K)
+  BC_U_g(1)          = 0.0       0.0    ! (cm/sec)
+  BC_MASSFLOW_g(1)   = 10.0      116.0  ! (g/sec)
+  BC_X_g(1,1)        = 0.2       0.2    ! O2
+  BC_X_g(1,2)        = 0.0       0.0    ! CO
+  BC_X_g(1,3)        = 0.0       0.0    ! CO2
+  BC_X_g(1,4)        = 0.8       0.8    ! N2
+  BC_X_g(1,5)        = 0.0       0.0    ! Soot
+
+  BC_ROP_s(1,1)      =  0.0    ! -0-
+
+  BC_MASSFLOW_s(1,2) = 18.0    ! -0-
+  BC_ROP_s(1,2)      = 0.1     ! -0-
+  BC_T_s(1,2)        = 300.0   ! -0-    ! (K)
+  BC_U_s(1,2)        = 0.0     ! -0-
+
+  BC_X_s(1,2,1)      = 0.6     ! -0-
+  BC_X_s(1,2,2)      = 0.4     ! -0-
+
+
+! Pressure Outlet
+!---------------------------------------------------------------------//
+  BC_X_w(3)  = 0.0
+  BC_X_e(3)  = 3.0
+  BC_Y_s(3)  = 150.0
+  BC_Y_n(3)  = 150.0
+
+  BC_TYPE(3) = 'PO'
+  BC_P_g(3)  = 3.04d7! (Barye) -> ~30 atm
+
+
+! Walls / Obstacles to shape domain
+!---------------------------------------------------------------------//
+
+!                (20)   (21)   (22)   (23)   (24)
+  BC_X_w(20)  =  6.0    7.0    8.0    9.0    10.0
+  BC_X_e(20)  =  7.0    8.0    9.0    10.0   11.0
+  BC_Y_s(20)  =  0.0    0.0    0.0    0.0    0.0
+  BC_Y_n(20)  =  12.5   15.0   17.5   20.0   22.5
+
+!                (25)   (26)   (27)   (28)   (29)
+  BC_X_w(25)  =  11.0   12.0   13.0   14.0   15.0
+  BC_X_e(25)  =  12.0   13.0   14.0   15.0   16.0
+  BC_Y_s(25)  =  0.0    0.0    0.0    0.0    0.0
+  BC_Y_n(25)  =  87.5   90.0   92.5   95.0   97.5
+
+!                (30)   (31)   (32)   (33)   (34)   (35)   (36)
+  BC_X_w(30)  =  9.0    10.0   11.0   12.0   13.0   14.0   15.0
+  BC_X_e(30)  =  10.0   11.0   12.0   13.0   14.0   15.0   16.0
+  BC_Y_s(30)  =  147.5  145.0  142.5  140.0  137.5  135.0  132.5
+  BC_Y_n(30)  =  150.0  150.0  150.0  150.0  150.0  150.0  150.0
+
+
+  BC_TYPE(20)   = 17*'NSW'
+
+  BC_Hw_T_g(20)     = 17*0.0
+  BC_Hw_T_s(20,1)   = 17*0.0
+  BC_Hw_T_s(20,2)   = 17*0.0
+
+  BC_C_T_g(20)      = 17*0.0
+  BC_C_T_s(20,1)    = 17*0.0
+  BC_C_T_s(20,2)    = 17*0.0
+
+  BC_Hw_X_g(20,1)   = 17*0.0
+  BC_Hw_X_g(20,2)   = 17*0.0
+  BC_Hw_X_g(20,3)   = 17*0.0
+  BC_Hw_X_g(20,4)   = 17*0.0
+  BC_Hw_X_g(20,5)   = 17*0.0
+
+  BC_C_X_g(20,1)    = 17*0.0
+  BC_C_X_g(20,2)    = 17*0.0
+  BC_C_X_g(20,3)    = 17*0.0
+  BC_C_X_g(20,4)    = 17*0.0
+  BC_C_X_g(20,5)    = 17*0.0
+
+  BC_Hw_X_s(20,1,1) = 17*0.0
+  BC_Hw_X_s(20,1,2) = 17*0.0
+
+  BC_C_X_s(20,1,1)  = 17*0.0
+  BC_C_X_s(20,1,2)  = 17*0.0
+
+  BC_Hw_X_s(20,2,1) = 17*0.0
+  BC_Hw_X_s(20,2,2) = 17*0.0
+
+  BC_C_X_s(20,2,1)  = 17*0.0
+  BC_C_X_s(20,2,2)  = 17*0.0
+
+#_______________________________________________________________________
+# INTERNAL SURFACES SECTION
+
+  IS_X_w = 1.0
+  IS_X_e = 1.0
+  IS_Y_s = 0.0
+  IS_Y_n = 12.5
+
+  IS_TYPE = 'IP'
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+  @(RXNS)
+
+    Combustion_s1 { chem_eq = "2FC1 + O2 --> 2CO"}
+    Combustion_s2 { chem_eq = "2FC2 + O2 --> 2CO"}
+
+    Char_CO2_s1 { chem_eq = "FC1 + CO2 --> 2CO"}            ! Forward
+    Char_CO2_s1r { chem_eq = "2CO + 0.FC1 --> Soot + CO2"}  ! Reverse
+
+    Char_CO2_s2 { chem_eq = "FC2 + CO2 --> 2CO"}            ! Forward
+    Char_CO2_s2r { chem_eq = "2CO + 0.FC2 --> Soot + CO2"}  ! Reverse
+
+    CO_Combustion { chem_eq = "CO + 0.5O2 --> CO2" }
+
+    Char_to_Char { chem_eq = 'FC2 --> FC1' }
+
+    Ash_to_Ash { chem_eq = 'Ash2 --> Ash1' }
+
+  @(END)
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  OUT_DT = 0.10
+  RES_DT = 0.05
+
+  SPX_DT(1)  = 0.05   ! EP_g 
+  SPX_DT(2)  = 0.05   ! P_g, P_star 
+  SPX_DT(3)  = 0.05   ! U_g, V_g, W_g
+  SPX_DT(4)  = 0.05   ! U_s, V_s, W_s
+  SPX_DT(5)  = 0.05   ! ROP_s
+  SPX_DT(6)  = 0.05   ! T_g, T_s
+  SPX_DT(7)  = 0.05   ! X_g, X_s
+  SPX_DT(8)  = 100.   ! theta
+  SPX_DT(9)  = 100.   ! Scalar
+  SPX_DT(10) = 0.05   ! Reaction Rates
+
+  RESID_STRING  = 'P0' 'V0', 'V1', 'V2', 'T0', 'T1', 'T2'
+
+  nRR = 9 ! Number of reaction rates to write to .SPA
+
+  NLOG = 100
+  FULL_LOG = .F.
+  WRITE_DASHBOARD = .T.
+
+
+#_______________________________________________________________________
+THERMO DATA
+
+The following are coal pseudo species specifications.  Replace these
+with appropriate coal properties.  Also define the heat of formation (Hf298)
+values (the fifteenth coefficient).  The readme file describes the data format.
+Fixed Carbon               WARNING!       0.S   200.000  6000.000  B  12.01100 1
+-7.94079328E-01 8.09779756E-03-6.56398654E-06 1.84781958E-09 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00-7.94079328E-01 8.09779756E-03-6.56398654E-06    3
+ 1.84781958E-09 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+Coal Ash                   WARNING!       0.S   200.000  6000.000  B  56.00000 1
+ 8.70769880E+00 8.45407650E-03 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 8.70769880E+00 8.45407650E-03 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4

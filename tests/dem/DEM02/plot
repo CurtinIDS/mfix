@@ -1,0 +1,286 @@
+# Data Index
+#                     A-B
+#  > Kn 5.0*10^4         
+#    * En = 1.0    --  01
+#    * En = 0.9    --  02
+#    * En = 0.8    --  03
+#    * En = 0.7    --  04
+#    * En = 0.6    --  05
+#    * En = 0.5    --  06
+#                        
+#  > Kn 5.0*10^5         
+#    * En = 1.0    --  07
+#    * En = 0.9    --  08
+#    * En = 0.8    --  09
+#    * En = 0.7    --  10
+#    * En = 0.6    --  11
+#    * En = 0.5    --  12
+#                        
+#  > Kn 5.0*10^6         
+#    * En = 1.0    --  13
+#    * En = 0.9    --  14
+#    * En = 0.8    --  15
+#    * En = 0.7    --  16
+#    * En = 0.6    --  17
+#    * En = 0.5    --  18
+
+
+# color definitions
+set border linewidth 1.5
+set style line 1 lt 2 lc rgb '#000000' lw 1 # black
+set style line 2 lt 1 lc rgb '#9400d3' lw 1 # purple
+set style line 3 lt 1 lc rgb '#ff4500' lw 1 # orange-1
+set style line 4 lt 1 lc rgb '#006400' lw 1 # green
+set style line 5 lt 1 lc rgb '#ffa500' lw 1 # yellow
+set style line 6 lt 1 lc rgb '#0000ff' lw 1 # blue
+set style line 7 lt 1 lc rgb '#800000' lw 1 # brown
+set style line 8 lt 1 lc rgb '#ff0000' lw 1 # orange-2
+
+
+set xlabel "k^{th} bounce (-)"
+set xrange [0 : 12]
+set xtics nomirror 0,2,12
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 1 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM02_Kn5d4.png"
+
+set multiplot layout 1,2 title "Bounce height: 5.0*10^4 Spring constant"
+
+set ylabel "particle center height (m)"
+set yrange [0.0 : 0.55]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside right center
+
+set title
+plot 'POST_HEIGHT.dat' index 1 using 1:2 w lines ls 2  notitle, \
+     'POST_HEIGHT.dat' index 1 using 1:3 w points ls 2 title 'e_n=1.0',\
+     'POST_HEIGHT.dat' index 2 using 1:2 w lines ls 3  notitle, \
+     'POST_HEIGHT.dat' index 2 using 1:3 w points ls 3 title 'e_n=0.9',\
+     'POST_HEIGHT.dat' index 3 using 1:2 w lines ls 4  notitle, \
+     'POST_HEIGHT.dat' index 3 using 1:3 w points ls 4 title 'e_n=0.8',\
+     'POST_HEIGHT.dat' index 4 using 1:2 w lines ls 5  notitle, \
+     'POST_HEIGHT.dat' index 4 using 1:3 w points ls 5 title 'e_n=0.7',\
+     'POST_HEIGHT.dat' index 5 using 1:2 w lines ls 6  notitle, \
+     'POST_HEIGHT.dat' index 5 using 1:3 w points ls 6 title 'e_n=0.6',\
+     'POST_HEIGHT.dat' index 6 using 1:2 w lines ls 7  notitle, \
+     'POST_HEIGHT.dat' index 6 using 1:3 w points ls 7 title 'e_n=0.5'
+
+
+
+set ylabel "absolute relative difference (%)"
+set yrange [-0.5 : 10]
+set ytics nomirror 0,2,10
+
+set key reverse inside right center
+
+set title
+plot 'POST_HEIGHT.dat' index 1 using 1:4 w linespoints ls 2 title 'e_n=1.0', \
+     'POST_HEIGHT.dat' index 2 using 1:4 w linespoints ls 3 title 'e_n=0.9', \
+     'POST_HEIGHT.dat' index 3 using 1:4 w linespoints ls 4 title 'e_n=0.8', \
+     'POST_HEIGHT.dat' index 4 using 1:4 w linespoints ls 5 title 'e_n=0.7', \
+     'POST_HEIGHT.dat' index 5 using 1:4 w linespoints ls 6 title 'e_n=0.6', \
+     'POST_HEIGHT.dat' index 6 using 1:4 w linespoints ls 7 title 'e_n=0.5'
+
+unset multiplot
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 2 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM02_Kn5d5.png"
+
+set multiplot layout 1,2 title "Bounce height: 5.0*10^5 Spring constant"
+
+set ylabel "particle center height (m)"
+set yrange [0.0 : 0.55]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside right center
+
+set title
+plot 'POST_HEIGHT.dat' index  7 using 1:2 w lines ls 2  notitle, \
+     'POST_HEIGHT.dat' index  7 using 1:3 w points ls 2 title 'e_n=1.0',\
+     'POST_HEIGHT.dat' index  8 using 1:2 w lines ls 3  notitle, \
+     'POST_HEIGHT.dat' index  8 using 1:3 w points ls 3 title 'e_n=0.9',\
+     'POST_HEIGHT.dat' index  9 using 1:2 w lines ls 4  notitle, \
+     'POST_HEIGHT.dat' index  9 using 1:3 w points ls 4 title 'e_n=0.8',\
+     'POST_HEIGHT.dat' index 10 using 1:2 w lines ls 5  notitle, \
+     'POST_HEIGHT.dat' index 10 using 1:3 w points ls 5 title 'e_n=0.7',\
+     'POST_HEIGHT.dat' index 11 using 1:2 w lines ls 6  notitle, \
+     'POST_HEIGHT.dat' index 11 using 1:3 w points ls 6 title 'e_n=0.6',\
+     'POST_HEIGHT.dat' index 12 using 1:2 w lines ls 7  notitle, \
+     'POST_HEIGHT.dat' index 12 using 1:3 w points ls 7 title 'e_n=0.5'
+
+
+set ylabel "absolute relative difference (%)"
+set yrange [-0.5 : 10]
+set ytics nomirror 0,2,10
+
+set key reverse inside right center
+
+set title
+plot 'POST_HEIGHT.dat' index  7 using 1:4 w linespoints ls 2 title 'e_n=1.0', \
+     'POST_HEIGHT.dat' index  8 using 1:4 w linespoints ls 3 title 'e_n=0.9', \
+     'POST_HEIGHT.dat' index  9 using 1:4 w linespoints ls 4 title 'e_n=0.8', \
+     'POST_HEIGHT.dat' index 10 using 1:4 w linespoints ls 5 title 'e_n=0.7', \
+     'POST_HEIGHT.dat' index 11 using 1:4 w linespoints ls 6 title 'e_n=0.6', \
+     'POST_HEIGHT.dat' index 12 using 1:4 w linespoints ls 7 title 'e_n=0.5'
+
+unset multiplot
+
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 3 size 900,400 enhanced
+set terminal pngcairo size 900,400 enhanced font 'Verdana, 10'
+set output "DEM02_Kn5d6.png"
+
+set multiplot layout 1,2 title "Bounce height: 5.0*10^4 Spring constant"
+
+set ylabel "particle center height (m)"
+set yrange [0.0 : 0.55]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside right center
+
+set title
+plot 'POST_HEIGHT.dat' index 13 using 1:2 w lines ls 2  notitle, \
+     'POST_HEIGHT.dat' index 13 using 1:3 w points ls 2 title 'e_n=1.0',\
+     'POST_HEIGHT.dat' index 14 using 1:2 w lines ls 3  notitle, \
+     'POST_HEIGHT.dat' index 14 using 1:3 w points ls 3 title 'e_n=0.9',\
+     'POST_HEIGHT.dat' index 15 using 1:2 w lines ls 4  notitle, \
+     'POST_HEIGHT.dat' index 15 using 1:3 w points ls 4 title 'e_n=0.8',\
+     'POST_HEIGHT.dat' index 16 using 1:2 w lines ls 5  notitle, \
+     'POST_HEIGHT.dat' index 16 using 1:3 w points ls 5 title 'e_n=0.7',\
+     'POST_HEIGHT.dat' index 17 using 1:2 w lines ls 6  notitle, \
+     'POST_HEIGHT.dat' index 17 using 1:3 w points ls 6 title 'e_n=0.6',\
+     'POST_HEIGHT.dat' index 18 using 1:2 w lines ls 7  notitle, \
+     'POST_HEIGHT.dat' index 18 using 1:3 w points ls 7 title 'e_n=0.5'
+
+set ylabel "absolute relative difference (%)"
+set yrange [-0.5 : 10]
+set ytics nomirror 0,2,10
+
+set key reverse inside right center
+
+set title
+plot 'POST_HEIGHT.dat' index 13 using 1:4 w linespoints ls 2 title 'e_n=1.0', \
+     'POST_HEIGHT.dat' index 14 using 1:4 w linespoints ls 3 title 'e_n=0.9', \
+     'POST_HEIGHT.dat' index 15 using 1:4 w linespoints ls 4 title 'e_n=0.8', \
+     'POST_HEIGHT.dat' index 16 using 1:4 w linespoints ls 5 title 'e_n=0.7', \
+     'POST_HEIGHT.dat' index 17 using 1:4 w linespoints ls 6 title 'e_n=0.6', \
+     'POST_HEIGHT.dat' index 18 using 1:4 w linespoints ls 7 title 'e_n=0.5'
+
+unset multiplot
+
+
+#-------------------------------------------------------------------------------------
+
+#set terminal wxt 4 size 1100,400 enhanced
+set terminal pngcairo size 1100,400 enhanced font 'Verdana, 10'
+set output "DEM02_height.png"
+
+set multiplot layout 1,3 title "Bounce height"
+
+set ylabel "particle center height (m)"
+set yrange [0.0 : 0.55]
+set ytics nomirror 0,0.1,0.5
+
+set key reverse inside right center
+
+set title "k_n=5.0*10^4 (N.m^{-1})"
+plot 'POST_HEIGHT.dat' index 1 using 1:2 w lines ls 2  notitle,\
+     'POST_HEIGHT.dat' index 1 using 1:3 w points ls 2 notitle,\
+     'POST_HEIGHT.dat' index 2 using 1:2 w lines ls 3  notitle,\
+     'POST_HEIGHT.dat' index 2 using 1:3 w points ls 3 notitle,\
+     'POST_HEIGHT.dat' index 3 using 1:2 w lines ls 4  notitle,\
+     'POST_HEIGHT.dat' index 3 using 1:3 w points ls 4 notitle,\
+     'POST_HEIGHT.dat' index 4 using 1:2 w lines ls 5  notitle,\
+     'POST_HEIGHT.dat' index 4 using 1:3 w points ls 5 notitle,\
+     'POST_HEIGHT.dat' index 5 using 1:2 w lines ls 6  notitle,\
+     'POST_HEIGHT.dat' index 5 using 1:3 w points ls 6 notitle,\
+     'POST_HEIGHT.dat' index 6 using 1:2 w lines ls 7  notitle,\
+     'POST_HEIGHT.dat' index 6 using 1:3 w points ls 7 notitle 
+
+set title "k_n=5.0*10^5 (N.m^{-1})"
+plot 'POST_HEIGHT.dat' index  7 using 1:2 w lines ls 2  notitle,\
+     'POST_HEIGHT.dat' index  7 using 1:3 w points ls 2 notitle,\
+     'POST_HEIGHT.dat' index  8 using 1:2 w lines ls 3  notitle,\
+     'POST_HEIGHT.dat' index  8 using 1:3 w points ls 3 notitle,\
+     'POST_HEIGHT.dat' index  9 using 1:2 w lines ls 4  notitle,\
+     'POST_HEIGHT.dat' index  9 using 1:3 w points ls 4 notitle,\
+     'POST_HEIGHT.dat' index 10 using 1:2 w lines ls 5  notitle,\
+     'POST_HEIGHT.dat' index 10 using 1:3 w points ls 5 notitle,\
+     'POST_HEIGHT.dat' index 11 using 1:2 w lines ls 6  notitle,\
+     'POST_HEIGHT.dat' index 11 using 1:3 w points ls 6 notitle,\
+     'POST_HEIGHT.dat' index 12 using 1:2 w lines ls 7  notitle,\
+     'POST_HEIGHT.dat' index 12 using 1:3 w points ls 7 notitle
+
+set title "k_n=5.0*10^6 (N.m^{-1})"
+plot 'POST_HEIGHT.dat' index 13 using 1:2 w lines ls 2  notitle,\
+     'POST_HEIGHT.dat' index 13 using 1:3 w points ls 2 title 'e_n=1.0',\
+     'POST_HEIGHT.dat' index 14 using 1:2 w lines ls 3  notitle,\
+     'POST_HEIGHT.dat' index 14 using 1:3 w points ls 3 title 'e_n=0.9',\
+     'POST_HEIGHT.dat' index 15 using 1:2 w lines ls 4  notitle,\
+     'POST_HEIGHT.dat' index 15 using 1:3 w points ls 4 title 'e_n=0.8',\
+     'POST_HEIGHT.dat' index 16 using 1:2 w lines ls 5  notitle,\
+     'POST_HEIGHT.dat' index 16 using 1:3 w points ls 5 title 'e_n=0.7',\
+     'POST_HEIGHT.dat' index 17 using 1:2 w lines ls 6  notitle,\
+     'POST_HEIGHT.dat' index 17 using 1:3 w points ls 6 title 'e_n=0.6',\
+     'POST_HEIGHT.dat' index 18 using 1:2 w lines ls 7  notitle,\
+     'POST_HEIGHT.dat' index 18 using 1:3 w points ls 7 title 'e_n=0.5'
+
+unset multiplot
+
+
+#-------------------------------------------------------------------------------------
+
+
+#set terminal wxt 5 size 1100,400 enhanced
+set terminal pngcairo size 1100,400 enhanced font 'Verdana, 10'
+set output "DEM02_diff.png"
+
+set multiplot layout 1,3 title "Difference in bounce height"
+
+set yrange [-0.5 : 10]
+set ytics nomirror 0,2,10
+
+set key reverse inside right top
+
+set ylabel "absolute relative difference (%)"
+
+set title "k_n=5.0*10^4 (N.m^{-1})"
+plot 'POST_HEIGHT.dat' index 1 using 1:4 w linespoints ls 2 notitle,\
+     'POST_HEIGHT.dat' index 2 using 1:4 w linespoints ls 3 notitle,\
+     'POST_HEIGHT.dat' index 3 using 1:4 w linespoints ls 4 notitle,\
+     'POST_HEIGHT.dat' index 4 using 1:4 w linespoints ls 5 notitle,\
+     'POST_HEIGHT.dat' index 5 using 1:4 w linespoints ls 6 notitle,\
+     'POST_HEIGHT.dat' index 6 using 1:4 w linespoints ls 7 notitle
+
+set title "k_n=5.0*10^5 (N.m^{-1})"
+plot 'POST_HEIGHT.dat' index  7 using 1:4 w linespoints ls 2 notitle,\
+     'POST_HEIGHT.dat' index  8 using 1:4 w linespoints ls 3 notitle,\
+     'POST_HEIGHT.dat' index  9 using 1:4 w linespoints ls 4 notitle,\
+     'POST_HEIGHT.dat' index 10 using 1:4 w linespoints ls 5 notitle,\
+     'POST_HEIGHT.dat' index 11 using 1:4 w linespoints ls 6 notitle,\
+     'POST_HEIGHT.dat' index 12 using 1:4 w linespoints ls 7 notitle
+
+set title "k_n=5.0*10^6 (N.m^{-1})"
+plot 'POST_HEIGHT.dat' index 13 using 1:4 w linespoints ls 2 title 'e_n=1.0', \
+     'POST_HEIGHT.dat' index 14 using 1:4 w linespoints ls 3 title 'e_n=0.9', \
+     'POST_HEIGHT.dat' index 15 using 1:4 w linespoints ls 4 title 'e_n=0.8', \
+     'POST_HEIGHT.dat' index 16 using 1:4 w linespoints ls 5 title 'e_n=0.7', \
+     'POST_HEIGHT.dat' index 17 using 1:4 w linespoints ls 6 title 'e_n=0.6', \
+     'POST_HEIGHT.dat' index 18 using 1:4 w linespoints ls 7 title 'e_n=0.5'
+
+unset multiplot
+
+

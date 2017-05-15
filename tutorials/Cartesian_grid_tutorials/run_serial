@@ -1,0 +1,125 @@
+#!/bin/tcsh 
+# Script to run all the tutorial cases in serial
+rm -f */*.RES */*.SP* */*.LOG */*.log */*.OUT */*.vtp */*.vtk */*.pvd */*.vtu */VTU_FRAME_INDEX.TXT */DASHBOARD.TXT
+echo
+echo "Running all Cartesian grid tutorials. See run.log and DASBOARD.TXT (if available)"
+echo "for details about the run status, in each directory."
+cd channel
+echo "********************************************************************"
+echo "1. channel"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd cylinder
+echo "********************************************************************"
+echo "2. cylinder"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd hourglass
+echo "********************************************************************"
+echo "3. hourglass"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd naca4412
+echo "********************************************************************"
+echo "4. naca4412"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd polygons
+echo "********************************************************************"
+echo "5. polygons"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd spoutedbed1
+echo "********************************************************************"
+echo "6. spoutedbed1"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd spoutedbed2
+echo "********************************************************************"
+echo "7. spoutedbed2"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd wavy
+echo "********************************************************************"
+echo "8. wavy"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd 3dfb
+echo "********************************************************************"
+echo "9. 3dfb"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Ending at:"
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd cyclone
+echo "********************************************************************"
+echo "10. cyclone"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd stl
+echo "********************************************************************"
+echo "11. stl"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..
+# Another case
+echo
+cd msh
+echo "********************************************************************"
+echo "12. msh"
+echo "Started on `date`"
+sh ../../../model/make_mfix < ../in > compile.log
+./mfix.exe > run.log
+echo "Finished on `date`"
+cd ..

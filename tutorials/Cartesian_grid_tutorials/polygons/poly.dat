@@ -1,0 +1,31 @@
+!======================================================================
+! poly.dat: stores polygon data. DO NOT REMOVE ANY OF LINES 1-13
+! Input starts at line 14 and follows the following structure:
+N_POLYGON                   : Number of polygons
+N_VERTEX(1) POLY_SIGN(1)    : Number of vertices , polygon sign for polygon #1
+X1 Y1 BC_ID_1 : list of (x,y) for each vertex, and bc id of corresponding edge
+X2 Y2 BC_ID_2                 (for polygon 1)
+.
+.
+.
+Repeat for all additional polygons
+!======================================================================
+! This is line 13. Input starts below (line 14):
+2
+6 1.0
+10.0    40.0     2
+15.0    40.0     2
+17.0    36.0     2
+15.0    32.0     2
+10.0    32.0     2
+ 8.0    36.01    2
+9 1.0
+20.0    30.01    2
+24.0    28.01    2
+24.0    24.01    2
+28.0    22.01    2
+28.0    16.0     2
+12.0    16.0     2
+12.0    22.01    2
+16.0    24.01    2
+16.0    28.01    2

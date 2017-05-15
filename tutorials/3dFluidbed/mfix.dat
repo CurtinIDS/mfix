@@ -1,0 +1,105 @@
+#                                                                               
+#  Bubbling Fluidized Bed Simulation                                            
+#                                                                               
+#  F.B. Modeler                  9-6-94                                         
+#                                                                               
+# Run time for F90 allocatable arrays on Octane -- 3.3 h                                                        
+# Run-control section   
+#                                                                               
+  RUN_NAME = 'BUB02'                                                            
+  DESCRIPTION = 'Bubbling Fluidized Bed Simulation'                             
+  RUN_TYPE = 'new'                                                              
+  UNITS = 'cgs'                                                                 
+  TIME  = 0.0 
+  TSTOP = 1.0
+  DT = 1.0E-4                                     
+  ENERGY_EQ = .FALSE.                                                           
+  SPECIES_EQ = .FALSE.    .FALSE.                                               
+#                                                                               
+# Geometry Section                                                              
+#                                                                               
+  COORDINATES = 'cylindrical'                                                   
+                                                                                
+  XLENGTH  =   7.0    IMAX =   7                                                
+  YLENGTH  = 100.0    JMAX = 100                                                
+  ZLENGTH  = @(2*Pi)  KMAX =   8                                                
+                                                                                
+#                                                                               
+# Gas-phase Section                                                             
+#                                                                               
+  MU_g0 = 1.8E-4                                                                
+  MW_avg = 29.                                                                  
+#                                                                               
+# Solids-phase Section                                                          
+#                                                                               
+  RO_s0   = 2.0                                                                 
+  D_p0    = 0.04                                                                
+                                                                                
+  e       = 0.8                                                                 
+  Phi     = 0.0                                                                 
+  EP_star = 0.42                                                                
+#                                                                               
+# Initial Conditions Section                                                    
+#                                                                               
+       !              Bed       Freeboard                                       
+  IC_X_w           =  0.0             0.0                                       
+  IC_X_e           =  7.0             7.0                                       
+  IC_Y_s           =  0.0            50.0                                       
+  IC_Y_n           = 50.0           100.0                                       
+  IC_Z_b           =  0.0             0.0                                       
+  IC_Z_t           = @(2*Pi)         @(2*Pi)                                    
+                                                                                
+  IC_EP_g          =  0.42            1.0                                       
+                                                                                
+  IC_U_g           =  0.0             0.0                                       
+  IC_V_g           =@(25.9/0.42)     25.9                                       
+  IC_W_g           =  0.0             0.0                                       
+                                                                                
+  IC_U_s(1,1)      =  0.0             0.0                                       
+  IC_V_s(1,1)      =  0.0             0.0                                       
+  IC_W_s(1,1)      =  0.0             0.0                                       
+                                                                                
+  IC_P_star        =  0.0             0.0                                       
+  IC_T_g           = 300.0          300.0                                       
+                                                                                
+#                                                                               
+#  Boundary Conditions Section                                                  
+#                                                                               
+       !              Jet   Grid     Exit                                       
+  BC_X_w           =  0.0    1.0      0.0                                       
+  BC_X_e           =  1.0    7.0      7.0                                       
+  BC_Y_s           =  0.0    0.0    100.0                                       
+  BC_Y_n           =  0.0    0.0    100.0                                       
+  BC_Z_b           =  0.0    0.0      0.0                                       
+  BC_Z_t           = @(2*Pi) @(2*Pi) @(2*Pi)                                    
+                                                                                
+  BC_TYPE          = 'MI'   'MI'    'PO'                                        
+                                                                                
+  BC_EP_g          =  1.0    1.0                                                
+                                                                                
+  BC_U_g           =  0.0    0.0                                                
+  BC_V_g           = 25.9   25.9                                                
+  BC_W_g           =  0.0    0.0                                                
+                                                                                
+  BC_P_g           = 1.013E6  1.013E6   1.013E6                                 
+  BC_T_g           = 300.0   300.0                                              
+                                                                                
+  BC_Jet_g0        = 25.9                                                       
+  BC_DT_0          =  0.0                                                       
+  BC_Jet_gh        =100.0                                                       
+  BC_DT_h          =  0.2                                                       
+  BC_Jet_gl        = 25.9                                                       
+  BC_DT_l          =  0.9                                                       
+#                                                                               
+#  Output Control                                                               
+#                                                                               
+  RES_DT = 0.01                                                                 
+        !                                                                       
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g                           
+        !      P_star    V_g  V_s            T_s1 X_s    Theta  Scalar          
+        !                W_g  W_s            T_s2                               
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 100.   100.0  100.0                
+                                                                                
+  NLOG   = 100                                                                  
+  full_log = .true.                                                             
+                                                                                

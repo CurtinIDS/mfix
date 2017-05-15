@@ -1,0 +1,342 @@
+#!/bin/perl
+#
+# Process Fortran files to create make dependencies.
+#
+
+package fdep;
+
+use strict;
+use warnings;
+use Getopt::Long qw(:config no_ignore_case bundling_override);
+use File::Find;
+use File::Spec;
+use File::Basename;
+use Cwd;
+
+###############################################
+# Global package options                      #
+###############################################
+our %opts = (
+	'verbose' => 0,
+	'srcdir'  => undef,
+	'outdir'  => undef,
+	'moddir'  => undef,
+	'fexts'   => ['f', 'f90', 'f95', 'f03', 'f08', 'inc'],
+	'mexts'   => 'mod',
+	're'      => {
+	    'use' => qr/^[\s]*use,?[\s*](?:intrinsic[\s*]::[\s*])?(\w*)/im,
+	    'inc' => qr/^[\s]*include[\s]*(?:'|")?([\w\.]*)/im,
+	    'mod' => qr/^[\s]*module[\s]*(\w*)/im,
+		     },
+	'ignore'  => ['dflib',
+		      'iso_c_binding',
+		     ],
+	'include' => [],
+	'recursive' => 0,
+);
+
+###############################################
+# Main                                        #
+###############################################
+sub main
+{
+	my $self = shift;
+	parse_args();
+
+	foreach my $arg (@ARGV) {
+		if (-d $arg) {
+			wtree($arg);
+		} elsif (-f $arg) {
+			fproc($arg);
+		} else {
+			die "Unable to process: $arg\n";
+		}
+
+	}
+}
+
+###############################################
+# Parse the command line arguments            #
+###############################################
+sub parse_args
+{
+	GetOptions(\%opts,
+		'verbose|v+',
+		'suffix=s@',
+		'mod|M=s',
+		'ignore|i=s@',
+		'include|I=s@',
+		'outdir|o=s',
+		'srcdir|s=s',
+		'moddir|m=s',
+		'recursive|r!',
+	);
+
+	# Change the ignore array into a hash.
+	my %ignore = map { $_ => 1 } @{$opts{ignore}};
+	undef $opts{ignore};
+	$opts{ignore} = \%ignore;
+
+	# Make sure all include directories exist
+	for my $i (0 .. $#{$opts{include}}) {
+		if (! -d @{$opts{include}}[$i]) {
+			splice(@{$opts{include}}, $i, 1);
+		}
+	}
+	
+	# Make sure we have a module directory
+	if (not defined $opts{moddir}) {
+		$opts{moddir} = '.';
+	}
+}
+
+###############################################
+# Process a single file                       #
+###############################################
+sub fproc
+{
+	my $file = shift;
+	my $dir = dirname($file);
+	my %deps;
+
+	# Check to see if we have input and output dirs
+	if (not defined $opts{srcdir}) {
+		$opts{srcdir} = $dir;
+	}
+	if (not defined $opts{outdir}) {
+		$opts{outdir} = $opts{srcdir};
+	}
+
+	$deps{$file} = fdeps($file);
+	wdep($file, \%deps);
+}
+
+###############################################
+# Walk a directory tree                       #
+###############################################
+sub wtree
+{
+	my $dir = shift;
+
+	# Check to see if we have input and output dirs
+	if (not defined $opts{srcdir}) {
+		$opts{srcdir} = $dir;
+	}
+	if (not defined $opts{outdir}) {
+		$opts{outdir} = $opts{srcdir};
+	}
+
+	my $files = findf($dir);
+	foreach my $idir (@{$opts{include}}) {
+		push(@{$files}, @{findf($idir)});
+	}
+
+	my %deps;
+	foreach my $file (@{$files}) {
+		$deps{$file} = fdeps($file);
+	}
+
+	foreach my $file (@{$files}) {
+		wdep($file, \%deps);
+	}
+}
+
+###############################################
+# Get all dependencies of a file              #
+###############################################
+sub fdeps
+{
+	my $file = shift;
+	if ($opts{verbose}) {
+		print "Parsing file: $file\n";
+	}
+
+	my %h = ('use' => [],
+		 'inc' => [],
+		 'mod' => '',
+	);
+
+	open(my $fh, "<", $file) or die "can not open file $file: $!";
+	while (my $line = <$fh>) {
+		if ($line =~ $opts{re}{use}) {
+			my $use_module = lc($1);
+			if ($opts{verbose} > 2) {
+				print "\tuse: $use_module\n";
+			}
+			if (! exists $opts{ignore}->{$use_module}) {
+				push(@{$h{use}}, $use_module);
+			}
+		} elsif ($line =~ $opts{re}{inc}) {
+			my $include_file = lc($1);
+			if ($opts{verbose} > 2) {
+				print "\tinclude: $include_file\n";
+			}
+			push(@{$h{inc}}, $include_file);
+		} elsif ($line =~ $opts{re}{mod}) {
+			my $module_name = lc($1);
+			if ($opts{verbose} > 2) {
+				print "\tmodule: $module_name\n";
+			}
+			if ($module_name ne 'procedure') {
+				$h{mod} = $module_name;
+			}
+		}
+	}
+	close($fh);
+
+	$h{use} = uniq($h{use});
+	$h{inc} = uniq($h{inc});
+
+	if (@{$h{inc}}) {
+		foreach my $inc (@{$h{inc}}) {
+			my $ih = fdeps(findi($inc));
+			if (@{$ih->{use}}) {
+				push(@{$h{use}}, @{$ih->{use}});
+			}
+			if (@{$ih->{inc}}) {
+				push(@{$h{inc}}, @{$ih->{inc}});
+			}
+		}
+	}
+
+	if ($opts{verbose} > 1) {
+		my $j = "\n\t\t";
+		print "\t use:\n\t\t";
+		print "" . join($j, @{$h{use}});
+		print "\n     include:\n\t";
+		print "" . join($j, @{$h{inc}});
+		print "\n";
+	}
+
+	return \%h;
+}
+
+###############################################
+# Write a file dependencies                   #
+###############################################
+sub wdep
+{
+	my ($file, $dref) = @_;
+	my ($header, $prefix, $dfs, @dfiles);
+	my ($dfile, $ofile, $mfile);
+
+	my $re = "(?i)(". join("|", @{$opts{fexts}}) .")";
+	my $ign = join(", ", keys %{$opts{ignore}});
+	my $idirs = join(", ", @{$opts{include}});
+	my $deps = $dref->{$file}{use};
+	my $incs = $dref->{$file}{inc};
+	my $mod  = $dref->{$file}{mod};
+
+	my ($name, $path, $suff) = fileparse($file, $re);
+	$dfile = File::Spec->catfile($opts{outdir}, $name .'d');
+	$ofile = File::Spec->catfile($opts{outdir}, $name .'o');
+
+	if ($opts{verbose}) {
+		print "Creating dependency file: $dfile\n";
+	}
+
+	if (@{$deps}) {
+		foreach my $dep (@{$deps}) {
+			if (exists($opts{$dep})) {
+				warn "Skipping: $dep\n";
+				next;
+			}
+			my $tmp = File::Spec->catfile($opts{moddir},
+						      $dep .'.mod');
+			push(@dfiles, $tmp);
+		}
+	}
+
+	if (@{$incs}) {
+		foreach my $inc (@{$incs}) {
+			my $tmp = findi($inc);
+			push(@dfiles, $tmp) if $tmp;
+		}
+	}
+
+	if ($mod) {
+		$mfile = File::Spec->catfile($opts{moddir},
+					     $mod .".". $opts{mexts});
+	}
+
+	$header = join("", <DATA>);
+	close(DATA);
+
+	$prefix = length($ofile) + 2;
+	$dfs = join(" \\\n".' 'x$prefix, @dfiles);
+
+	open(my $fh, ">", $dfile) or die "can not open file $dfile: $!";
+	printf $fh $header, $0, $opts{srcdir}, $opts{outdir},
+			    $opts{moddir}, $idirs, $ign, $file;
+	print $fh "$ofile: $dfs\n"           if @dfiles;
+	print $fh "$mfile: $ofile\n" if $mod;
+	close($fh);
+}
+
+###############################################
+# Make a unique list                          #
+###############################################
+sub uniq
+{
+	my $ref = shift;
+	my %seen;
+	my @uniq = grep { !$seen{$_}++ } @$ref;
+	return \@uniq;
+}
+
+###############################################
+# Find all fortran (and .inc) files           #
+###############################################
+sub findf
+{
+	my $path = shift;
+	my $re = "(". join("|", @{$opts{fexts}}) .")";
+	my @files;
+
+	if ($opts{verbose}) {
+		print "Finding files in $path\n";
+	}
+
+	find(sub {push(@files, $File::Find::name) if /$re$/i}, $path);
+
+	return \@files;
+}
+
+###############################################
+# Find an include file (search include dirs)  #
+###############################################
+sub findi
+{
+	my $file = shift;
+
+	my $tmp = File::Spec->catfile($opts{srcdir}, $file);
+	if (-f $tmp) {
+		return $tmp;
+	}
+
+	foreach my $idir (@{$opts{include}}) {
+		$tmp = File::Spec->catfile($idir, $file);
+		if (-f $tmp) {
+			return $tmp;
+		}
+	}
+
+	warn "Unable to find include file: $file\n";
+	return undef;
+}
+
+__PACKAGE__->main() unless caller;
+1;
+__DATA__
+# This file is generated from running
+# %s
+#
+# with parameters:
+# source directory  =>  %s
+# output directory  =>  %s
+# module directory  =>  %s
+# include paths     =>  %s
+# ignored modules   =>  %s
+#
+# on input file:
+# %s

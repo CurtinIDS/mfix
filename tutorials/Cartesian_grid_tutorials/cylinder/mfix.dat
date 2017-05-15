@@ -1,0 +1,218 @@
+! Run-control section                                                           
+                                                                               
+   RUN_NAME              =  'CYL'           
+
+   DESCRIPTION           = 'Flow over a Cylinder , Re = 200'
+   RUN_TYPE              = 'new'             
+   UNITS                 = 'SI'
+   TIME                  = 0.0                !start time
+   TSTOP                 = 300.0
+   DT                    = 0.25               !time step
+   ENERGY_EQ             = .FALSE.            !do not solve energy eq
+   SPECIES_EQ            = .FALSE.    .FALSE. !do not solve species eq
+  
+   DT_FAC = 1.0
+   DETECT_STALL = .FALSE.
+
+   GRAVITY = 0.0
+
+   DISCRETIZE(1) = 2
+   DISCRETIZE(3) = 2
+   DISCRETIZE(4) = 2
+   DEF_COR       = .TRUE.
+   FPFOI         = .FALSE.
+ 
+   TOL_RESID     = 1.0E-6
+
+   NORM_g = 0.0
+
+   MOMENTUM_X_EQ(1) = .FALSE.
+   MOMENTUM_Y_EQ(1) = .FALSE.
+
+!===============================================================================
+! Cartesian Grid - Quadric definition:
+! Quadric surface Normal form : 
+! f(x,y,z) = lambda_x * x^2 + lambda_y * y^2 + lambda_z * z^2 + d = 0
+! Regions where f(x,y,z) < 0 are part of the computational domain.
+! Regions where f(x,y,z) > 0 are excluded from the computational domain.
+!
+! Predefined quadrics: set QUADRIC_FORM to one of the following:
+! Plane:                    'PLANE'
+! Cylinder (internal flow): 'X_CYL_INT' or 'Y_CYL_INT' or 'Z_CYL_INT'
+! Cylinder (external flow): 'X_CYL_EXT' or 'Y_CYL_EXT' or 'Z_CYL_EXT'
+! Cone     (internal flow): 'X_CONE'    or 'Y_CONE'    or 'Z_CONE'
+!===============================================================================
+
+  CARTESIAN_GRID = .TRUE.
+
+  N_QUADRIC = 1
+
+  QUADRIC_FORM(1) = 'Z_CYL_EXT'
+  RADIUS(1) = 0.05
+
+  t_x(1)      =  2.0  
+  t_y(1)      =  2.0  
+
+  BC_ID_Q(1) = 12 
+
+  PRINT_WARNINGS = .TRUE.
+
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.5
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+
+  VTK_VAR = 2 3 12
+
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'cartesian' 
+
+  XLENGTH               =  6.0            ! length
+  YLENGTH               =  4.0            ! height
+
+  IMAX                  =  120            ! cells in i direction
+  JMAX                  =  80             ! cells in j direction
+
+  NO_K = .TRUE.
+         
+! Using Control points to define grid spacing
+                
+  CPX         = 1.90    2.10   6.00
+  NCX         = 20      40     60
+                        
+  LAST_DX(1)  = -1.0  ! Match Last  DX from segment 1 with First DX of segment 2
+  FIRST_DX(3) = -1.0  ! Match First DX from segment 3 with Last  DX of segment 2
+
+  CPY         = 1.90    2.10   4.00
+  NCY         = 20      40     20
+                        
+  LAST_DY(1)  = -1.0  ! Match Last  DY from segment 1 with First DY of segment 2
+  FIRST_DY(3) = -1.0  ! Match First DY from segment 3 with Last  DY of segment 2
+ 
+
+! Gas-phase Section                                                             
+ 
+ ! Gas-phase Section                                                   
+   MU_g0                 = 1.8E-5             !constant gas viscosity
+   RO_g0                 = 1.2                !constant gas density
+ 
+! Solids-phase Section                                                          
+  
+  MMAX = 0
+
+! Initial Conditions Section 
+
+IC_X_w(1)             =     0.0    
+IC_X_e(1)             =     6.0 
+IC_Y_s(1)             =     0.0 
+IC_Y_n(1)             =     4.0 
+
+IC_EP_g(1)            =     1.0 
+IC_U_g(1)             =     0.0 
+IC_V_g(1)             =     0.0 
+
+
+! Boundary Conditions Section 
+! Inlet
+BC_X_w(  1)     =   0.0
+BC_X_e(  1)     =   0.0
+BC_Y_s(  1)     =   0.0
+BC_Y_n(  1)     =   4.0
+BC_TYPE(  1)    =   'MI'
+BC_Ep_g(  1)    =   1.0
+BC_U_g(  1)     =   0.03
+BC_V_g(  1)     =   0.0
+BC_P_g(  1)     =   0.0
+
+! Outlet
+
+BC_X_w(2)             =     6.0
+BC_X_e(2)             =     6.0
+BC_Y_s(2)             =     0.0
+BC_Y_n(2)             =     4.0
+BC_TYPE(2)            =     'PO'
+BC_P_g(2)             =     0.0 
+
+! Top wall
+BC_X_w(3)             =     0.0
+BC_X_e(3)             =     6.0
+BC_Y_s(3)             =     4.0
+BC_Y_n(3)             =     4.0
+
+BC_TYPE(3)    =     'FSW'
+
+
+! Bottom wall
+BC_X_w(4)             =     0.0
+BC_X_e(4)             =     6.0
+BC_Y_s(4)             =     0.0
+BC_Y_n(4)             =     0.0
+
+BC_TYPE(4)    =     'FSW'
+
+                    
+! cut-cell boundary condition
+  BC_TYPE(12)           = 'CG_NSW'
+
+
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                  !write text file CYL.OUT
+                                               !  every 10 s
+  RES_DT                = 100.0                !write binary restart file
+                                               !  CYl.RES every 100.0 s
+  NLOG                  = 25                   !write logfile CYL.LOG 
+                                               !every 25 time steps
+  FULL_LOG              = .TRUE.               !display residuals on screen
+
+  Resid_string    = "P0", "U0", "V0"
+
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+ SPX_DT = 100. 0.1       0.1  0.1  100.      100. 100.    100.   100.        
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1  NODESK = 1
+
+
+!  Sweep Direction
+
+ LEQ_SWEEP(1) = 'ISIS'
+ LEQ_SWEEP(2) = 'ISIS'
+ LEQ_SWEEP(3) = 'ISIS'
+ LEQ_SWEEP(4) = 'ISIS'
+ LEQ_SWEEP(5) = 'ISIS'
+ LEQ_SWEEP(6) = 'ISIS'
+ LEQ_SWEEP(7) = 'ISIS'
+ LEQ_SWEEP(8) = 'ISIS'
+ LEQ_SWEEP(9) = 'ISIS'
+
+! # Maximum iterations for linear solve
+
+
+

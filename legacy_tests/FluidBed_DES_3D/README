@@ -1,0 +1,4 @@
+This is a small scale test case for DEM. It uses:
+  > Cartesian grid cut-cell with STL boundaries
+  > Automatic particle generation
+  > Distributed Memeory Parallel

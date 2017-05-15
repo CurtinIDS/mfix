@@ -1,0 +1,289 @@
+! Gas/solids flow in fully developed 1-D channel using Simonin
+! model along with Jenkins small frictional boundary condition
+
+! For more detail see:
+! Simonin, O., 1996. Combustion and turbulence in two-phase flows,
+!   Von Karman institute for fluid dynamics, lecture series,
+!   1996-02
+! Balzer, G., Simonin, O., Boelle, A., and Lavieville, J., 1996,
+!   A unifying modelling approach for the numerical prediction
+!   of dilute and dense gas-solid two phase flow. CFB5, 5th int.
+!   conf. on circulating fluidized beds, Beijing, China.
+
+! Author: S. Benyahia, Dec. 2011
+
+
+!*********************************************************************
+! Run Control
+!*********************************************************************
+  RUN_NAME = 'R'
+  DESCRIPTION = 'developed laminar flow'
+  RUN_TYPE = 'new'
+
+  UNITS = 'cgs'
+
+  TIME = 0.0          ! start time
+  TSTOP = 200.0       ! stop time 
+  DT = 0.1            ! time step
+  DT_FAC = 1          ! factor for adjusting time step
+                      ! (1=constant time step)
+
+! Solve energy eq?  [.TRUE.]
+  ENERGY_EQ = .FALSE.
+
+! Solve species eq?  [.TRUE.]
+!                 Gas     Sld 1
+  SPECIES_EQ = .FALSE.    .FALSE.
+ 
+! Solve momentum equations?  [.TRUE.]
+! by not solving x-mom we obtain a steady-state
+!                    Gas      Sld 1
+  MOMENTUM_X_EQ  =  .FALSE.   .FALSE.
+  MOMENTUM_Y_EQ  =  .TRUE.   .TRUE.
+  MOMENTUM_Z_EQ  = .FALSE.   .FALSE.
+
+! Solve a granular energy transport equation(s) as opposed to an
+! algebraic equation?  [.FALSE.]
+  GRANULAR_ENERGY = .T.
+
+! the kinetic theory model used to describe the solids phase(s)
+  KT_TYPE = 'SIMONIN'
+
+! legacy keyword to invoke ahmadi or simonin models
+! (cannot be invoked simultaneously)
+#  AHMADI = .T.
+#  SIMONIN = .F.
+
+! the gas-solid drag model.  ['SYAM_OBRIEN']
+! note drag will not be used for this granular flow case
+  DRAG_TYPE  = 'GIDASPOW'
+
+
+!*********************************************************************
+! Numerical Parameters
+!*********************************************************************
+  MAX_NIT = 75          ! maximum number of iterations [500]
+
+  TOL_RESID = 1E-4      ! max. continuity+momentum residual at 
+                        ! convergence [1E-3]
+
+! factor to normalize gas pressure/solids correction equation(s) 
+! residual
+!  [undefined] : normalization uses residual from first iteration 
+!      0       : normalization based on dominate term in continuity eqn
+!  [defined]   : normalized by value provided
+  NORM_g = 0.0d0
+  NORM_s = 0.0d0
+
+! Number of iterations in the linear equation solver
+!      [LEQ_IT(1,2)=20]
+!      [LEQ_IT(3-5)=5]
+!      [LEQ_IT(6-9)=15]
+  LEQ_IT = 9*300
+
+! The tolerance in the linear equation solver  [1.0D-4]
+  LEQ_TOL = 9*1D-06
+
+
+!*********************************************************************
+! Geometry 
+!*********************************************************************
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH = 10.0    IMAX = 20     ! length and cells in x/i direction
+                                  ! (coarse grid)
+  YLENGTH = 10.0    JMAX = 1     ! length and cells in y/j direction
+                                 ! (1 cell; makes this effectively 1D)
+  NO_K = .TRUE.                  ! no k direction
+
+! y direction cyclic w/ a specified pressure drop
+  CYCLIC_Y_PD = .TRUE.
+
+! cyclic boundary condition with specified fluid pressure drop
+! across y-length. (since flux_g is also defined this value
+! simply serves an initial guess in the simulation; it still
+! must be specified.)
+  delp_y = 800.   ! (bayre)
+
+! cyclic boundary condition with specified mass flux
+  Flux_g = 0.6   ! (g/cm^2.s)
+ 
+! gravitational acceleration (y-direction)  
+  GRAVITY = 980.
+
+
+!*********************************************************************
+! Gas Phase
+!*********************************************************************
+  MU_g0 = 1.8E-4     ! constant gas viscosity (poise)
+
+! the molecular weight or density must be specified (or species names).
+! if density is specified then the molecular weight will be ignored.
+! specifying molecular weight allows for compressibility but requires
+! setting the pressure and temperature in IC and BC regions
+  MW_avg = 29.0     ! average molecular weight of air (g/g-mol)
+
+! use k-e turbulence model for single phase flow with standard wall
+! functions?  [.FALSE.]. 
+! (Must be set to true when using Ahmadi or Simonin models)
+  K_EPSILON = .TRUE. 
+  Mu_gmax = 1.E+03   ! max. value of the turbulent viscosity of the fluid
+     
+
+!*********************************************************************
+! Solid Phase
+!*********************************************************************
+  MMAX = 1     ! number of 'solids' phases   [1]
+  SOLIDS_MODEL(1) = 'TFM'           ! set the model type for the 
+                                    ! indicated solids
+
+  RO_S0 = 2.4   ! material particle density(s)
+  D_p0 = 0.012   ! particle diameter of phase 1
+
+  EP_STAR = 0.36   ! packed bed void fraction
+
+  C_e = 0.95   ! coefficient of restitution p-p
+
+! must be set when using either schaeffer (default) or friction
+  PHI = 30.0   ! angle of internal friction (in degrees)
+
+
+!*********************************************************************
+! Initial Conditions
+!*********************************************************************
+! domain --------------------
+  IC_X_w(1)       =       0.0 
+  IC_X_e(1)       =      10.0 
+  IC_Y_s(1)       =       0.0 
+  IC_Y_n(1)       =      10.0
+ 
+  IC_EP_g(1)      =       0.97 
+ 
+  IC_U_g(1)       =       0.0
+  IC_V_g(1)       =     500.0
+
+! since mw specified not density         
+  IC_P_g(1)       = 1013250.        
+  IC_T_g(1)       =     298.
+ 
+  IC_U_s(1,1)     =       0.
+  IC_V_s(1,1)     =     410.0
+  
+  IC_Theta_m(1,1) =    1000.   ! initial granular temperature
+                               ! (cm/s)^2
+  IC_K_Turb_G(1)  =     100.   ! initial turbulent kinetic energy
+  IC_E_Turb_G(1)  =    1000.   ! initial turbulent dissipation
+
+
+!*********************************************************************
+! Boundary Conditions
+!*********************************************************************
+! This is a 1D periodic system with a specified mass flux imposed
+! in the y-direction via delp_y/flux_g
+
+! setup no slip bc for the gas phase and use johnson-jackson bc with
+! modification for jenkins small frictional bc for the solids phase.
+
+! West wall --------------------
+  BC_X_w(4)       =       0.
+  BC_X_e(4)       =       0.
+  BC_Y_s(4)       =       0.
+  BC_Y_n(4)       =      10.
+  BC_TYPE(4) = 'PAR_SLIP_WALL'
+
+! invoke johnson-jackson partial slip bc for the solids
+  BC_JJ_PS(4) = 1
+
+! for free slip using psw bc define hw to zero 
+! always need to define wall velocities when using psw bc
+  BC_Uw_s(4,1)    =       0.0
+  BC_Vw_s(4,1)    =       0.0
+  BC_Ww_s(4,1)    =       0.0
+! since johnson-jackson partial slip bc is invoked these are not
+! needed
+#  BC_hw_s(4,1)   =       0.0   
+#  BC_Thetaw_m(4,1)  =      0.
+#  BC_C_Theta_m(4,1) =      0.
+
+! for no slip wall using psw bc leave hw undefined and set vw=0
+  BC_Uw_g(4)      =       0.0
+  BC_Vw_g(4)      =       0.0
+  BC_Ww_g(4)      =       0.0
+
+
+! East wall --------------------
+  BC_X_w(5)       =       10.
+  BC_X_e(5)       =       10.
+  BC_Y_s(5)       =        0.
+  BC_Y_n(5)       =       10. 
+  BC_TYPE(5) = 'PAR_SLIP_WALL'
+
+  BC_JJ_PS(5) = 1
+
+  BC_Uw_s(5,1)    =       0.0
+  BC_Vw_s(5,1)    =       0.0
+  BC_Ww_s(5,1)    =       0.0
+#  BC_hw_s(5,1)    =       0.0   
+#  BC_Thetaw_m(5,1)  =     0.
+#  BC_C_Theta_m(5,1) =     0.
+
+  BC_Uw_g(5)      =       0.0
+  BC_Vw_g(5)      =       0.0
+  BC_Ww_g(5)      =       0.0
+
+! use jenkins small frictional boundary condition [.FALSE.] 
+! (only used if granular_energy true and bc_jj_ps=1)
+  JENKINS = .T.
+
+! these must be set if jenkins when granular_energy true and bc_jj_ps=1
+  e_w = 0.7   ! coefficient of resitution for p-w   [1]
+  phi_w = 11.31   ! angle of internal friction at the walls (in degrees)
+                  ! (means tan_phi_w = 0.2)
+
+! this is unused when using the jenkins small frictional bc model 
+! variation on the bc_jj_ps
+#  PHIP = 0.2   ! specularity coefficient   [0.6]
+
+
+!*********************************************************************
+!  Output Control
+!*********************************************************************
+  RES_DT     =   0.1       ! Interval (s) to update restart (.RES) file 
+  OUT_DT     =  10.0       ! Interval (s) to update standard output (.OUT) file 
+
+
+! Interval (s) to update .SPX files 
+  SPX_DT(1)  =   0.1     ! Void fraction (EP_g)
+  SPX_DT(2)  =   0.1     ! Gas and solids pressure (P_g, P_star)
+  SPX_DT(3)  =   0.1     ! Gas velocity (U_g, V_g, W_g)
+  SPX_DT(4)  =   0.1     ! Solids velocity (U_s, V_s, W_s)
+  SPX_DT(5)  = 100.0     ! Solids density (ROP_s)
+  SPX_DT(6)  = 100.0     ! Gas and solids temp. (T_g, T_s1, T_s2)
+  SPX_DT(7)  = 100.0     ! Gas and solids mass fractions (X_g, X_s)
+  SPX_DT(8)  =   0.1     ! Granular Temperature (G)
+  SPX_DT(9)  =   0.1     ! User defined scalars
+
+  SPX_DT(10) = 100.0     ! reaction rates
+  SPX_DT(11) =   0.1     ! turbulence quantities (k-epsilon)
+
+
+! Display the residuals on the screen and messages about convergence
+! on the screen and in the .LOG file.  [.FALSE.]
+  FULL_LOG = .TRUE.
+
+! Interval in number of time steps at which .LOG file is written.  [25]
+  NLOG = 25
+
+! Specify residuals to be printed as 4-character strings.
+! in this case print out information on the mixture solids phase
+  RESID_STRING  = 'P0' 'P1' 'V0' 'V1' 'K0' 'G1'
+
+
+!*********************************************************************
+! Parallelization Controls
+!*********************************************************************
+! Number of grid blocks in X/Y/Z directions (i,j,k) for a distributed
+! memory parallel (DMP) simulation   [1]
+  NODESI = 1 
+  NODESJ = 1
+  NODESK = 1

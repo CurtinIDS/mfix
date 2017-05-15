@@ -1,0 +1,171 @@
+! Run-control section                                                           
+                                                                               
+  RUN_NAME              = 'WAVY'
+  DESCRIPTION           = 'Solid jet impinging on wavy surface'
+  RUN_TYPE              = 'NEW'             
+  UNITS                 = 'SI'
+  TIME                  = 0.0                  !start time
+  TSTOP                 = 3.0
+  DT                    = 1.0E-3               !time step
+  ENERGY_EQ             = .FALSE.              !do not solve energy eq
+  SPECIES_EQ            = .FALSE.    .FALSE.   !do not solve species eq
+  DT_MIN =  1.0E-8
+
+  DT_MAX = 1.0E-2
+
+  MAX_NIT               = 50
+
+  TOL_RESID             = 1.0E-4
+
+  NORM_g = 1.0
+  NORM_s = 1.0
+
+!===============================================================================
+! Cartesian Grid - Define geometry from user-defined function
+!===============================================================================
+
+  CARTESIAN_GRID = .TRUE.
+
+  N_USR_DEF = 1
+
+  PRINT_PROGRESS_BAR = .TRUE.
+  WRITE_DASHBOARD = .TRUE.
+
+!===============================================================================
+! VTK file options
+!===============================================================================
+  WRITE_VTK_FILES  = .TRUE.
+  TIME_DEPENDENT_FILENAME = .TRUE.
+  VTK_DT = 0.1
+
+
+! Available flags for VTK_VAR are :
+!   1 : Void fraction (EP_g)
+!   2 : Gas pressure, solids pressure (P_g, P_star)
+!   3 : Gas velocity (U_g, V_g, W_g)
+!   4 : Solids velocity (U_s, V_s, W_s)
+!   5 : Solids density (ROP_s)
+!   6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!   7 : Gas and solids mass fractions (X_g, X-s)
+!   8 : Granular temperature (G)
+!   9 : NOT AVAILABLE (User defined scalars)
+!  10 : NOT AVAILABLE (Reaction Rates)
+!  11 : NOT AVAILABLE (Turbulence quantities (k and ε))
+!  12 : Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+! 100 : Processor assigned to scalar cell (Partition)
+! 101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3 4 101  
+
+! Geometry Section                                                              
+                                                                               
+  COORDINATES           = 'cartesian' 
+
+  XLENGTH               = 1.0
+  YLENGTH               = 0.1
+
+!GRID A
+  IMAX                  =  200                ! cells in i direction
+  JMAX                  =  50                 ! cells in j direction
+
+  NO_K = .TRUE.
+
+! Gas-phase Section                                                             
+ 
+  MU_g0                 = 1.8E-5               !constant gas viscosity
+  MW_avg                = 29.0
+ 
+! Solids-phase Section                                                          
+  
+  MMAX = 1
+  RO_s0                 = 2640.0               !solids density
+  D_p0                  = 0.000213             !particle diameter     
+  e                     = 0.8                  !restitution coefficient
+  Phi                   = 15.0                 !angle of internal friction
+  EP_star               = 0.42                 !void fraction at minimum
+
+
+  
+! Initial Conditions Section                                                    
+  
+
+    ! 1. BED
+  IC_X_w(1)             =    0.0    
+  IC_X_e(1)             =    1.0 
+  IC_Y_s(1)             =    0.0
+  IC_Y_n(1)             =    0.1
+                                  
+  IC_EP_g(1)            =   1.0
+  IC_U_g(1)             =   2.0 
+  IC_V_g(1)             =   0.0 
+  IC_U_s(1,1)           =   0.0 
+  IC_V_s(1,1)           =   0.0 
+
+  IC_T_g( 1)            =   298.0        
+
+                                                                               
+!  Boundary Conditions Section                                                  
+                   
+  BC_X_w(1)             =   0.0     0.0     0.0      1.0    0.0
+  BC_X_e(1)             =   0.0     0.0     0.0      1.0    1.0 
+  BC_Y_s(1)             =   0.0     0.045   0.055    0.0    0.1
+  BC_Y_n(1)             =   0.045   0.055   0.1      0.1    0.1
+
+  BC_TYPE(1)            =    'MI'   'MI'    'MI'     'PO'   'PO'
+
+  BC_EP_g(1)            =   1.0     0.42    1.0
+  BC_U_g(1)             =   2.0     0.0     2.0
+  BC_V_g(1)             =   0.0     0.0     0.0
+  BC_U_s(1,1)           =   0.0     2.0     0.0
+  BC_V_s(1,1)           =   0.0     0.0     0.0
+
+  BC_P_g(1)             =  1.013E5  1.013E5 1.013E5 1.013E5  1.013E5  
+  BC_T_g(1)             =  298.0    298.0   298.0    298.0    298.0      
+
+                    
+! cut-cell boundary condition
+  BC_TYPE(12)           = 'CG_NSW'
+
+!                                                                               
+!  Output Control                                                               
+!                  
+  OUT_DT                = 10.                  !write text file WAVY.OUT
+                                               !  every 10 s
+  RES_DT                = 100.0                !write binary restart file
+                                               !  WAVY.RES every 100.0 s
+  NLOG                  = 25                   !write logfile WAVY.LOG 
+                                               !every 25 time steps
+  FULL_LOG              = .TRUE.               !display residuals on screen
+
+  Resid_string    = "P0", "P1", "U0", "U1","V0", "V1"
+
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.1  0.1      0.1  0.1  100.      100. 100.    100.   100.     
+                                                                                
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1  NODESK = 1
+
+  LEQ_IT(1)     = 50
+  LEQ_TOL       = 9*1D-12
+  LEQ_PC        = 9*'NONE'
+  LEQ_METHOD    = 9*2
+
+!  Sweep Direction
+
+! LEQ_SWEEP(1) = 'ISIS'
+! LEQ_SWEEP(2) = 'ISIS'
+! LEQ_SWEEP(3) = 'ISIS'
+! LEQ_SWEEP(4) = 'ISIS'
+! LEQ_SWEEP(5) = 'ISIS'
+! LEQ_SWEEP(6) = 'ISIS'
+! LEQ_SWEEP(7) = 'ISIS'
+! LEQ_SWEEP(8) = 'ISIS'
+! LEQ_SWEEP(9) = 'ISIS'
+
+! # Maximum iterations for linear solve
+
+

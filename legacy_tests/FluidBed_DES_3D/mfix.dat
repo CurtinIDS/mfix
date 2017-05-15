@@ -1,0 +1,284 @@
+########################################################################
+# 3D-DEM Cylinder                                                      #
+#                                                                      #
+# Author: J. Musser                                      Date: 02-2014 #
+#                                                                      #
+########################################################################
+
+  RUN_NAME    = 'CYL'
+  DESCRIPTION = '3D Cylinder with discrete solids (STL geometry).'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_TYPE = 'NEW'
+  UNITS = 'CGS'
+
+  Time   =   0.0
+  Tstop  =   0.1
+
+  DT =     @(1.0/128.0)
+  DT_MAX = @(1.0/128.0)
+
+  ENERGY_EQ  = .F.
+  SPECIES_EQ = .F.   .F.
+
+  CALL_USR = .F.
+
+  GENER_PART_CONFIG = .T.
+
+  DES_INTERP_ON = .T.
+  DES_INTERP_MEAN_FIELDS = .T.
+
+  DES_INTERP_SCHEME = 'GARG_2012'
+
+  DRAG_TYPE = 'GIDASPOW'
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+! Set the max-number of iterations before "stalled"
+  MAX_NIT = 50
+
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH =   1.2   IMAX = 12
+  ZLENGTH =   1.2   KMAX = 12
+  YLENGTH =   5.0   JMAX = 25
+
+  CARTESIAN_GRID = .T.
+
+  USE_STL = .T.
+  STL_BC_ID = 3
+
+  TX_STL = -2.0
+  TY_STL =  0.0
+  TZ_STL = -2.0
+
+  FAC_DIM_MAX_CUT_CELL = 1.0
+
+  PRINT_PROGRESS_BAR = .T.
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+! Gas Section
+!---------------------------------------------------------------------//
+  MU_g0 = 1.8E-4    ! constant gas viscosity
+  RO_g0 = 1.2E-3    ! constant gas density
+
+
+! Particle Section
+!---------------------------------------------------------------------//
+
+  MMAX = 1
+
+  PARTICLES = 5000   ! Number of particles
+
+  KN = 1.0d+6        ! Normal inter-particle collision spring constant
+  KT_FAC = @(2/7)    ! Tangential spring factor = KT/KN
+  MEW = 0.0          ! Inter-particle friction coeffienct
+
+  KN_W = 1.0d+6      ! Normal particle-wall collision spring constant
+  KT_W_FAC = @(2/7)  ! Tangential spring factor = KT_W/KN_W
+  MEW_W = 0.0        ! Particle-wall friction coefficient
+
+  DES_EN_INPUT =      1.d0
+  DES_EN_WALL_INPUT = 1.d0
+
+  NFACTOR = 0        ! No initial settling
+
+! Solids phase 1:
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  RO_s0(1) =   2.00   ! solids density
+  D_p0(1) =    0.04   ! particle diameter
+
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+! Freeboard
+!---------------------------------------------------------------------//
+  IC_X_w(1) =       0.0     ! (cm)
+  IC_X_e(1) =       1.2     ! (cm)
+  IC_Z_b(1) =       0.0     ! (cm)
+  IC_Z_t(1) =       1.2     ! (cm)
+  IC_Y_n(1) =       5.0     ! (cm)
+  IC_Y_s(1) =       0.0     ! (cm)
+
+  IC_EP_g(1) =      1.0     ! (-)
+
+  IC_P_g(1) =       0.0     ! (bary)
+  IC_T_g(1) =     300.0     ! (K)
+
+  IC_U_g(1) =       0.0     ! (cm/sec)
+  IC_W_g(1) =       0.0     ! (cm/sec)
+  IC_V_g(1) =       0.0     ! (cm/sec)
+
+
+! Bed
+!---------------------------------------------------------------------//
+  IC_X_w(2) =       0.0     ! (cm)
+  IC_X_e(2) =       1.2     ! (cm)
+  IC_Z_b(2) =       0.0     ! (cm)
+  IC_Z_t(2) =       1.2     ! (cm)
+  IC_Y_n(2) =       2.0     ! (cm)
+  IC_Y_s(2) =       0.0     ! (cm)
+
+  IC_EP_g(2) =      0.85    ! (-)
+
+  IC_P_g(2) =       0.0     ! (bary)
+  IC_T_g(2) =     300.0     ! (K)
+
+  IC_U_g(2) =       0.0     ! (cm/sec)
+  IC_W_g(2) =       0.0     ! (cm/sec)
+  IC_V_g(2) =       0.0     ! (cm/sec)
+
+  IC_EP_s(2,1) =    0.15    ! (-)
+
+  IC_U_s(2,1) =     0.0     ! (cm/sec)
+  IC_V_s(2,1) =     0.0     ! (cm/sec)
+  IC_W_s(2,1) =     0.0     ! (cm/sec)
+
+  IC_THETA_M(2,1) = 0.0
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+
+! Pressure Outlet
+!---------------------------------------------------------------------//
+  BC_X_w(1) =       0.0     ! (m)
+  BC_X_e(1) =       1.2     ! (m)
+  BC_Z_b(1) =       0.0     ! (m)
+  BC_Z_t(1) =       1.2     ! (m)
+  BC_Y_s(1) =       5.0     ! (m)
+  BC_Y_n(1) =       5.0     ! (m)
+
+  BC_TYPE(1) =      'PO'
+
+  BC_P_g(1)   =     0.0     ! (barye)
+  BC_T_g(1)   =   300.0     ! (K)
+
+
+! Walls:
+!---------------------------------------------------------------------//
+  BC_TYPE(3) = 'CG_NSW'
+
+
+
+! Distributor: (Gas only)
+!---------------------------------------------------------------------//
+
+  BC_Y_s(11:82) =  72*0.0
+  BC_Y_n(11:82) =  72*0.0
+
+  BC_X_w(11:46) =  6*0.0 6*0.1 6*0.2 6*0.3 6*0.4 6*0.5  ! (cm)
+  BC_X_e(11:46) =  6*0.1 6*0.2 6*0.3 6*0.4 6*0.5 6*0.6  ! (cm)
+
+  BC_X_w(47:82) =  6*0.6 6*0.7 6*0.8 6*0.9 6*1.0 6*1.1  ! (cm)
+  BC_X_e(47:82) =  6*0.7 6*0.8 6*0.9 6*1.0 6*1.1 6*1.2  ! (cm)
+
+  BC_Z_b(11:16) =    0.0   0.2   0.4   0.6   0.8   1.0  ! (cm)
+  BC_Z_t(11:16) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+
+  BC_Z_b(17:22) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+  BC_Z_t(17:22) =    0.2   0.4   0.6   0.8   1.0   1.2  ! (cm)
+
+  BC_Z_b(23:28) =    0.0   0.2   0.4   0.6   0.8   1.0  ! (cm)
+  BC_Z_t(23:28) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+
+  BC_Z_b(29:34) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+  BC_Z_t(29:34) =    0.2   0.4   0.6   0.8   1.0   1.2  ! (cm)
+
+  BC_Z_b(35:40) =    0.0   0.2   0.4   0.6   0.8   1.0  ! (cm)
+  BC_Z_t(35:40) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+
+  BC_Z_b(41:46) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+  BC_Z_t(41:46) =    0.2   0.4   0.6   0.8   1.0   1.2  ! (cm)
+
+  BC_Z_b(47:52) =    0.0   0.2   0.4   0.6   0.8   1.0  ! (cm)
+  BC_Z_t(47:52) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+
+  BC_Z_b(53:58) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+  BC_Z_t(53:58) =    0.2   0.4   0.6   0.8   1.0   1.2  ! (cm)
+
+  BC_Z_b(59:64) =    0.0   0.2   0.4   0.6   0.8   1.0  ! (cm)
+  BC_Z_t(59:64) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+
+  BC_Z_b(65:70) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+  BC_Z_t(65:70) =    0.2   0.4   0.6   0.8   1.0   1.2  ! (cm)
+
+  BC_Z_b(71:76) =    0.0   0.2   0.4   0.6   0.8   1.0  ! (cm)
+  BC_Z_t(71:76) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+
+  BC_Z_b(77:82) =    0.1   0.3   0.5   0.7   0.9   1.1  ! (cm)
+  BC_Z_t(77:82) =    0.2   0.4   0.6   0.8   1.0   1.2  ! (cm)
+
+
+  BC_TYPE(11:82) =   72*'MI'
+
+  BC_EP_g(11:82) =   72*1.0     ! (-)
+
+  BC_P_g(11:82) =    72*0.0     ! (bary)
+  BC_T_g(11:82) =  72*300.0     ! (K)
+
+  BC_U_g(11:82) =    72*0.0     ! (cm/sec)
+  BC_W_g(11:82) =    72*0.0     ! (cm/sec)
+  BC_V_g(11:82) =  72*160.0     ! (cm/sec)
+
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  RES_DT = 0.10
+
+  SPX_DT(1) = @(1.0/32.0) ! EP_g
+  SPX_DT(2:9) = 8*1.00
+
+  PRINT_DES_DATA = .F.
+
+  GROUP_RESID = .T.
+
+  NLOG = 50
+  FULL_LOG = .T.
+  WRITE_DASHBOARD = .T.
+
+  WRITE_VTK_FILES  = .T.
+  TIME_DEPENDENT_FILENAME = .T.
+  VTK_DT = @(1.0/32.0)
+
+! Available flags for VTK_VAR are :
+!  1 : Void fraction (EP_g)
+!  2 : Gas pressure, solids pressure (P_g, P_star)
+!  3 : Gas velocity (U_g, V_g, W_g)
+!  4 : Solids velocity (U_s, V_s, W_s)
+!  5 : Solids density (ROP_s)
+!  6 : Gas and solids temperature (T_g, T_s1, T_s2)
+!  7 : Gas and solids mass fractions (X_g, X_s)
+!  8 : Granular temperature (G)
+! 11 : Turbulence quantities (k and ε)
+! 12 : Gas Vorticity magnitude and Lambda_2 (VORTICITY, LAMBDA_2)
+!100 : Processor assigned to scalar cell (Partition)
+!101 : Boundary condition flag for scalar cell (BC_ID)
+
+  VTK_VAR = 1 2 3
+
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  2  NODESJ =  1  NODESK =  2
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .T.
+
+  BATCH_WALLCLOCK = 172500  ! 2 Days
+  TERM_BUFFER =        900  ! 1 Hr

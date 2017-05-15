@@ -1,0 +1,157 @@
+! This problem has two conducting regions with a specified jump in temperature.
+! The jump condition is implemented through the solve_energy_eq subroutine.
+! C(1) gives the value of the jump on the left and C(2), the right.  A linear
+! left to right variation is used.
+#                                                                               
+# Run-control section                                                           
+#                                                                               
+  RUN_NAME = 'FCELL01'                                                          
+  DESCRIPTION = 'Two conducting regions with a jump'                             
+  RUN_TYPE = 'new'                                                              
+  UNITS = 'cgs'                                                                 
+  MOMENTUM_X_EQ = .FALSE. .FALSE.                                    
+  MOMENTUM_Y_EQ = .FALSE. .FALSE.                                    
+  MOMENTUM_Z_EQ = .FALSE. .FALSE.                                    
+  ENERGY_EQ = .TRUE.                                                           
+  SPECIES_EQ = .FALSE.    .FALSE.   
+  MAX_NIT = 5000
+  CALL_USR = .TRUE.
+  TOL_RESID_T = 1.E-5
+#                                                                               
+# Geometry Section                                                              
+#                                                                               
+  COORDINATES = 'cartesian'                                                   
+                                                                                
+  XLENGTH  =   1.0    IMAX =   10                                              
+  YLENGTH  =   2.0    JMAX =   20                                                                                                                               
+  NO_K     = .TRUE.  
+                                                            
+#                                                                               
+# Gas-phase Section                                                             
+#  
+
+  C(1) = 1000.
+  C(2) = 0.
+  RO_g0 = 1.
+  MU_g0 = 1.8E-4                                                                
+  MW_avg = 29.  
+  C_pg0 = 1. 
+  k_g0 = 1000.0   
+  gravity = 0.                                                            
+#                                                                               
+# Solids-phase Section                                                          
+# 
+  MMAX = 0                                                                              
+#                                                                               
+# Initial Conditions Section                                                    
+#                                                                               
+       !              Bed                                          
+  IC_X_w           =  0.0                                       
+  IC_X_e           =  1.0                                      
+  IC_Y_s           =  0.0                                      
+  IC_Y_n           =  2.0                                        
+                                                                                
+  IC_EP_g          =  1.0                                       
+                                                                                
+  IC_U_g           =  0.0                                       
+  IC_V_g           =  0.0                                      
+                                                                                
+  IC_T_g           = 300.0                                  
+                                                                                
+#                                                                               
+#  Boundary Conditions Section                                                  
+#                                                                               
+       !              South                                        
+  BC_X_w           =  0.0                                         
+  BC_X_e           =  1.0                                      
+  BC_Y_s           =  0.0                                         
+  BC_Y_n           =  0.0                                        
+                                                                                
+  BC_TYPE          = 'NSW'  
+                                                                                
+  BC_EP_g          =  1.0                                               
+  BC_Tw_g          =  1000.
+                                                                                 
+       !                North                                       
+  BC_X_w(5)        =     0.0                                        
+  BC_X_e(5)        =     1.0                                       
+  BC_Y_s(5)        =     2.0                                        
+  BC_Y_n(5)        =     2.0                                       
+                                                                                
+  BC_TYPE(5)       =  'NSW'  
+                                                                                
+  BC_EP_g(5)       =   1.0                                                
+  BC_Tw_g(5)       =  0.                                                      
+  BC_hw_T_g(5)     = 0.0
+  BC_C_T_g(5)      = -250.
+  
+        !                divider-north                                       
+  BC_X_w(35)        =     0.0   .1  .2  .3  .4  .5  .6  .7  .8  .9                                       
+  BC_X_e(35)        =     0.1   .2  .3  .4  .5  .6  .7  .8  .9  1.                                  
+  BC_Y_s(35)        =     10*1.0                                        
+  BC_Y_n(35)        =     10*1.1                                       
+                                                                                
+  BC_TYPE(35)       =  10*'NSW'  
+                                                                                
+  BC_EP_g(35)       =   10*1.0                                                
+  BC_Tw_g(35)       =  10*800.                                                      
+!  BC_hw_T_g(35)     = 10*0.0
+!  BC_C_T_g(35)      = 10*0.0
+  
+       !                divider-south                                       
+  BC_X_w(45)        =     0.0  .1  .2  .3  .4  .5  .6  .7  .8  .9                                        
+  BC_X_e(45)        =     0.1  .2  .3  .4  .5  .6  .7  .8  .9  1.0                                     
+  BC_Y_s(45)        =     10*0.9                                        
+  BC_Y_n(45)        =     10*1.0                                       
+                                                                                
+  BC_TYPE(45)       =  10*'NSW'  
+                                                                                
+  BC_EP_g(45)       =   10*1.0                                                
+  BC_Tw_g(45)       =  10*0.                                                      
+  BC_hw_T_g(45)     = 10*0.0
+  BC_C_T_g(45)      = 10*-200.0
+    
+                         
+       !                East                                       
+  BC_X_w(15)        =     0.0                                        
+  BC_X_e(15)        =     0.0                                       
+  BC_Y_s(15)        =     0.0                                        
+  BC_Y_n(15)        =     2.0                                       
+                                                                                
+  BC_TYPE(15)       =  'NSW'  
+                                                                                
+  BC_EP_g(15)       =   1.0                                                
+  BC_Tw_g(15)       =  0.                                                      
+  BC_hw_T_g(15)     = 0.0
+  BC_C_T_g(15)      = 0.0
+  
+                         
+       !                West                                       
+  BC_X_w(25)        =     1.0                                        
+  BC_X_e(25)        =     1.0                                       
+  BC_Y_s(25)        =     0.0                                        
+  BC_Y_n(25)        =     2.0                                       
+                                                                                
+  BC_TYPE(25)       =  'NSW'  
+                                                                                
+  BC_EP_g(25)       =   1.0                                                
+  BC_Tw_g(25)       =  0.                                                      
+  BC_hw_T_g(25)     = 0.0
+  BC_C_T_g(25)      = 0.0
+  
+
+                        
+#                                                                               
+#  Output Control                                                               
+#                  
+  OUT_DT = 10.                                                             
+  RES_DT = 0.01                                                                 
+        !                                                                       
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g                           
+        !      P_star    V_g  V_s            T_s1 X_s                           
+        !                W_g  W_s            T_s2                               
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      .10   100.   100.0   100.                                                                                  
+  NLOG   = 25                                                                   
+                                                                                
+  FULL_LOG = .TRUE.
+  RESID_STRING = 'T0'                                                            

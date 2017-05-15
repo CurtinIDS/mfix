@@ -1,0 +1,794 @@
+!
+!  Hopper discharge with multiple particles
+!
+!  Please see the readme.txt for more details
+!
+                           
+! Run-control section                                                           
+
+  RUN_NAME 		= 'HOPPER'             
+  DESCRIPTION 		= 'hopper discharge'
+  RUN_TYPE 		= 'new'             
+  UNITS 		= 'cgs'
+  TIME  		= 0.0				!start time
+  TSTOP 		= 2.0E-2                        !increase it to 12.0 for actual runs
+  DT 			= 1.0E-4			!time step
+  ENERGY_EQ 		= .FALSE.			!do not solve energy eq
+  SPECIES_EQ 		= .FALSE.    .FALSE. 	.FALSE.	!do not solve species eq
+  DETECT_STALL          = .FALSE.
+
+
+! Geometry Section                                                              
+
+  COORDINATES 		= 'cartesian' 
+  XLENGTH  		= 50.0				!radius
+  IMAX 			= 40 				!cells in i direction
+  YLENGTH  		= 105.0				!height
+  JMAX 			= 61 				!cells in j direction
+  NO_K     		= .TRUE. 			!2D, no k direction
+
+  DX                    = 15*1 10*2 15*1
+  DY                    = 37*2 17*1 7*2
+  CLOSE_PACKED 	        = .TRUE.  .TRUE.
+
+!  FEDORS_LANDEL = .TRUE.                        !compute ep_star using Fedors_landel correlation
+  YU_STANDISH = .TRUE.                          !compute ep_star using Yu_Standish correlation
+!
+
+! Gas-phase Section                                                             
+ 
+  MU_g0 		= 1.8E-4			!constant gas viscosity
+  RO_g0			= 1.2E-3			!constant gas density
+
+ 
+! Solids-phase Section                                                          
+  MMAX			= 2 
+  RO_s0   		= 2.5d0  2.5d0			!solids density
+  D_p0     		= 0.02d0  0.1d0			!particle diameter     
+  e       		= 0.8 				!restitution coefficient
+  Phi    		= 20.0				!angle of internal friction
+  EP_star 		= 0.35				!void fraction at minimum
+  C_f			= 0.1d0				!fluidization
+
+  
+! Initial Conditions Section                                                    
+  
+! 1. Whole Domain                                      
+  IC_X_w(1)           	=  0.0		
+  IC_X_e(1)           	=  50.0		
+  IC_Y_s(1)          	=  0.0
+  IC_Y_n(1)           	=  105.0 
+                                			!initial values in the region
+  IC_EP_g(1)          	=  1.0				!void fraction	
+  IC_ROP_s(1,1)         =  0.0d0
+  IC_ROP_s(1,2)         =  0.0d0 
+  
+  IC_U_g(1)           	=  0.0				!radial gas velocity
+  IC_V_g(1)          	=  0.0				!axial gas velocity
+  IC_U_s(1,1)      	=  0.0				!radial solids velocity 
+  IC_V_s(1,1)      	=  0.0 				!axial solids velocity
+  IC_U_s(1,2)      	=  0.0				!radial solids velocity 
+  IC_V_s(1,2)      	=  0.0 
+  
+! 2. Hopper                                       
+  IC_X_w(2)           	=   15.0		
+  IC_X_e(2)           	=   35.0
+  IC_Y_s(2)           	=   75.0
+  IC_Y_n(2)           	=   76.0
+                                  
+  IC_EP_g(2)         	=   0.4                                  
+  IC_ROP_s(2,1)         =   0.75
+  IC_ROP_s(2,2) 	=   0.750                        
+  IC_U_g(2)           	=   0.0
+  IC_V_g(2)           	=   0.0d0                                 
+  IC_U_s(2,1)      	=   0.0
+  IC_V_s(2,1)      	=   0.0                                  
+  IC_U_s(2,2)      	=   0.0
+  IC_V_s(2,2)      	=   0.0                              				 
+!  3. Hopper                                       
+  IC_X_w(3)           	=   14.0
+  IC_X_e(3)           	=   36.0			
+  IC_Y_s(3)           	=   76.0
+  IC_Y_n(3)           	=   77.0
+                                  
+  IC_EP_g(3)         	=   0.4                                  
+  IC_ROP_s(3,1)         =   0.75
+  IC_ROP_s(3,2) 	=   0.750                        
+  IC_U_g(3)           	=   0.0
+  IC_V_g(3)           	=   0.0d0                                 
+  IC_U_s(3,1)      	=   0.0
+  IC_V_s(3,1)      	=   0.0                                  
+  IC_U_s(3,2)      	=   0.0
+  IC_V_s(3,2)      	=   0.0     
+  
+!  4. Hopper                                       
+  IC_X_w(4)           	=   13.0	
+  IC_X_e(4)           	=   37.0		
+  IC_Y_s(4)           	=   77.0
+  IC_Y_n(4)           	=   78.0
+                                  
+  IC_EP_g(4)         	=   0.4                                  
+  IC_ROP_s(4,1)         =   0.75
+  IC_ROP_s(4,2) 	=   0.750                        
+  IC_U_g(4)           	=   0.0
+  IC_V_g(4)           	=   0.0d0                                 
+  IC_U_s(4,1)      	=   0.0
+  IC_V_s(4,1)      	=   0.0                                  
+  IC_U_s(4,2)      	=   0.0
+  IC_V_s(4,2)      	=   0.0 
+
+!  5. Hopper                                       
+  IC_X_w(5)           	=   12.0
+  IC_X_e(5)           	=   38.0	
+  IC_Y_s(5)           	=   78.0
+  IC_Y_n(5)           	=   79.0
+                                  
+  IC_EP_g(5)         	=   0.4                                  
+  IC_ROP_s(5,1)         =   0.75
+  IC_ROP_s(5,2) 	=   0.750                        
+  IC_U_g(5)           	=   0.0
+  IC_V_g(5)           	=   0.0d0                                 
+  IC_U_s(5,1)      	=   0.0
+  IC_V_s(5,1)      	=   0.0                                  
+  IC_U_s(5,2)      	=   0.0
+  IC_V_s(5,2)      	=   0.0
+    
+!  6. Hopper                                       
+  IC_X_w(6)           	=   11.0
+  IC_X_e(6)           	=   39.0
+  IC_Y_s(6)           	=   79.0
+  IC_Y_n(6)           	=   80.0
+                                  
+  IC_EP_g(6)         	=   0.4                                  
+  IC_ROP_s(6,1)         =   0.75
+  IC_ROP_s(6,2) 	=   0.750                        
+  IC_U_g(6)           	=   0.0
+  IC_V_g(6)           	=   0.0d0                                 
+  IC_U_s(6,1)      	=   0.0
+  IC_V_s(6,1)      	=   0.0                                  
+  IC_U_s(6,2)      	=   0.0
+  IC_V_s(6,2)      	=   0.0
+    
+!  7. Hopper                                       
+  IC_X_w(7)           	=   10.0	
+  IC_X_e(7)           	=   40.0		
+  IC_Y_s(7)           	=   80.0
+  IC_Y_n(7)           	=   81.0
+                                  
+  IC_EP_g(7)         	=   0.4                                  
+  IC_ROP_s(7,1)         =   0.75
+  IC_ROP_s(7,2) 	=   0.750                        
+  IC_U_g(7)           	=   0.0
+  IC_V_g(7)           	=   0.0d0                                 
+  IC_U_s(7,1)      	=   0.0
+  IC_V_s(7,1)      	=   0.0                                  
+  IC_U_s(7,2)      	=   0.0
+  IC_V_s(7,2)      	=   0.0
+    
+!  8. Hopper                                       
+  IC_X_w(8)           	=   9.0	
+  IC_X_e(8)           	=   41.0
+  IC_Y_s(8)           	=   81.0
+  IC_Y_n(8)           	=   82.0
+                                  
+  IC_EP_g(8)         	=   0.4                                  
+  IC_ROP_s(8,1)         =   0.75
+  IC_ROP_s(8,2) 	=   0.750                        
+  IC_U_g(8)           	=   0.0
+  IC_V_g(8)           	=   0.0d0                                 
+  IC_U_s(8,1)      	=   0.0
+  IC_V_s(8,1)      	=   0.0                                  
+  IC_U_s(8,2)      	=   0.0
+  IC_V_s(8,2)      	=   0.0
+    
+!  9. Hopper                                       
+  IC_X_w(9)           	=   8.0			
+  IC_X_e(9)           	=   42.0	
+  IC_Y_s(9)           	=   82.0
+  IC_Y_n(9)           	=   83.0
+                                  
+  IC_EP_g(9)         	=   0.4                                  
+  IC_ROP_s(9,1)         =   0.75
+  IC_ROP_s(9,2) 	=   0.750                        
+  IC_U_g(9)           	=   0.0
+  IC_V_g(9)           	=   0.0d0                                 
+  IC_U_s(9,1)      	=   0.0
+  IC_V_s(9,1)      	=   0.0                                  
+  IC_U_s(9,2)      	=   0.0
+  IC_V_s(9,2)      	=   0.0
+    
+!  10. Hopper                                       
+  IC_X_w(10)           	=   7.0		
+  IC_X_e(10)           	=   43.0
+  IC_Y_s(10)           	=   83.0
+  IC_Y_n(10)           	=   84.0
+                                  
+  IC_EP_g(10)         	=   0.4                                  
+  IC_ROP_s(10,1)        =   0.75
+  IC_ROP_s(10,2) 	=   0.750                        
+  IC_U_g(10)           	=   0.0
+  IC_V_g(10)           	=   0.0d0                                 
+  IC_U_s(10,1)      	=   0.0
+  IC_V_s(10,1)      	=   0.0                                  
+  IC_U_s(10,2)      	=   0.0
+  IC_V_s(10,2)      	=   0.0
+    
+!  11. Hopper                                       
+  IC_X_w(11)           	=   6.0		
+  IC_X_e(11)           	=   44.0
+  IC_Y_s(11)           	=   84.0
+  IC_Y_n(11)           	=   85.0
+                                  
+  IC_EP_g(11)         	=   0.4                                  
+  IC_ROP_s(11,1)        =   0.75
+  IC_ROP_s(11,2) 	=   0.750                        
+  IC_U_g(11)           	=   0.0
+  IC_V_g(11)           	=   0.0d0                                 
+  IC_U_s(11,1)      	=   0.0
+  IC_V_s(11,1)      	=   0.0                                  
+  IC_U_s(11,2)      	=   0.0
+  IC_V_s(11,2)      	=   0.0
+    
+!  12. Hopper                                       
+  IC_X_w(12)           	=   5.0
+  IC_X_e(12)           	=   45.0
+  IC_Y_s(12)           	=   85.0
+  IC_Y_n(12)           	=   86.0
+                                  
+  IC_EP_g(12)         	=   0.4                                  
+  IC_ROP_s(12,1)        =   0.75
+  IC_ROP_s(12,2) 	=   0.750                        
+  IC_U_g(12)           	=   0.0
+  IC_V_g(12)           	=   0.0d0                                 
+  IC_U_s(12,1)      	=   0.0
+  IC_V_s(12,1)      	=   0.0                                  
+  IC_U_s(12,2)      	=   0.0
+  IC_V_s(12,2)      	=   0.0
+    
+!  13. Hopper                                       
+  IC_X_w(13)           	=   4.0
+  IC_X_e(13)           	=   46.0
+  IC_Y_s(13)           	=   86.0
+  IC_Y_n(13)           	=   87.0
+                                  
+  IC_EP_g(13)         	=   0.4                                  
+  IC_ROP_s(13,1)        =   0.75
+  IC_ROP_s(13,2) 	=   0.750                        
+  IC_U_g(13)           	=   0.0
+  IC_V_g(13)           	=   0.0d0                                 
+  IC_U_s(13,1)      	=   0.0
+  IC_V_s(13,1)      	=   0.0                                  
+  IC_U_s(13,2)      	=   0.0
+  IC_V_s(13,2)      	=   0.0
+    
+!  14. Hopper                                       
+  IC_X_w(14)           	=   3.0
+  IC_X_e(14)           	=   47.0
+  IC_Y_s(14)           	=   87.0
+  IC_Y_n(14)           	=   88.0
+                                  
+  IC_EP_g(14)         	=   0.4                                  
+  IC_ROP_s(14,1)        =   0.75
+  IC_ROP_s(14,2) 	=   0.750                        
+  IC_U_g(14)           	=   0.0
+  IC_V_g(14)           	=   0.0d0                                 
+  IC_U_s(14,1)      	=   0.0
+  IC_V_s(14,1)      	=   0.0                                  
+  IC_U_s(14,2)      	=   0.0
+  IC_V_s(14,2)      	=   0.0
+
+!  15. Hopper                                       
+  IC_X_w(15)           	=   2.0		
+  IC_X_e(15)           	=   48.0		
+  IC_Y_s(15)           	=   88.0
+  IC_Y_n(15)           	=   100.0
+                                  
+  IC_EP_g(15)         	=   0.4                                  
+  IC_ROP_s(15,1)        =   0.75
+  IC_ROP_s(15,2) 	=   0.750                        
+  IC_U_g(15)           	=   0.0
+  IC_V_g(15)           	=   0.0d0                                 
+  IC_U_s(15,1)      	=   0.0
+  IC_V_s(15,1)      	=   0.0                                  
+  IC_U_s(15,2)      	=   0.0
+  IC_V_s(15,2)      	=   0.0   
+
+				                                                
+!  Boundary Conditions Section                                                  
+            
+ 
+       ! 1. Bottom Surface
+  BC_X_w(1)		=  0.0				
+  BC_X_e(1)		=  50.0				
+  BC_Y_s(1)		=  0.0 
+  BC_Y_n(1)		=  0.0
+
+  BC_TYPE(1)		= 'MI'				
+
+  BC_EP_g(1)		=  1.0 
+  BC_U_g(1)		=  0.0 
+  BC_V_g(1)		=  0.0 
+  BC_P_g(1)		=  0.0			
+
+       ! 2. Top Surface
+  BC_X_w(2)		=   0.0			
+  BC_X_e(2)		=   50.0	
+  BC_Y_s(2)		=  105.0
+  BC_Y_n(2)		=  105.0
+
+  BC_TYPE(2)		=  'PO' 	
+  BC_P_g(2)		=  0.0                                 
+
+       ! 3. Hopper Wall                                       
+  IS_X_w(3)		=  15.0				
+  IS_X_e(3)		=  15.0				
+  IS_Y_s(3)		=  75.0 
+  IS_Y_n(3)		=  76.0
+
+  IS_TYPE(3)		= 'IP'				
+
+       ! 4. Hopper Wall                                       
+  IS_X_w(4)		=  14.0				
+  IS_X_e(4)		=  15.0				
+  IS_Y_s(4)		=  76.0 
+  IS_Y_n(4)		=  76.0
+
+  IS_TYPE(4)		= 'IP'				
+
+     ! 5. Hopper Wall                                       
+  IS_X_w(5)		=  14.0				
+  IS_X_e(5)		=  14.0				
+  IS_Y_s(5)		=  76.0 
+  IS_Y_n(5)		=  77.0
+
+  IS_TYPE(5)		= 'IP'				
+
+       ! 6. Hopper Wall                                       
+  IS_X_w(6)		=  13.0				
+  IS_X_e(6)		=  14.0				
+  IS_Y_s(6)		=  77.0 
+  IS_Y_n(6)		=  77.0
+
+  IS_TYPE(6)		= 'IP'				
+
+     ! 7. Hopper Wall                                       
+  IS_X_w(7)		=  13.0				
+  IS_X_e(7)		=  13.0				
+  IS_Y_s(7)		=  77.0 
+  IS_Y_n(7)		=  78.0
+
+  IS_TYPE(7)		= 'IP'				
+
+       ! 8. Hopper Wall                                       
+  IS_X_w(8)		=  12.0				
+  IS_X_e(8)		=  13.0				
+  IS_Y_s(8)		=  78.0 
+  IS_Y_n(8)		=  78.0
+
+  IS_TYPE(8)		= 'IP'				
+
+     ! 9. Hopper Wall                                       
+  IS_X_w(9)		=  12.0				
+  IS_X_e(9)		=  12.0				
+  IS_Y_s(9)		=  78.0 
+  IS_Y_n(9)		=  79.0
+
+  IS_TYPE(9)		= 'IP'				
+
+       ! 10. Hopper Wall                                       
+  IS_X_w(10)		=  11.0				
+  IS_X_e(10)		=  12.0				
+  IS_Y_s(10)		=  79.0 
+  IS_Y_n(10)		=  79.0
+
+  IS_TYPE(10)		= 'IP'				
+
+    ! 11. Hopper Wall                                       
+  IS_X_w(11)		=  11.0				
+  IS_X_e(11)		=  11.0				
+  IS_Y_s(11)		=  79.0 
+  IS_Y_n(11)		=  80.0
+
+  IS_TYPE(11)		= 'IP'			
+
+       ! 12. Hopper Wall                                       
+  IS_X_w(12)		=  10.0				
+  IS_X_e(12)		=  11.0				
+  IS_Y_s(12)		=  80.0 
+  IS_Y_n(12)		=  80.0
+
+  IS_TYPE(12)		= 'IP'				
+
+    ! 13. Hopper Wall                                       
+  IS_X_w(13)		=  10.0				
+  IS_X_e(13)		=  10.0				
+  IS_Y_s(13)		=  80.0 
+  IS_Y_n(13)		=  81.0
+
+  IS_TYPE(13)		= 'IP'				
+
+       ! 14. Hopper Wall                                       
+  IS_X_w(14)		=  9.0				
+  IS_X_e(14)		=  10.0				
+  IS_Y_s(14)		=  81.0 
+  IS_Y_n(14)		=  81.0
+
+  IS_TYPE(14)		= 'IP'				
+
+   ! 15. Hopper Wall                                       
+  IS_X_w(15)		=  9.0				
+  IS_X_e(15)		=  9.0				
+  IS_Y_s(15)		=  81.0 
+  IS_Y_n(15)		=  82.0
+
+  IS_TYPE(15)		= 'IP'				
+
+       ! 16. Hopper Wall                                       
+  IS_X_w(16)		=  8.0				
+  IS_X_e(16)		=  9.0				
+  IS_Y_s(16)		=  82.0 
+  IS_Y_n(16)		=  82.0
+
+  IS_TYPE(16)		= 'IP'				
+
+   ! 17. Hopper Wall                                       
+  IS_X_w(17)		=  8.0				
+  IS_X_e(17)		=  8.0				
+  IS_Y_s(17)		=  82.0 
+  IS_Y_n(17)		=  83.0
+
+  IS_TYPE(17)		= 'IP'				
+
+       ! 18. Hopper Wall                                       
+  IS_X_w(18)		=  7.0				
+  IS_X_e(18)		=  8.0				
+  IS_Y_s(18)		=  83.0 
+  IS_Y_n(18)		=  83.0
+
+  IS_TYPE(18)		= 'IP'				
+
+   ! 19. Hopper Wall                                       
+  IS_X_w(19)		=  7.0				
+  IS_X_e(19)		=  7.0				
+  IS_Y_s(19)		=  83.0 
+  IS_Y_n(19)		=  84.0
+
+  IS_TYPE(19)		= 'IP'				
+
+       ! 20. Hopper Wall                                       
+  IS_X_w(20)		=  6.0				
+  IS_X_e(20)		=  7.0				
+  IS_Y_s(20)		=  84.0 
+  IS_Y_n(20)		=  84.0
+
+  IS_TYPE(20)		= 'IP'				
+
+   ! 21. Hopper Wall                                       
+  IS_X_w(21)		=  6.0				
+  IS_X_e(21)		=  6.0				
+  IS_Y_s(21)		=  84.0 
+  IS_Y_n(21)		=  85.0
+
+  IS_TYPE(21)		= 'IP'				
+
+       ! 22. Hopper Wall                                       
+  IS_X_w(22)		=  5.0				
+  IS_X_e(22)		=  6.0				
+  IS_Y_s(22)		=  85.0 
+  IS_Y_n(22)		=  85.0
+
+  IS_TYPE(22)		= 'IP'				
+
+   ! 23. Hopper Wall                                       
+  IS_X_w(23)		=  5.0				
+  IS_X_e(23)		=  5.0				
+  IS_Y_s(23)		=  85.0 
+  IS_Y_n(23)		=  86.0
+
+  IS_TYPE(23)		= 'IP'				
+
+       ! 24. Hopper Wall                                       
+  IS_X_w(24)		=  4.0				
+  IS_X_e(24)		=  5.0				
+  IS_Y_s(24)		=  86.0 
+  IS_Y_n(24)		=  86.0
+
+  IS_TYPE(24)		= 'IP'				
+
+   ! 25. Hopper Wall                                       
+  IS_X_w(25)		=  4.0				
+  IS_X_e(25)		=  4.0				
+  IS_Y_s(25)		=  86.0 
+  IS_Y_n(25)		=  87.0
+
+  IS_TYPE(25)		= 'IP'				
+
+       ! 26. Hopper Wall                                       
+  IS_X_w(26)		=  3.0				
+  IS_X_e(26)		=  4.0				
+  IS_Y_s(26)		=  87.0 
+  IS_Y_n(26)		=  87.0
+
+  IS_TYPE(26)		= 'IP'				
+
+  ! 27.  Hopper Wall                                       
+  IS_X_w(27)		=  3.0				
+  IS_X_e(27)		=  3.0				
+  IS_Y_s(27)		=  87.0 
+  IS_Y_n(27)		=  88.0
+
+  IS_TYPE(27)		= 'IP'				
+
+       ! 28. Hopper Wall                                       
+  IS_X_w(28)		=  2.0				
+  IS_X_e(28)		=  3.0				
+  IS_Y_s(28)		=  88.0 
+  IS_Y_n(28)		=  88.0
+
+  IS_TYPE(28)		= 'IP'				
+		
+! 29.  Hopper Wall                                       
+  IS_X_w(29)		=  2.0				
+  IS_X_e(29)		=  2.0				
+  IS_Y_s(29)		=  88.0 
+  IS_Y_n(29)		=  100.0
+
+  IS_TYPE(29)		= 'IP'				
+
+       ! 33. Hopper Wall                                       
+  IS_X_w(33)		=  35.0				
+  IS_X_e(33)		=  35.0				
+  IS_Y_s(33)		=  75.0 
+  IS_Y_n(33)		=  76.0
+
+  IS_TYPE(33)		= 'IP'				
+
+       ! 34. Hopper Wall                                       
+  IS_X_w(34)		=  35.0				
+  IS_X_e(34)		=  36.0				
+  IS_Y_s(34)		=  76.0 
+  IS_Y_n(34)		=  76.0
+
+  IS_TYPE(34)		= 'IP'				
+
+     ! 35. Hopper Wall                                       
+  IS_X_w(35)		=  36.0				
+  IS_X_e(35)		=  36.0				
+  IS_Y_s(35)		=  76.0 
+  IS_Y_n(35)		=  77.0
+
+  IS_TYPE(35)		= 'IP'				
+		
+       ! 36. Hopper Wall                                       
+  IS_X_w(36)		=  36.0				
+  IS_X_e(36)		=  37.0				
+  IS_Y_s(36)		=  77.0 
+  IS_Y_n(36)		=  77.0
+
+  IS_TYPE(36)		= 'IP'				
+		
+     ! 37. Hopper Wall                                       
+  IS_X_w(37)		=  37.0				
+  IS_X_e(37)		=  37.0				
+  IS_Y_s(37)		=  77.0 
+  IS_Y_n(37)		=  78.0
+
+  IS_TYPE(37)		= 'IP'				
+
+       ! 38. Hopper Wall                                       
+  IS_X_w(38)		=  37.0				
+  IS_X_e(38)		=  38.0				
+  IS_Y_s(38)		=  78.0 
+  IS_Y_n(38)		=  78.0
+
+  IS_TYPE(38)		= 'IP'				
+
+     ! 39. Hopper Wall                                       
+  IS_X_w(39)		=  38.0				
+  IS_X_e(39)		=  38.0				
+  IS_Y_s(39)		=  78.0 
+  IS_Y_n(39)		=  79.0
+
+  IS_TYPE(39)		= 'IP'				
+
+       ! 40. Hopper Wall                                       
+  IS_X_w(40)		=  38.0				
+  IS_X_e(40)		=  39.0				
+  IS_Y_s(40)		=  79.0 
+  IS_Y_n(40)		=  79.0
+
+  IS_TYPE(40)		= 'IP'				
+
+    ! 41. Hopper Wall                                       
+  IS_X_w(41)		=  39.0				
+  IS_X_e(41)		=  39.0				
+  IS_Y_s(41)		=  79.0 
+  IS_Y_n(41)		=  80.0
+
+  IS_TYPE(41)		= 'IP'				
+
+       ! 42. Hopper Wall                                       
+  IS_X_w(42)		=  39.0				
+  IS_X_e(42)		=  40.0				
+  IS_Y_s(42)		=  80.0 
+  IS_Y_n(42)		=  80.0
+
+  IS_TYPE(42)		= 'IP'				
+		
+    ! 43. Hopper Wall                                       
+  IS_X_w(43)		=  40.0				
+  IS_X_e(43)		=  40.0				
+  IS_Y_s(43)		=  80.0 
+  IS_Y_n(43)		=  81.0
+
+  IS_TYPE(43)		= 'IP'				
+		
+       ! 44. Hopper Wall                                       
+  IS_X_w(44)		=  40.0				
+  IS_X_e(44)		=  41.0				
+  IS_Y_s(44)		=  81.0 
+  IS_Y_n(44)		=  81.0
+
+  IS_TYPE(44)		= 'IP'				
+
+   ! 45. Hopper Wall                                       
+  IS_X_w(45)		=  41.0				
+  IS_X_e(45)		=  41.0				
+  IS_Y_s(45)		=  81.0 
+  IS_Y_n(45)		=  82.0
+
+  IS_TYPE(45)		= 'IP'				
+
+       ! 46. Hopper Wall                                       
+  IS_X_w(46)		=  41.0				
+  IS_X_e(46)		=  42.0				
+  IS_Y_s(46)		=  82.0 
+  IS_Y_n(46)		=  82.0
+
+  IS_TYPE(46)		= 'IP'				
+
+   ! 47. Hopper Wall                                       
+  IS_X_w(47)		=  42.0				
+  IS_X_e(47)		=  42.0				
+  IS_Y_s(47)		=  82.0 
+  IS_Y_n(47)		=  83.0
+
+  IS_TYPE(47)		= 'IP'				
+
+       ! 48. Hopper Wall                                       
+  IS_X_w(48)		=  42.0				
+  IS_X_e(48)		=  43.0				
+  IS_Y_s(48)		=  83.0 
+  IS_Y_n(48)		=  83.0
+
+  IS_TYPE(48)		= 'IP'				
+
+   ! 49. Hopper Wall                                       
+  IS_X_w(49)		=  43.0				
+  IS_X_e(49)		=  43.0			
+  IS_Y_s(49)		=  83.0 
+  IS_Y_n(49)		=  84.0
+
+  IS_TYPE(49)		= 'IP'				
+
+       ! 50. Hopper Wall                                       
+  IS_X_w(50)		=  43.0				
+  IS_X_e(50)		=  44.0				
+  IS_Y_s(50)		=  84.0 
+  IS_Y_n(50)		=  84.0
+
+  IS_TYPE(50)		= 'IP'				
+
+   ! 51. Hopper Wall                                       
+  IS_X_w(51)		=  44.0				
+  IS_X_e(51)		=  44.0				
+  IS_Y_s(51)		=  84.0 
+  IS_Y_n(51)		=  85.0
+
+  IS_TYPE(51)		= 'IP'				
+
+       ! 52. Hopper Wall                                       
+  IS_X_w(52)		=  44.0				
+  IS_X_e(52)		=  45.0				
+  IS_Y_s(52)		=  85.0 
+  IS_Y_n(52)		=  85.0
+
+  IS_TYPE(52)		= 'IP'				
+
+
+   ! 53. Hopper Wall                                       
+  IS_X_w(53)		=  45.0				
+  IS_X_e(53)		=  45.0				
+  IS_Y_s(53)		=  85.0 
+  IS_Y_n(53)		=  86.0
+
+  IS_TYPE(53)		= 'IP'				
+
+       ! 54. Hopper Wall                                       
+  IS_X_w(54)		=  45.0				
+  IS_X_e(54)		=  46.0				
+  IS_Y_s(54)		=  86.0 
+  IS_Y_n(54)		=  86.0
+
+  IS_TYPE(54)		= 'IP'				
+
+   ! 55. Hopper Wall                                       
+  IS_X_w(55)		=  46.0				
+  IS_X_e(55)		=  46.0				
+  IS_Y_s(55)		=  86.0 
+  IS_Y_n(55)		=  87.0
+
+  IS_TYPE(55)		= 'IP'				
+
+       ! 56. Hopper Wall                                       
+  IS_X_w(56)		=  46.0				
+  IS_X_e(56)		=  47.0				
+  IS_Y_s(56)		=  87.0 
+  IS_Y_n(56)		=  87.0
+
+  IS_TYPE(56)		= 'IP'				
+
+
+  ! 57.  Hopper Wall                                       
+  IS_X_w(57)		=  47.0				
+  IS_X_e(57)		=  47.0				
+  IS_Y_s(57)		=  87.0 
+  IS_Y_n(57)		=  88.0
+
+  IS_TYPE(57)		= 'IP'				
+
+       ! 58. Hopper Wall                                       
+  IS_X_w(58)		=  47.0				
+  IS_X_e(58)		=  48.0				
+  IS_Y_s(58)		=  88.0 
+  IS_Y_n(58)		=  88.0
+
+  IS_TYPE(58)		= 'IP'				
+
+
+
+
+
+! 59.  Hopper Wall                                       
+  IS_X_w(59)		=  48.0				
+  IS_X_e(59)		=  48.0				
+  IS_Y_s(59)		=  88.0 
+  IS_Y_n(59)		=  100.0
+
+  IS_TYPE(59)		= 'IP'				
+
+
+
+!
+!  Output Control                                                               
+!                  
+  OUT_DT 		= 10. 		
+				
+  RES_DT 		= 0.01
+			
+  NLOG   		= 25 		
+				
+  FULL_LOG 		= .TRUE. 
+
+!SPX_DT values determine how often SPx files are written.  
+!
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g
+        !      P_star    V_g  V_s            T_s  X_s     Theta   Scalar 
+        !                W_g  W_s
+  SPX_DT = 0.01 0.1      0.1  0.1  0.01      100. 100.   100.0     100.        
+
+!  The decomposition in I, J, and K directions for a Distributed Memory Parallel machine
+  
+  NODESI = 1   NODESJ = 1   NODESK = 1
+
+!  Sweep Direction
+
+LEQ_SWEEP(1) = 'ISIS' 
+LEQ_SWEEP(2) = 'ISIS'  
+LEQ_SWEEP(3) = 'ISIS' 
+LEQ_SWEEP(4) = 'ISIS'  
+LEQ_SWEEP(5) = 'ISIS'  
+LEQ_SWEEP(6) = 'ISIS'  
+LEQ_SWEEP(7) = 'ISIS' 
+LEQ_SWEEP(8) = 'ISIS'  
+LEQ_SWEEP(9) = 'ISIS'

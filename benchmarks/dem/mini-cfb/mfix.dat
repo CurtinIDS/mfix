@@ -1,0 +1,252 @@
+########################################################################
+#  3D-Gasifier                                                         #
+#                                                                      #
+# Author: J. Musser                                         Date: 2013 #
+#                                                                      #
+#                                                                      #
+########################################################################
+
+  RUN_NAME = 'MINI-CFB'
+  DESCRIPTION = 'DEM CFB'
+
+#_______________________________________________________________________
+# RUN CONTROL SECTION
+
+  RUN_TYPE = 'NEW'
+
+  UNITS = 'SI'
+
+  Time =   0.0
+  Tstop = 60.0
+
+  DT =     5.0d-5
+  DT_MAX = 5.0d-5
+
+  ENERGY_EQ =  .F.
+  SPECIES_EQ(0:1) = .F. .F.
+
+  MOMENTUM_X_EQ(1) = .F.
+  MOMENTUM_Y_EQ(1) = .F.
+  MOMENTUM_Z_EQ(1) = .F.
+
+  GENER_PART_CONFIG = .T.
+
+  CALL_USR = .F.
+  PRINT_DES_DATA = .T.
+
+  DRAG_TYPE = 'GIDASPOW_BLEND'
+
+  DES_INTERP_ON = .T.
+  DES_INTERP_MEAN_FIELDS= .T.
+
+  DES_INTERP_SCHEME = 'SQUARE_DPVM'
+  DES_INTERP_WIDTH = 2.4d-3 ! (m)
+
+  DES_EXPLICITLY_COUPLED= .T.
+
+  CALL_USR = .T.
+
+
+#_______________________________________________________________________
+# NUMERICAL SECTION
+
+  MAX_NIT = 50
+  TOL_RESID = 1.0E-3
+
+  MAX_INLET_VEL_FAC =  1.0d6
+
+#_______________________________________________________________________
+# GEOMETRY SECTION
+
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH = 0.32   IMAX =  42
+  ZLENGTH = 0.15   KMAX =  20
+  YLENGTH = 1.32   JMAX = 132
+
+  CARTESIAN_GRID = .T.
+
+  USE_STL = .T.
+  STL_BC_ID = 15
+
+  ITERMAX_INT = 50000
+
+  TOL_SNAP       =  @(1.0/16.0)
+  TOL_SMALL_CELL =  @(1.0/16.0)
+  TOL_SMALL_AREA =  @(1.0/16.0)
+  TOL_DELH       =  @(1.0/16.0)
+
+  DIM_FACETS_PER_CELL = 25
+  FAC_DIM_MAX_CUT_CELL = 0.5
+
+#_______________________________________________________________________
+# MATERIAL SECTION
+
+
+! Gas Section
+!---------------------------------------------------------------------//
+
+! Mixture molecular weight
+  MW_AVG = 28.8
+
+! Constant gas viscosity
+  MU_g0 = 1.8d-5  ! (kg/m.s)
+
+
+! PARTICLE SECTION
+!---------------------------------------------------------------------//
+  MMAX = 1
+
+! Normal collision spring constant (N/m)
+  KN =    1.0d3                ! inter-particle
+  KN_W =  1.0d3                ! particle-wall
+
+! Friction coefficient. (1)
+  MEW =   0.35                 ! particle-particle
+  MEW_W = 0.35                 ! particle-wall
+
+! Restitution coefficient. (1)
+  DES_EN_INPUT =      0.92     ! particle-particle
+  DES_EN_WALL_INPUT = 0.84     ! particle-wall
+
+  NFACTOR = 0                  ! No initial settling
+
+  DES_NEIGHBOR_SEARCH =  4     ! Neighbor search
+  NEIGHBOR_SEARCH_N =    5     ! Search frequency
+
+
+! Solids phase 1:
+!---------------------------------------------------------------------//
+  SOLIDS_MODEL(1) = 'DEM'
+
+  D_p0(1) =    800.0d-6    ! (m)
+  RO_s0(1) =  1130.0d+0    ! (kg/m^3)
+
+#_______________________________________________________________________
+# INITIAL CONDITIONS SECTION
+
+
+! Freeboard
+!---------------------------------------------------------------------//
+  IC_X_w(1) =       0.00     ! (m)
+  IC_X_e(1) =       0.32     ! (m)
+  IC_Z_b(1) =       0.00     ! (m)
+  IC_Z_t(1) =       0.15     ! (m)
+  IC_Y_s(1) =       0.00     ! (m)
+  IC_Y_n(1) =       1.32     ! (m)
+
+  IC_EP_g(1) =      1.00     ! (-)
+
+  IC_T_g(1) =     293.15     ! (K)
+  IC_P_g(1) =     101.325d3  ! (Pa -> 1 atm)
+
+  IC_U_g(1) =       0.0      ! (m/sec)
+  IC_V_g(1) =       0.0      ! (m/sec)
+  IC_W_g(1) =       0.0      ! (m/sec)
+
+
+! Stand Pipe
+!---------------------------------------------------------------------//
+  IC_X_w(2) =       0.045    ! (m)
+  IC_X_e(2) =       0.245    ! (m)
+  IC_Z_b(2) =       0.050    ! (m)
+  IC_Z_t(2) =       0.100    ! (m)
+  IC_Y_s(2) =       0.000    ! (m)
+  IC_Y_n(2) =       0.930    ! (m)
+
+  IC_EP_g(2) =      0.50     ! (-)
+
+  IC_T_g(2) =     293.15     ! (K)
+  IC_P_g(2) =     101.325d3  ! (Pa -> 1 atm)
+
+  IC_U_g(2) =       0.0      ! (m/sec)
+  IC_V_g(2) =       0.0      ! (m/sec)
+  IC_W_g(2) =       0.0      ! (m/sec)
+
+  IC_U_s(2,1) =     0.0      ! (m/sec)
+  IC_V_s(2,1) =     0.0      ! (m/sec)
+  IC_W_s(2,1) =     0.0      ! (m/sec)
+
+  IC_THETA_M(2,1) = 0.0
+
+
+#_______________________________________________________________________
+# BOUNDARY CONDITIONS SECTION
+
+
+! Distributor: (Gas only)
+!---------------------------------------------------------------------//
+  BC_X_w(1) =   0.250     ! (m)
+  BC_X_e(1) =   0.310     ! (m)
+  BC_Z_b(1) =   0.045     ! (m)
+  BC_Z_t(1) =   0.105     ! (m)
+  BC_Y_s(1) =   0.000     ! (m)
+  BC_Y_n(1) =   0.000     ! (m)
+
+  BC_TYPE(1) =   'MI'
+
+! Gas Phase:
+  BC_EP_g(1) =  1.0       ! (-)
+
+  BC_P_g(1) = 101.325d3   ! (Pa -> 1 atm)
+  BC_T_g(1) = 293.15      ! (K)
+
+  BC_V_g(1) =   3.25      ! (m/sec)
+  BC_U_g(1) =   0.00      ! (m/sec)
+  BC_W_g(1) =   0.00      ! (m/sec)
+
+
+! Pressure Outlet
+!---------------------------------------------------------------------//
+  BC_X_w(2)  =  0.052
+  BC_X_e(2)  =  0.092
+  BC_Z_b(2)  =  0.055
+  BC_Z_t(2)  =  0.095
+  BC_Y_s(2)  =  1.320
+  BC_Y_n(2)  =  1.320
+
+  BC_TYPE(2) =  'PO'
+
+  BC_P_g(2) = 101.325d3 ! (Pa -> 1atm)
+  BC_T_g(2) = 293.15    ! (K)
+
+
+! Walls:
+!---------------------------------------------------------------------//
+  BC_TYPE(15) = 'CG_NSW'
+
+
+
+#_______________________________________________________________________
+# OUTPUT CONTROL SECTION
+
+  RES_DT = @(1.0/512.0)
+
+! RES_BACKUPS = 4
+! RES_BACKUP_DT = @(1.0/8.0)
+
+  SPX_DT(1:9) = 9*100.0
+  SPX_DT(1) = @(1.0/512.0)
+
+  WRITE_VTK_FILES  = .F.
+  VTU_DIR = 'VTUS'
+
+  VTK_DT = @(1.0/32.0)
+  VTK_VAR(1) = 1   ! EP_g
+  VTK_VAR(2) = 3   ! U_g, V_g, W_g
+
+  GROUP_RESID = .T.
+
+  FULL_LOG = .T.
+  NLOG = 5000
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI =  1  NODESJ =  1  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+
+  CHK_BATCHQ_END = .T.
+  BATCH_WALLCLOCK = 2.592d13 ! 30 Days
+  TERM_BUFFER =         120  !  2 Min

@@ -1,0 +1,29 @@
+#!/bin/tcsh 
+# Script to run all the tutorial cases in serial
+
+# set up tutorial directory and model directory
+set `pwd` ; tutorial_dir=$1
+
+# This scipts assumes that the tutorials were run with script run_serial
+# and that the file List_of_tutorials_to_run.txt exists.
+
+# For each tutorial:
+#    go to the directory
+#    Search for "Total CPU time used" in run.log and display the run-time for each tutorial
+#    go back to home tutorial directory
+
+set_count=0
+
+for tutorial in `cat List_of_tutorials_to_run.txt`
+do
+
+   (( set_count = set_count + 1 ))
+   cd $tutorial
+   echo "********************************************************************"
+   echo $set_count '  '  $tutorial
+   grep "Total CPU time used" run.log
+   cd $tutorial_dir
+
+done
+
+echo "********************************************************************"

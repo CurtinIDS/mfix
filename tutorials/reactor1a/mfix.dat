@@ -1,0 +1,175 @@
+!
+!  Plug-flow reactor
+!  M. Syamlal                  2-13-98
+!
+! Run-control section
+!
+
+! run time on R10000 Octane - 1 s
+
+!  reaction rate expression entered through data file
+
+  RUN_NAME = 'PFR'
+  DESCRIPTION = 'Plug-flow reactor'
+  RUN_TYPE = 'new'
+  UNITS = 'cgs'
+!  TIME  = 0.0    TSTOP = 1.0  DT = 100.0E-4  !commented out for steady-state
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ =   .TRUE. .FALSE.
+
+   CALL_USR = .TRUE.    !to activate the user-defined subroutine usr3
+  
+   MOMENTUM_X_EQ =  .FALSE.  .FALSE.
+   MOMENTUM_Y_EQ =  .TRUE.  .FALSE.  
+
+
+   LEQ_IT = 7*100
+   LEQ_METHOD = 7*2
+   LEQ_SWEEP = 'isis'
+
+
+
+! Geometry Section
+!
+  COORDINATES = 'Cylindrical'
+
+  XLENGTH  =  250.0    IMAX =  1
+  YLENGTH  =  800.0    JMAX =  80
+
+  NO_K     = .TRUE.
+
+  MAX_NIT = 1000
+  TOL_RESID  = 1.E-3
+  TOL_DIVERGE = 1.e15
+!
+! Gas-phase Section
+!
+  MU_g0 = 1.8E-4
+  DIF_g0 = 0.0
+
+  NMAX_g = 3
+
+  SPECIES_g(1) = 'A'       SPECIES_ALIAS_g(1) = 'A'
+  SPECIES_g(2) = 'R'       SPECIES_ALIAS_g(2) = 'R'
+  SPECIES_g(3) = 'Inert'   SPECIES_ALIAS_g(3) = 'Inert'
+
+
+!
+! Solids-phase Section
+!
+  MMAX = 0
+
+!
+! Initial Conditions Section
+!
+
+  IC_X_w           =  0.0 
+  IC_X_e           = 250.0
+  IC_Y_s           =  0.0
+  IC_Y_n           = 800.0
+ 
+  IC_EP_g          = 1.0
+ 
+  IC_U_g           =   0.0
+  IC_V_g           =  0.0 
+
+  IC_P_g           =  @(5066250.0)
+  IC_P_star        =  0.0
+  IC_T_g           = 488.
+  IC_X_g(1,1)      = 0.5
+  IC_X_g(1,2)      = 0.0
+  IC_X_g(1,3)      = 0.5
+
+!
+!  Boundary Conditions Section
+!
+       !            Bottom      Top
+       !            Gas-inlet   Gas-Exit
+  BC_X_w           =   0.0        0.0
+  BC_X_e           = 250.0      250.0
+  BC_Y_s           =   0.0      800.0
+  BC_Y_n           =   0.0      800.0
+ 
+  BC_TYPE          =  'MI'      'PO'
+
+  BC_EP_g          =   1.0 
+ 
+  BC_U_g           =  0.0
+  BC_V_g           = 24.104946  !for 80% conversion
+  
+  BC_T_g           = 488.
+  BC_X_g(1,1)      = 0.5
+  BC_X_g(1,2)      = 0.0
+  BC_X_g(1,3)      = 0.5
+
+  BC_hw_X_g(1,1)      = 0.0
+  BC_hw_X_g(1,2)      = 0.0
+  BC_hw_X_g(1,3)      = 0.0
+
+  BC_C_X_g(1,1)      = 0.0
+  BC_C_X_g(1,2)      = 0.0
+  BC_C_X_g(1,3)      = 0.0
+
+  BC_P_g           =  @(5066250.0) @(5066250.0)
+
+!
+!  Output Control
+!
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g    G     Scalar
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.01 0.1      0.1  0.1  100.      100. 100.   100.   100.
+
+  FULL_LOG = .TRUE.
+  RESID_STRING  = 'P0' 'V0' 'X001' 'X002' 'X003'
+  
+  
+  
+!  Levenspiel p.111:  A -> 3R,   -rA = EP_g * 31.6E-5 * [A]**0.5 g-mol/cc.s
+!   two other (1st and second order) reaction schemes may also be used.
+!    -rA = EP_g * 0.04 * [A] g-mol/cm^3.s
+!    -rA = EP_g * 640. * [A]**2 g-mol/cm^3.s
+!  An EP_g needs to be included in Levenspiel's expression to correct for the
+!  volume occupied by solids
+
+
+#_______________________________________________________________________
+# CHEMICAL REACTION SECTION
+
+! The reaction rate expression has been entered in user-defined 
+! subroutine usr_rates.f.  Select a set of constants for various rxn orders.
+
+!  C =  31.6E-5     0.5  !half order
+!  C =  0.0728843   1.0  !first order
+  C =  5001.09     2.0  !second order
+
+  @(RXNS)
+
+    AtoR { chem_eq = "A --> 3R" }
+
+  @(END)
+
+
+
+THERMO DATA
+
+The following are pseudo thermochemical data for species A, R, and Inert.
+The readme file describes the thermochemical data format.
+A                          WARNING!       0.G   200.000  6000.000  B  27.00000 1
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    3
+ 1.84781958E-09 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+
+R                          WARNING!       0.G   200.000  6000.000  B   9.00000 1
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+ 
+Inert                      WARNING!       0.G   200.000  6000.000  B  27.00000 1
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    2
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    3
+ 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00 0.00000000E+00    4
+ 

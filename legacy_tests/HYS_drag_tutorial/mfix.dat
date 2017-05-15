@@ -1,0 +1,218 @@
+! A 0-D periodic channel with a pressure gradient imposed in the 
+! y-direction via delp_y. A bidisperse powder with particles of
+! same density but differing size with HYS drag.
+
+! For more details see: Holloway, Yin and Sundaresan (HYS) drag 
+! relation implementation in MFIX in ~mfix/doc/HYS_drag.pdf 
+
+! Author: B. Holloway via S. Benyahia, July, 2009
+
+
+!*********************************************************************
+! Run Control
+!*********************************************************************
+  RUN_NAME = 'per_chan_HYS'
+  DESCRIPTION = 'Binary mixture using HYS drag'
+  RUN_TYPE = 'new'
+
+  UNITS = 'cgs'
+
+  TIME = 0.0
+  TSTOP = 1000.0
+  DT = 1.0e-4 
+  DT_MIN = 1.0e-8
+
+! Solve energy eq?   [.TRUE.]
+  ENERGY_EQ = .FALSE.
+
+! Solve species eq?   [.TRUE.]
+!               Gas     Sld 1   Sld 2
+  SPECIES_EQ = .FALSE. .FALSE. .FALSE.
+
+! Solve momentum equations?   [.TRUE.]
+! (solve gas and both solids)
+   MOMENTUM_X_EQ =  3*.T.
+   MOMENTUM_Y_EQ =  3*.T.
+
+! solve a granular energy transport equation(s) as opposed to an
+! algebraic equation?   [.FALSE.]
+  GRANULAR_ENERGY = .FALSE.
+  
+! the kinetic theory model used to describe the solids phase(s)
+#  KT_TYPE = 'IA_NONEP'   ! NOT using IA polydisperse kinetic theory
+  
+! the radial distribution function, that is generally only employed 
+! by the specified kinetic theory model   ['LEBOWITZ']
+#  RDF_TYPE = 'LEBOWITZ'  ! this is default radial distribution function
+
+! the gas-solid drag model.  ['SYAM_OBRIEN']
+  DRAG_TYPE = 'HYS'     ! Holloway, Yin, and Sundaresan drag model
+  LAM_HYS = 0.0001d0     ! lubrication cut off (1 micron) [1 micron]
+  
+! use the schaeffer model for frictional/plastic solids phase
+! stress?   [.TRUE.]  
+  SCHAEFFER = .F.   ! no frictional viscosity will be used
+
+
+!*********************************************************************
+! Numerical Parameters
+!*********************************************************************
+  MAX_NIT = 200     ! high NIT for convergence
+
+  TOL_RESID = 1D-7
+
+  NORM_G = 0.0
+  DISCRETIZE = 9*2
+  DEF_COR = .T.
+
+  LEQ_TOL = 9*1D-10
+  LEQ_IT  = 9*300
+   
+
+!*********************************************************************
+! Geometry 
+!*********************************************************************
+  COORDINATES = 'CARTESIAN'
+
+  XLENGTH = 1.0    IMAX = 1     ! length and cells in x/i direction
+  YLENGTH = 1.0    JMAX = 1     ! length and cells in y/j direction
+  NO_K = .TRUE.                 ! 2D, no k direction
+
+! x direction cyclic w/o specified pressure drop
+  CYCLIC_X = .TRUE.
+
+! y direction cyclic w/ a specified pressure drop
+  CYCLIC_Y_PD = .TRUE.
+
+! constant fluid pressure drop across y-length
+  delp_y = 118.931535d0     ! (bayre)
+
+! gravitational acceleration (y-direction)
+  GRAVITY = 981
+
+
+!*********************************************************************
+! Gas Phase
+!*********************************************************************
+  MU_g0 = 1.8E-4     ! constant gas viscosity (poise)
+
+! the molecular weight or density must be specified (or species names).
+! if density is specified then the molecular weight will be ignored.
+! specifying molecular weight allows for compressibility but requires
+! setting the pressure and temperature in IC and BC regions
+#  MW_avg = 29.0     ! average molecular weight of air (g/g-mol)
+  RO_g0 = 1.3E-3     ! constant gas density 
+
+
+!*********************************************************************
+! Solid Phase
+!*********************************************************************
+! rp1/rp2=1.0, dp1/dp2=1.667,  m1/m2=4.63
+
+  MMAX = 2     ! number of 'solids' phases   [1]
+  SOLIDS_MODEL(1) = 'TFM'  'TFM'    ! set the model type for the 
+                                    ! indicated solids
+  RO_s0 = 2*2.4d0     ! material particle density(s)
+  D_p0(1) = 0.02     ! particle diameter of phase 1
+  D_p0(2) = 0.012     ! particle diameter of phase 2
+
+  MU_s0 = 1.8E-4  1.8E-4   ! constant solids viscosity for both phases
+
+! solids phase(s) forms a packed bed with indicated void fraction
+! ep_star
+  CLOSE_PACKED = 2*.TRUE.
+
+  EP_star = 0.44d0     ! packed bed void fraction
+
+! maximum. solids vol. fraction at packing for indicated phase. these
+! are used to update the value of ep_star when a polydisperse system
+! is involved and a model is invoked to calculate ep_star such as
+! yu_standish or fedors_landel  [1-ep_star]
+#  ep_s_max(1) = 0.56d0
+#  ep_s_max(2) = 0.56d0
+
+! this quantity is unnecessary since constant solids viscosity is used
+! and therefore frictional/plastic stress calculations are skipped
+#  Phi = 30     ! angle of internal friction (in degrees)
+
+! may be needed for solids-solids drag relation
+  C_e = 1.0     ! coefficient of restitution p-p
+  C_f = 0.0d0     ! coefficient of friction between unlike solids
+  
+! these quantities currently do not matter unless invoking certain
+! boundary condition routines. they must be set when using Johnson
+! and Jackson partial slip bc
+#  PHIP = 0.0001     ! specularity coefficient   [0.6]
+#  e_w = 0.7     ! particle-wall collisions
+
+
+!*********************************************************************
+! Initial Conditions
+!*********************************************************************
+! domain --------------------
+  IC_X_w(1)       =       0.0 
+  IC_X_e(1)       =       1.0 
+  IC_Y_s(1)       =       0.0 
+  IC_Y_n(1)       =       1.0
+
+  IC_EP_g(1)      =       0.95d0
+  IC_ROP_s(1,1)   =  @(0.025d0*2.4d0)
+  IC_ROP_s(1,2)   =  @(0.025d0*2.4d0)
+ 
+  IC_U_g(1)       =       0.0
+  IC_V_g(1)       =     567.0
+
+! allows for slight compressibility if gas mw specified not density
+#  IC_P_g(1)       = 1013250.0
+#  IC_T_g(1)       =     298.0
+
+  IC_U_s(1,1)     =       0.0
+  IC_V_s(1,1)     =     400.0
+#  IC_Theta_m(1,1) =       1.0d-5  ! initial granular temperature
+                                  ! for IA_NONEP units are g.(cm/s)^2
+
+  IC_U_s(1,2)     =       0.0
+  IC_V_s(1,2)     =     400.0
+#  IC_Theta_m(1,2) =       1.0d-5
+                        
+                               
+!*********************************************************************
+! Boundary Conditions
+!*********************************************************************
+! This is a 0D fully periodic system with a pressure gradient imposed
+! in the y-direction via delp_y
+
+
+!*********************************************************************
+!  Output Control
+!*********************************************************************
+  RES_DT     =  0.001    ! Interval (s) to update restart (.RES) file 
+  OUT_DT     =  10       ! Interval (s) to update standard output (.OUT) file 
+
+! Interval (s) to update .SPX files 
+  SPX_DT(1)  =   1.0E-1  ! Void fraction (EP_g)
+  SPX_DT(2)  =   1.0E-1  ! Gas and solids pressure (P_g, P_star)
+  SPX_DT(3)  =   0.1     ! Gas velocity (U_g, V_g, W_g)
+  SPX_DT(4)  =   0.1     ! Solids velocity (U_s, V_s, W_s)
+  SPX_DT(5)  =   0.1     ! Solids density (ROP_s)
+  SPX_DT(6)  =  10.0     ! Gas and solids temp. (T_g, T_s1, T_s2)
+  SPX_DT(7)  =  10.0     ! Gas and solids mass fractions (X_g, X_s)
+  SPX_DT(8)  =   0.1     ! Granular Temperature (G)
+  SPX_DT(9)  =  10.0     ! User defined scalars
+
+! Display the residuals on the screen and messages about convergence
+! on the screen and in the .LOG file. [.FALSE.]
+#  FULL_LOG = .TRUE.
+
+! Specify residuals to be printed as 4-character strings.
+#  RESID_STRING  = 'P0' 'U1' 'V1' 'U2' 'V0' 'G1' 'G2'
+
+
+!*********************************************************************
+! Parallelization Controls
+!*********************************************************************
+! Number of grid blocks in X/Y/Z directions (i,j,k) for a distributed
+! memory parallel (DMP) simulation   [1]
+  NODESI = 1 
+  NODESJ = 1
+  NODESK = 1

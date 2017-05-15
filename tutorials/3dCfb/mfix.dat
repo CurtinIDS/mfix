@@ -1,0 +1,162 @@
+#  CFB model  test simulation              
+#  M.Syamlal                      Date: 04/24/95                                
+#                                                                               
+
+#  Run time for F90 allocatable arrays version on an Octane is 1.8 days 
+#  and the disk space required is 85 Mb.  Decrease TSTOP to shorten the run.
+#  Increase SPX_DT values to reduce storage.                                                            
+                                                                                
+# RUN CONTROL SECTION                                                           
+                                                                                
+  RUN_NAME = 'CFB3D'                                                            
+  DESCRIPTION = 'CFB modeling test - 301 -- 3D'                                 
+                                                                                
+  UNITS  = 'CGS'                                                                
+                                                                                
+  RUN_TYPE = 'new'                                                              
+  TIME  = 0.0                                                                   
+  TSTOP  = 5.0                                                                  
+  DT  = 20.0e-4                                                                 
+                                                                                
+  ENERGY_EQ = .F.                                                               
+  SPECIES_EQ = 2*.F.                                                            
+  CALL_USR = .F.                                                                
+                                                                                
+  NORM_s   = 0.0d0
+  NORM_g   = 0.0d0
+      
+                                                                                
+# Physical parameters                                                           
+                                                                                
+  e             =  0.8                 ! coefficient of restitution             
+  Phi           =  0.0                 ! angle of internal friction             
+                                                                                
+                                                                                
+# GEOMETRY SECTION                                                              
+                                                                                
+  COORDINATES = 'CYLINDRICAL'                                                   
+                                                                                
+  XLENGTH =  20.                                                                
+  IMAX   =  16                                                                  
+                                                                                
+  YLENGTH = 955.                                                                
+  JMAX   = 191                                                                  
+                                                                                
+  ZLENGTH = @( 2*pi)                                                            
+  KMAX  = 12                                                                    
+                                                                                
+                                                                                
+# GAS SECTION                                                                   
+                                                                                
+  MW_avg = 29.0                                                                 
+  MU_g0  = 1.8e-4                                                               
+                                                                                
+                                                                                
+# PARTICLE SECTION                                                              
+                                                                                
+  MMAX  = 1                                                                     
+  D_p0          =  0.012                                                        
+  RO_s0         =  2.6                                                          
+                                                                                
+  EP_star       =  0.4                                                          
+                                                                                
+  ur_fac(2) = 0.8                        !solids pr.                            
+                                                                                
+# INITIAL CONDITIONS SECTION                                                    
+                                                                                
+       !           Bed                                                          
+  IC_x_w        =  0.0                                                          
+  IC_x_e        = 20.0                                                          
+  IC_y_s        =  0.0                                                          
+  IC_y_n        =955.0                                                          
+  IC_z_b        =  0.0                                                          
+  IC_z_t        =@( 2*pi)                                                       
+                                                                                
+  IC_ep_g       =  0.9                                                          
+                                                                                
+  IC_P_star =  0.0                                                              
+                                                                                
+  IC_U_g        =   0.0                                                         
+  IC_V_g        = 420.0                                                         
+  IC_W_g        =  0.0                                                          
+                                                                                
+  IC_U_s(1,1)   =  0.0                                                          
+  IC_V_s(1,1)   =  0.0                                                          
+  IC_W_s(1,1)   =  0.0                                                          
+                                                                                
+                                                                                
+  IC_T_g        = 294.0                                                         
+                                                                                
+# BOUNDARY CONDITIONS SECTION                                                   
+                                                                                
+       !                                                                        
+       !       air inlet                                                        
+  BC_x_w(1)     =    0.0                                                        
+  BC_x_e(1)     =   20.0                                                        
+  BC_y_s(1)     =    0.0                                                        
+  BC_y_n(1)     =    0.0                                                        
+  BC_z_b(1)     =    0.0                                                        
+  BC_z_t(1)     =    @( 2*pi)                                                   
+                                                                                
+  BC_TYPE(1)    =   'MI'                                                        
+                                                                                
+  BC_ep_g(1)    =   0.9                                                         
+  BC_P_g(1)     =   1151424.5                                                   
+  BC_T_g(1)     =   294.0                                                       
+                                                                                
+  BC_U_g(1) =    0.0                                                            
+  BC_V_g(1) =  420.0                                                            
+  BC_W_g(1) =   0.0                                                             
+                                                                                
+  BC_U_s(1,1)   =    0.0                                                        
+  BC_MASSFLOW_s(1,1)= 0.0                                                       
+  BC_W_s(1,1)   =    0.0                                                        
+      !                                                                         
+      !      solids inlet                                                       
+  BC_x_w(2)     = 20.0                                                          
+  BC_x_e(2)     = 20.0                                                          
+  BC_y_s(2)     = 30.0                                                          
+  BC_y_n(2)     = 50.0                                                          
+  BC_z_b(2)     = 0.0                                                           
+  BC_z_t(2)     = @(pi)                                                         
+                                                                                
+  BC_TYPE(2)    ='MI'                                                           
+                                                                                
+  BC_ep_g(2)    = 0.4                                                           
+  BC_P_g(2)     = 1151424.5                                                     
+  BC_T_g(2)     = 294.0                                                         
+                                                                                
+  BC_U_g(2) = 0.0                                                               
+  BC_V_g(2) = 0.0                                                               
+  BC_W_g(2) = 0.0                                                               
+                                                                                
+  BC_MASSFLOW_s(2,1)= @(PI*20.*20.*5.0)                                         
+  BC_V_s(2,1)   =    0.0                                                        
+  BC_W_s(2,1)   =    0.0                                                        
+                                                                                
+!                Gas-solids outlet                                              
+  BC_x_w(5)     = 20.0                                                          
+  BC_x_e(5)     = 20.0                                                          
+  BC_y_s(5)     = 890.0                                                         
+  BC_y_n(5)     = 910.0                                                         
+  BC_z_b(5)     = 0.                                                            
+  BC_z_t(5)     = @(pi)                                                         
+                                                                                
+  BC_TYPE(5)    = 'Po'                                                          
+                                                                                
+  BC_P_g(5)     =  1151424.5                                                    
+                                                                                
+                                                                                
+# OUTPUT CONTROL SECTION                                                        
+                                                                                
+   RES_DT = 0.01  !OUT_DT = 100.                                                
+         !                                                                      
+         !  EP_g     P_g     U_g   U_s   ROP_s  T_g      X_g    Theta  Scalar                
+         !           P_star  V_g   V_s          T_s1     X_s                    
+         !                   W_g   W_s          T_s2                            
+   SPX_DT = 0.02     0.2     0.2   0.2   100.    100.    100.  100.0    100.       
+                                                                                
+   USR_DT(1) = 0.1                                                              
+                                                                                
+   NLOG = 25                                                                    
+   FULL_LOG = .TRUE.                                                            

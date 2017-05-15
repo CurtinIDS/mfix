@@ -1,0 +1,183 @@
+#
+#  Turbulent flow in a pipe
+#
+#  F.B. Modeler                  May-24-04
+#
+#  fully turbulent flow can be written as:
+#  V_g_turbulent = 1.2245 * V_g_avrg * (1 - r/R)^1/7 
+#
+#
+
+#
+# Run-control section
+#
+  RUN_NAME = 'R'
+  DESCRIPTION = 'Single-phase 2-D Cylindrical turbulent flow'
+  RUN_TYPE = 'new'  !  'restart_1' ! 
+  UNITS = 'cgs'
+
+! Steady state
+!   TIME  =0.0  
+!   TSTOP = 0.1   
+!   DT = 1.0e-3
+
+  ENERGY_EQ = .FALSE.
+  SPECIES_EQ = .FALSE.    .FALSE.
+  GRANULAR_ENERGY = .TRUE.
+
+! We are using the same under-relaxation factor for K and Epsilon equation
+! as the one for scalar equations.
+  UR_FAC(9) = 0.9
+
+! K_Epsilon should be changed to true to use this model
+! To use wall functions, you should use PSW condition at walls.
+!
+ K_Epsilon = .TRUE.
+  
+#
+# Geometry Section
+#
+  COORDINATES = 'CYLINDRICAL'
+
+  XLENGTH  =   10.0    IMAX =  10 
+  YLENGTH  = 600.0    JMAX = 300
+
+# 2-D axisymetric case. 
+  NO_K     = .TRUE.
+
+  MAX_NIT = 40000 
+  TOL_RESID  = 1.E-5
+ 
+#
+# Gas-phase Section
+#
+# It runs much better without defining the gas density (using ideal gas law)
+#!  RO_g0 = 0.001
+
+  MU_g0 = 1.80E-04
+  MW_avg = 29.
+  MU_GMAX = 1000.
+     #
+#
+# Solids-phase Section
+#
+# Single phase simulation no solids phase.
+!
+  MMAX         = 0
+
+
+# Initial Conditions Section
+#
+       !              
+  IC_X_w(1)           =  0.0 
+  IC_X_e(1)           =  10.0 
+  IC_Y_s(1)           =  0.0 
+  IC_Y_n(1)           = 600.0
+ 
+  IC_EP_g(1)          =  1 
+ 
+  IC_U_g(1)           =   0.0
+  IC_V_g(1)           =  800.0
+
+  IC_P_G(1)  =   1.013E+06
+
+  IC_T_G(1)  =      295
+ 
+  IC_U_s(1,1)           =   0.0
+  IC_V_s(1,1)           =  0.0
+  
+  IC_Theta_m(1,1)     = 1000.
+
+! Initial values for K and Epsilon
+  IC_K_Turb_G(1) = 1000.
+  IC_E_Turb_G(1) = 10000.
+
+###############################################
+#
+  BC_X_w(1) = 0.                                      
+  BC_X_e(1) = 10.                               
+  BC_Y_s(1) = 0.                                     
+  BC_Y_n(1) = 0.              
+  BC_TYPE(1) = 'MI'
+               
+               BC_EP_G(1)  =    1
+
+                BC_U_G(1)  =     0. 
+               BC_V_G(1)  =      800.
+
+              BC_U_S(1,1)  =    0.
+              BC_V_S(1,1)  =   0. 
+
+                BC_P_G(1)  =   1.013E+06
+                BC_T_G(1)  =      295
+
+  BC_Theta_m(1,1)     = 1000.
+
+! Inlet values of K and Epsilon
+  BC_K_Turb_G(1) = 1000.
+  BC_E_Turb_G(1) = 10000.
+  
+#
+###############################################
+#
+# It is VERY important to use a PAR_SLIP_WALL boundary condition
+# otherwise the standard wall functions will not work and the
+# turbulent velocity profile will not be obtained.
+#
+  BC_X_w(5) = 10.                                      
+  BC_X_e(5) = 10.                               
+  BC_Y_s(5) = 0.                                     
+  BC_Y_n(5) = 600.                     
+  BC_TYPE(5) = 'PAR_SLIP_WALL'
+
+!
+  ! 
+  BC_Uw_s(5,1) = 0.0
+  BC_Vw_s(5,1) = 0.0
+  BC_hw_s(5,1) = 0.0
+  BC_Uw_g(5) = 0.0
+  BC_Vw_g(5) = 0.0
+  BC_Ww_g(5) = 0.0
+  BC_Ww_s(5,1) = 0.0
+  BC_Thetaw_m(5,1) = 0.
+  BC_C_Theta_m(5,1) = 0. 
+  BC_JJ_PS(5) = 1
+###############################################
+
+     #
+     #   Exit Boundry Condition
+     #
+                BC_X_W(3)  =        0.
+                BC_X_E(3)  =        10.
+                BC_Y_S(3)  =     600.
+                BC_Y_N(3)  =     600.
+               BC_TYPE(3)  =       'PO'
+
+                BC_P_G(3)  =   1.013E+06
+
+                BC_T_G(3)  =     295
+#
+     #
+#
+#  Output Control
+#
+  RES_DT = 0.01
+  OUT_DT = 10.
+        !
+        ! EP_g P_g       U_g  U_s  ROP_s     T_g  X_g    Theta scalar Rrate  K-Epsilon
+        !      P_star    V_g  V_s            T_s1 X_s
+        !                W_g  W_s            T_s2
+  SPX_DT = 0.1 0.1      0.1  0.1   100.      100. 100.   0.1   100   100    0.1
+
+  NLOG   = 25
+#
+# Here the new String K0 shows the residual of K and Epsilon equations.
+#  
+  RESID_STRING = 'P0' 'P1' 'U0' 'V0' 'K0'
+   FULL_LOG = .TRUE.
+  
+# DMP control
+  
+  NODESI = 1  NODESJ = 1   NODESK = 1
+
+

@@ -1,0 +1,223 @@
+# Automake defaults to F77LINK.  Using FC to link will work whether FC is an MPI or non-MPI compiler.
+F77LD = $(FC)
+
+PPFCCOMPILE = $(FC) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(FPPFLAGS) $(AM_FCFLAGS) $(FCFLAGS) $(FCFLAGS_f)
+
+.F.o:
+	$(F77COMPILE) -c -o $@ $<
+
+.f.o:
+	$(PPFCCOMPILE) -c -o $@ $<
+
+FC_MODEXT=mod
+CLEANFILES=*.$(FC_MODEXT) *.so
+MODDIR=$(top_builddir)/model
+
+# Current directory takes precedence over model/include/ and model/
+INCS = $(FC_MODINC)$(top_srcdir)/model/include \
+       $(FC_MODINC)$(MODDIR)
+AM_FCFLAGS = $(INCS)
+AM_LDFLAGS =
+
+src_overrides := $(sort $(wildcard *.f) $(wildcard **/*.f))
+obj_overrides := $(patsubst %.f,%.o,$(src_overrides))
+
+SUFFIXES = .d
+
+.DEFAULT_GOAL := mfix$(EXEEXT)
+
+LIBMFIX = $(top_builddir)/libmfix.a
+
+bin_PROGRAMS = mfix$(EXEEXT)
+mfix_SOURCES = $(src_overrides)
+
+# We need to add mfix.f to mfix_SOURCES because gfortran 4.4 complains about not
+# finding MAIN if mfix.o is only in libmfix.a and not in the link command.
+# However, we can't add model/mfix.f to mfix_SOURCES for Makefile.usr because
+# then mfix.o is in $MFIX_HOME/model. So we copy it under $RUNDDIR.
+mfix_SOURCES += $(builddir)/.build/mfix.f
+
+mfix_LDADD = $(obj_overrides)
+mfix_LDADD += $(builddir)/.build/read_database.$(OBJEXT)
+mfix_LDADD += $(builddir)/.build/read_namelist.$(OBJEXT)
+mfix_LDADD += $(LIBMFIX)
+
+build:
+	rm -f $@
+	$(LN_S) $(top_builddir) $@
+
+.PHONY: TAGS test $(LIBMFIX)
+
+# top level directory needs to be built first
+$(LIBMFIX):
+	$(MAKE) -C $(top_builddir) $(notdir $@)
+
+$(LIBMFIX).md5: $(LIBMFIX)
+	@$(MD5SUM) $< | cmp -s $@ -; if test $$? -ne 0; then $(MD5SUM) $< > $@; fi
+
+clean-local:
+	-$(MAKE) -C $(top_builddir) clean
+
+# mfix.f needs to be built under $(builddir)
+$(builddir)/.build/mfix.f:  $(LIBMFIX).md5
+	@mkdir -p .build
+	cp $(top_srcdir)/model/mfix.f $@
+
+$(builddir)/.build/read_database.$(OBJEXT):  $(LIBMFIX).md5
+$(builddir)/.build/read_namelist.$(OBJEXT):  $(LIBMFIX).md5
+
+# read_namelist needs rebuilt in case usrnlst.inc is overridden
+$(builddir)/.build/read_namelist.$(OBJEXT): $(top_srcdir)/model/read_namelist.f
+	@mkdir -p .build
+	$(PPFCCOMPILE) -c -o $@ $<
+
+# read_database needs rebuilt to use the correct path to BURCAT.THR
+$(builddir)/.build/read_database.$(OBJEXT): $(top_srcdir)/model/read_database.f
+	@mkdir -p .build
+	$(PPFCCOMPILE) $(FC_DEFINE)BURCAT_THR="'$(top_srcdir)/model/thermochemical/BURCAT.THR'" -c -o $@ $<
+
+species.inc: mfix.dat
+	RUN_DIR=. $(top_srcdir)/config/rxn_preproc.sh
+
+################################################################
+#                                                              #
+#  Use script "fdep" to find dependencies among source files.  #
+#  Ignoring the following modules:                             #
+#  - omp_lib (OpenMP)                                          #
+#  - netcdf                                                    #
+#      Include /dev/null so GREP doesn't hang if $^ is empty   #
+################################################################
+DEP_IGN := -i omp_lib -i netcdf -i mpi
+
+.f.d:
+	$(top_builddir)/build-aux/fdep $(DEP_IGN) $(INCS) -m $(MODDIR) -o $(@D) $^
+	@SRCDIR="$(srcdir)" OBJEXT="$(OBJEXT)" MODEXT="$(FC_MODEXT)" MODDIR="$(MODDIR)" \
+	SED="$(SED)" GREP="$(GREP)" $(SHELL) $(top_srcdir)/build-aux/update-usrdeps $@
+	@for main_mod in `${GREP} -o -E "\S+\.${FC_MODEXT}" $@`; do \
+	    echo "$${main_mod}: ${LIBMFIX}" >> $@; \
+	done;
+	@$(GREP) -i -l 'INCLUDE.*species.inc' /dev/null $^| $(SED) 's/$$/:\ species.inc/g' >> $@
+
+CLEANS := clean distclean mostlyclean
+@make_ifnotclean@
+$(eval -include $(src_overrides:%.f=%.d) )
+@make_endif@
+
+CLEANFILES += usrmodule.deps species.inc $(src_overrides:%.f=%.d)
+DISTCLEANFILES = Makefile postmfix$(EXEEXT)
+
+################################################################
+#                                                              #
+#      convenience target for postmfix                         #
+#                                                              #
+################################################################
+
+postmfix$(EXEEXT): $(LIBMFIX).md5
+	$(MAKE) -C $(top_builddir) $@
+	rm -f $@
+	$(LN_S) $(top_builddir)/$@ $@
+
+################################################################
+#                                                              #
+#           pymfix Python module                               #
+#                                                              #
+################################################################
+
+if PYTHON
+pymfix_src = \
+	$(top_srcdir)/model/param_mod.f \
+	$(top_srcdir)/model/param1_mod.f \
+	$(top_srcdir)/model/dmp_modules/compar_mod.f \
+	$(top_srcdir)/model/fldvar_mod.f \
+	$(top_srcdir)/model/des/discretelement_mod.f \
+	$(top_srcdir)/model/iterate.f \
+	$(top_srcdir)/model/residual_mod.f \
+	$(top_srcdir)/model/time_step.f \
+	$(top_srcdir)/model/main.f \
+	$(top_srcdir)/model/run_mod.f
+
+pymfix_OBJECTS = $(pymfix_src:%.f=%.o)
+
+pymfix: mfix.so
+	rm -f $@
+	$(LN_S) $(top_srcdir)/pymfix/$@ $@
+
+mfix.so: $(LIBMFIX).md5
+mfix.so: $(pymfix_src) $(obj_overrides) $(builddir)/.build/read_database.$(OBJEXT) $(builddir)/.build/read_namelist.$(OBJEXT)
+	f2py -c --f77exec=$(FC) --f90exec=$(FC) -m mfix -I$(top_builddir)/model $(pymfix_src) $(mfix_LDADD) -lgomp --f90flags="$(AM_FCFLAGS) $(FCFLAGS) -cpp" --f77flags="$(AM_FFLAGS) $(FFLAGS) -cpp" --noopt --noarch $(F2PY_FLAGS)
+endif
+
+################################################################
+#                                                              #
+#      OpenMP and MPI support                                  #
+#                                                              #
+#      --enable-smp and --enable-dmp options in configure.ac   #
+#                                                              #
+################################################################
+
+if OPENMP
+AM_FCFLAGS += $(OPENMP_FCFLAGS)
+AM_LDFLAGS += $(OPENMP_FCFLAGS)
+endif
+
+F2PY_FLAGS =
+
+if MPI
+AM_FCFLAGS += $(FC_DEFINE)MPI
+AM_LDFLAGS += $(FC_DEFINE)MPI
+F2PY_FLAGS += $(FC_DEFINE)MPI
+
+test: postmfix$(EXEEXT) mfix$(EXEEXT) ## Run tests
+	MPIRANKS=$(MPIRANKS) ${top_srcdir}/build-aux/runtests.sh
+else
+test: postmfix$(EXEEXT) mfix$(EXEEXT) ## Run tests
+	${top_srcdir}/build-aux/runtests.sh
+endif
+
+################################################################
+#      TAU support
+################################################################
+TAU_F90=@TAU_F90@
+TAU_MAKEFILE=@TAU_MAKEFILE@
+export TAU_F90
+export TAU_MAKEFILE
+
+################################################################
+#      NETCDF support
+################################################################
+
+if NETCDF
+AM_FCFLAGS += $(FC_MODINC)$(NETCDF_INCDIR) $(FC_DEFINE)NETCDF
+AM_FCFLAGS += $(FC_MODINC)$(NETCDFF_INCDIR) $(FC_DEFINE)NETCDFF
+AM_LDFLAGS += -L@NETCDF_LIBDIR@ -l@NETCDF_LIBNAME@ -L@NETCDFF_LIBDIR@ -l@NETCDFF_LIBNAME@
+endif
+
+################################################################
+#                                                              #
+#      MKL support (only with Intel Fortran compiler)          #
+#                                                              #
+################################################################
+
+if MKL
+AM_FCFLAGS += -mkl
+AM_LDFLAGS += -mkl
+endif
+
+################################################################
+#      run this case
+################################################################
+
+run_t0: postmfix$(EXEEXT) mfix$(EXEEXT) ## run case to TSTOP=0 to run checks
+	OMP_NUM_THREADS=1 ./mfix$(EXEEXT) TSTOP=0 NODESI=1 NODESJ=1 NODESK=1
+
+################################################################
+#                                                              #
+#  Use absolute paths in the Makefile, so it can be copied     #
+#  to any mfix.dat directory.                                  #
+#                                                              #
+################################################################
+
+top_build_prefix=$(abs_top_build_prefix)
+top_builddir=$(abs_top_builddir)
+top_srcdir=$(abs_top_srcdir)
