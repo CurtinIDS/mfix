@@ -178,7 +178,6 @@ CONTAINS
       F_gp(1:MAX_PIP)  = ZERO
 
 ! Explicit drag force acting on a particle
-      Allocate(DRAG_FC (MAX_PIP,DIMN) )
       Allocate(PART_VEL(MAX_PIP,DIMN) )
       Allocate(CONTACT_FC (MAX_PIP,DIMN) )
       Allocate(PART_INFO(MAX_PIP,5))
