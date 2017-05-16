@@ -91,11 +91,13 @@
 !$omp shared(ijkstart3,ijkend3,pinc,i_of,j_of,k_of,no_k,interp_scheme,  &
 !$omp        funijk_map_c,xe,yn,dz,zt,avg_factor,do_k,pic,des_pos_new,  &
 !$omp        des_vel_new, mppic, mppic_pdrag_implicit,p_force,          &
-!$omp        u_g,v_g,w_g,model_b,pvol,fc,f_gp,ep_g)                     &
+!$omp        u_g,v_g,w_g,model_b,pvol,fc,f_gp,ep_g,                     &
+!$omp        drg_fc,part_info,part_vel,contact_fc,mycnt,pijk)           &                     
 !$omp private(ijk, i, j, k, pcell, iw, ie, js, jn, kb, ktp,             &
 !$omp         onew, ii, jj, kk,cur_ijk, ipjk, ijpk, ipjpk,              &
 !$omp         gst_tmp, vst_tmp, velfp, desposnew, ijpkp, ipjkp, &
-!$omp         ipjpkp,ijkp,nindx,np,weight_ft,d_force, vel_new)
+!$omp         ipjpkp,ijkp,nindx,np,weight_ft,d_force, vel_new,  &
+!$omp         m)
       DO ijk = ijkstart3,ijkend3
          if(.not.fluid_at(ijk) .or. pinc(ijk).eq.0) cycle
          i = i_of(ijk)
