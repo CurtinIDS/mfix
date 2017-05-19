@@ -1,0 +1,267 @@
+########################################################################
+#  Author: Vaibhav                          Date:   2016-03-16 	       #
+#                                                                      #
+#  Purpose: Reproduction of Goldschmidt et al., 2003 paper.            #
+#                                                                      #
+#  REF: Hydrodynamic modelling of dense gas fluidised beds :comparision#
+#       and validation of 3D discrete particle and continuum models.   #
+#	powder technology 142, 2004 23-47;		       	       #
+#       Gas Velocity = 250.0 (Umf = 125.0 cm/sec)                      #
+########################################################################
+
+#-------------------- RUN CONTROL SECTION - REQUIRED ---------------------
+
+   RUN_NAME = 'Z_Goldschmidt_DiFelice'			 		  ! Name used to create output files ('C')
+   DESCRIPTION = 'Goldschmidt : DEM fluidbed with Distributed flow.'      ! Problem description. Limited to 60 characters ('C')
+   UNITS = 'CGS'							  ! Simulation input/output units ('C')
+   RUN_TYPE = 'RESTART_1'	  ! "NEW" - A new run, "RESTART_1" - Traditional restart, "RESTART_2" - New run with IC from .RES file created by another run ('C')
+
+#-------------------- RUN CONTROL SECTION --------------------------------
+
+   TIME =   0.0							          ! Simulation start time ('DP')	
+   TSTOP =  5.0								  ! Simulation stop time ('DP')
+
+   DT =     1.0d-3							  ! Initial time step size ('DP')
+   DT_FAC = 1.0							          ! Factor for adjusting time step ('DP')
+   DT_MAX = 1.0d-4							  ! Maximum time step size ('DP')
+   DT_MIN = 1.0d-15							  ! Minimum time step size ('DP')
+   AUTO_RESTART = .T.							  ! Flag to restart the code when DT < DT_MIN ('L')
+
+   MOMENTUM_X_EQ(1) = .T.						  ! Flag to enable/disable solving the X-momentum equations ('L')
+   MOMENTUM_Y_EQ(1) = .T.						  ! Flag to enable/disable solving the y-momentum equations ('L')
+   MOMENTUM_Z_EQ(1) = .T.						  ! Flag to enable/disable solving the z-momentum equations ('L')
+   ENERGY_EQ = .F.							  ! Solve energy equations ('L')
+   SPECIES_EQ(0:1) = .F.  .F.						  ! Solve species transport equations ('L')
+
+!   GRANULAR_ENERGY = .F.						  ! Granular energy formulation selection. Applies to TFM ('L')
+!   K_EPSILON = .T.							  ! The K-Epsilon turbulence model (for single-phase flow). All walls must be defined ('L')
+!   L_SCALE0								  ! Value of turbulent length initialized ('DP')
+!   MU_GMAX = 1.0d3							  ! Maximum value of the turbulent viscosity of the fluid ('DP')
+
+   DRAG_TYPE = 'BVK'						  ! Available gas-solids drag models ('C') - Adjusted - Syamlal
+!   DRAG_C1								  ! Quantity for calibrating Syamlal-O'Brien drag correlation using Umf data ('DP')
+!   DRAG_D1								  ! Quantity for calibrating Syamlal-O'Brien drag correlation using Umf data ('DP')
+!   LAM_HYS								  ! The lubrication cutoff distance for HYS drag model ('DP')
+
+   MODEL_B = .F.							  ! Shared gas-pressure formulation.[.FALSE.] - Use Model A ('L')
+
+#-------------------- PHYSICAL PARAMETER SECTION -------------------------
+
+   P_REF = 0.0								  ! Reference pressure ('DP')
+   P_SCALE = 1.0							  ! Scale factor for pressure ('DP')
+   GRAVITY = 980.7							  ! Gravitational acceleration [980.7 in CGS; 9.87 in SI] ('DP')
+
+#-------------------- NUMERICAL PARAMETER SECTION ------------------------
+
+   MAX_NIT = 500							  ! Maximum number of iterations.[500] ('I')
+   TOL_RESID = 1.0d-2							  ! Maximum residual at convergence (Continuity + Momentum). [1.0d-3] ('DP')
+!   TOL_RESID_T = 1.0d-5						  ! Maximum residual at convergence (Energy).[1.0d-4] ('DP')
+!   TOL_RESID_TH = 1.0d-5						  ! Maximum residual at convergence (Granular Energy).[1.0d-4] ('DP')
+!   TOL_RESID_SCALAR = 1.0d-5						  ! Maximum residual at convergence (Scalar Equations).[1.0d-4] ('DP')
+!   TOL_RESID_K_EPSILON = 1.0d-5					  ! Maximum residual at convergence ((K_Epsilon Model).[1.0d-4] ('DP')
+!   TOL_DIVERGE = 1.0d+4						  ! Minimum residual for declaring divergence.[1.0d+4] ('DP')
+   DETECT_STALL = .F.					  ! Reduce the time step if the residuals stop decreasing. (.FALSE. - Continue iterating if residuals stall) ('L')
+
+!   LEQ_METHOD = 2							  ! LEQ Solver selection. 1 - SOR, [2] - BiCGSTAB, 3 - GMRES, 5 - CG ('I')
+!   LEQ_TOL = 1.0d-5							  ! Linear Equation tolerance.[1.0d-4] ('DP')
+!   LEQ_IT								  ! Number of iterations in the linear equation solver ('I')
+!   LEQ_SWEEP								  ! Linear equation sweep direction ('C')
+!   LEQ_PC								  ! Linear precondition used by the BiCGSTAB and CG LEQ solvers ('C')
+
+!   UR_FAC								  ! Under relaxation factors ('DP')
+!   UR_F_GS								  ! Under relaxation factors for implicit calculation of gas-solids drag coefficient ('DP')
+!   UR_KTH_SML						 ! Under relaxation factor for conductivity coefficient associated with other solids phases for IA Theory.[1.0] ('DP')
+
+   DISCRETIZE(1) = 2							  ! Discretization scheme. 1 - Gas Pressure ('I')
+   DISCRETIZE(2) = 5							  ! Discretization scheme. 2 - Solids Volume Fraction ('I')
+   DISCRETIZE(3) = 2							  ! Discretization scheme. 3 - Gas and Solids U Momentum Equation ('I')
+   DISCRETIZE(4) = 2							  ! Discretization scheme. 4 - Gas and Solids V Momentum Equation ('I')
+   DISCRETIZE(5) = 2							  ! Discretization scheme. 5 - Gas and Solids W Momentum Equation ('I')
+   DISCRETIZE(6) = 2							  ! Discretization scheme. 6 - Gas and Solids Energy Equations (Temperature) ('I')
+   DISCRETIZE(7) = 2							  ! Discretization scheme. 7 - Gas and Solids Species Mass Fractions ('I')
+   DISCRETIZE(8) = 2							  ! Discretization scheme. 8 - Granular Temperature ('I')
+   DISCRETIZE(9) = 2							  ! Discretization scheme. 9 - User-Defined Scalar and K-Epsilon Equation ('I')
+   DISCRETIZE(10) = 2							  ! Discretization scheme. 10 - DES Diffusion Equation ('I')
+!   CN_ON = .F.				 ! Temporal discretization scheme.[.FALSE.] - Implicit first order Euler method, .TRUE. - Two-step implicit Runge-Kutta method ('L')
+   
+   MAX_INLET_VEL_FAC = 5.0d5						  ! The code declares divergence if the velocity anywhere in the domain exceeds a maximum value ('DP')
+
+#-------------------- GEOMETRY & DISCRETIZATION SECTION ------------------
+
+   COORDINATES = 'CARTESIAN'						  ! Coordinates used in the simulation ('C')
+
+   XLENGTH  =  15.0							  ! Reactor length in the x (r) direction ('DP')
+   YLENGTH  =  70.0							  ! Reactor length in the y-direction ('DP')
+   ZLENGTH  =  1.5							  ! Reactor length in the z (theta) direction ('DP')
+
+   IMAX = 30								  ! Number of cells in the x (r) direction ('I')
+   JMAX = 140								  ! Number of cells in the y-direction ('I')
+   KMAX = 3								  ! Number of cells in the z-direction ('I')
+
+#-------------------- Cartesian grid -------------------------------------
+
+#-------------------- GAS PHASE SECTION ----------------------------------
+
+   RO_g0 = 1.205E-3							  ! Specified constant gas density (g/cm^3) ('DP')
+   MU_g0 = 1.800E-4							  ! Specified constant gas viscosity (g/(cm.s)) ('DP')
+
+#-------------------- SOLID PHASE SECTION --------------------------------
+
+   SOLIDS_MODEL(1) = 'DEM'						  ! Defines the model used for the solids phase. TFM, DEM, PIC ('C')
+
+   MMAX = 1								  ! Number of solids phases ('I')
+   D_p0(1) =   0.249							  ! Initial particle diameters (cm) ('DP')
+   RO_s0(1)=   2.526							  ! Specified constant solids density (g/cm^3) ('DP')
+
+#-------------------- Two Fluid model (TFM) ------------------------------
+
+#-------------------- Discrete Element Simulations (DES) -----------------
+
+   PARTICLES = 2440							  ! Number of particles to be read in from the particle_input.dat file ('I')
+!   GENER_PART_CONFIG = .F.						  ! Automatically generate initial particle position and velocity based on specified IC ('L')
+
+!   DES_CONTINUUM_COUPLED = .T.						  ! To switch between pure granular or coupled simulations of carried and dispersed phase flows ('L')
+!   DES_ONEWAY_COUPLED = .F.						  ! Run one-way coupled simulations. The fluid does not see the particles in terms of drag force ('L')
+
+   DES_INTG_METHOD = 'ADAMS_BASHFORTH'					  ! Time stepping scheme ('C')
+
+   DES_INTERP_ON = .T.							  ! Enables/Disables interpolation of field quantities to a particle's position ('L')
+   DES_INTERP_SCHEME = 'GARG_2012'					  ! Scheme used to map data to/from a particle's position and the Eulerian grid ('C')
+!   DES_INTERP_WIDTH							  ! length used in interpolating data to/from a particle's position and the Eulerian grid. 
+									  ! Applicable to the DPVM_SQUARE and DPVM_GAUSS ('DP')
+!   DES_INTERP_MEAN_FIELDS = .F.			! Enables/Disables interpolation of particle data (e.g., solids volume and drag force) from a particle's position
+								 ! to the Eulerian grid. [.FALSE.] - Assign particle data to the fluid grid cell containing the particle ('L')
+!   DES_EXPLICITLY_COUPLED = .F.					  ! Enable/Disable explicit coupling of DEM solids and the fluid. [.FALSE.] ('L')
+
+#-------------------- Discrete Element MODEL (DEM) -----------------------
+
+   NFACTOR = 500							  ! DEM settling period in no. of iterations ('I')
+
+   NEIGHBOR_SEARCH_N   = 20						  ! Maximum number of steps through a DEM loop before a neighbor search will be performed ('I')
+   DES_NEIGHBOR_SEARCH =  4						  ! Flag to set the neighbor search algorithm. 1 - N-square, [4] - Grid-Based ('I')
+!   NEIGHBOR_SEARCH_RAD_RATIO		! Ratio of the distance (imaginary sphere radius) to particle radius that is allowed before a neighbor search is performed ('DP')
+!   FACTOR_RLM				! Effectively increase the radius of particle (multiple of sum of particle radii) during building of particle neighbor list. ('DP')
+!   USE_VDH_DEM_MODEL							  ! Flag to use van der Hoef et al. (2006) model for adjusting the rotation of the contact plane ('L')
+
+   DES_COLL_MODEL= 'LSD'						  ! Collision model for the soft-sphere approach used in DEM model. LSD, HERTZIAN - Hertzian model ('C')
+
+   KN =   0.8d6								  ! Normal spring constant for inter-particle collisions (dyne/cm) ('DP')
+   KT_FAC = @(1/3)							  ! Ratio of the tangential spring constant to normal spring constant for inter-particle collisions ('DP')
+   KN_W =  0.8d6							  ! Normal spring constant for particle-wall collisions (dyne/cm) ('DP')
+   KT_W_FAC = @(1/3)							  ! Ratio of the tangential spring constant to normal spring constant for particle-wall collisions ('DP')
+
+   MEW =  0.1								  ! Inter-particle Coulomb friction coefficient ('DP')
+   MEW_W = 0.09								  ! Particle-wall Coulomb friction coefficient ('DP')
+
+   DES_EN_INPUT(1) = 0.97						  ! Normal restitution coefficient for inter-particle collisions ('DP')
+   DES_EN_WALL_INPUT = 0.97						  ! Normal restitution coefficient for particle-wall collisions ('DP')
+!   DES_ET_INPUT					  ! Tangential restitution coefficient for inter-particle collisions. Required for Hertzian collision model ('DP')
+!   DES_ET_WALL_INPUT					  ! Tangential restitution coefficient for particle-wall collisions. Required for Hertzian collision model ('DP')
+
+   DES_ETAT_FAC = 0.5					  ! Ratio of the tangential to the normal damping factor for inter-particle collisions. Required for LSD model ('DP')
+   DES_ETAT_W_FAC = 0.5					  ! Ratio of the tangential to the normal damping factor for particle-wall collisions. Required for LSD model ('DP')
+
+#-------------------- INITIAL CONDITIONS (IC) SECTION --------------------
+
+   IC_X_w(1)   =    0.0							  ! X coordinate of the west face ('DP')
+   IC_X_e(1)   =   15.0							  ! X coordinate of the east face ('DP')
+   IC_Y_s(1)   =    0.0							  ! Y coordinate of the south face ('DP')
+   IC_Y_n(1)   =   70.0						 	  ! Y coordinate of the north face ('DP')
+   IC_Z_b(1)   =    0.0							  ! Z coordinate of the bottom face ('DP')
+   IC_Z_t(1)   =    1.5							  ! Z coordinate of the top face ('DP')
+
+   IC_EP_g(1)  =    1.0							  ! Initial void fraction in the IC region ('DP')
+!   IC_P_G(1)					! Initial gas pressure in IC region. If unspecified, hydrostatic pressure profile varying only in y-direction is set-up ('DP')
+ 
+   IC_U_g(1)   =    0.0							  ! Initial x-component of gas velocity in the IC region ('DP')
+   IC_V_g(1)   =  125.0							  ! Initial y-component of gas velocity in the IC region ('DP')
+   IC_W_g(1)   =    0.0							  ! Initial z-component of gas velocity in the IC region ('DP')
+
+!   IC_K_TURB_G(1) = 100.0						  ! Initial value of K in K-Epsilon ('DP')
+!   IC_E_TURB_G(1) = 1000.0						  ! Initial value of Epsilon in K-Epsilon ('DP')
+
+#-------------------- BOUNDARY CONDITIONS (BC) SECTION -------------------
+
+
+
+! Uniform air inlet:
+!-----------------------------------------------------------------------//
+   BC_X_w(1) =    0.0							  ! X coordinate of the west face or edge ('DP')
+   BC_X_e(1) =   15.0							  ! X coordinate of the east face or edge ('DP')
+   BC_Y_s(1) =    0.0							  ! Y coordinate of the south face or edge ('DP')
+   BC_Y_n(1) =    0.0							  ! Y coordinate of the north face or edge ('DP')
+   BC_Z_b(1) =    0.0							  ! Z coordinate of the bottom face or edge ('DP')
+   BC_Z_t(1) =    1.5							  ! Z coordinate of the top face or edge ('DP')
+
+   BC_TYPE(1) =  'MI'							  ! Type of boundary ('C')
+
+   BC_EP_g(1) =   1.0							  ! Void fraction at the BC plane ('DP')
+
+   BC_P_g(1) =    0.0							  ! Gas pressure at the BC plane ('DP')
+
+   BC_U_g(1) =    0.0							  ! X-component of gas velocity at the BC plane (cm/sec) ('DP')
+   BC_V_g(1) =  250.0							  ! Y-component of gas velocity at the BC plane (cm/sec) ('DP')
+   BC_W_g(1) =    0.0							  ! Z-component of gas velocity at the BC plane (cm/sec) ('DP')
+
+!   BC_K_TURB_G(1) = 1000.0						  ! Boundary value of K for K-Epsilon Equation ('DP')
+!   BC_E_TURB_G(1) = 10000.0						  ! Boundary value of Epsilon for K-Epsilon Equation ('DP')
+
+
+! Top Pressure Outflow:
+!---------------------------------------------------------------------//
+   BC_X_w(2) =    0.0							  ! X coordinate of the west face or edge ('DP')
+   BC_X_e(2) =   15.0							  ! X coordinate of the east face or edge ('DP')
+   BC_Y_s(2) =   70.0							  ! Y coordinate of the south face or edge ('DP')
+   BC_Y_n(2) =   70.0							  ! Y coordinate of the north face or edge ('DP')
+   BC_Z_b(2) =    0.0							  ! Z coordinate of the bottom face or edge ('DP')
+   BC_Z_t(2) =    1.5							  ! Z coordinate of the top face or edge ('DP')
+
+   BC_TYPE(2) =   'PO'							  ! Type of boundary ('C')
+
+   BC_P_g(2) =    0.0							  ! Gas pressure at the BC plane ('DP')
+
+
+#_______________________________________________________________________
+# OUTPUT CONROL SECTION
+
+  RES_DT = 0.005      ! interval write restart (.RES) file
+
+  NLOG = 25       ! time steps between updates to (.LOG) file
+  FULL_LOG = .T.  ! display residuals on screen
+
+
+! Interval at which .SPX files are written
+  SPX_DT(1) = 0.005   ! EP_g
+  SPX_DT(2) = 0.005   ! P_g, P_star
+  SPX_DT(3) = 0.005   ! V_g, W_g
+  SPX_DT(4) = 0.005   ! U_s, V_s, W_s
+  SPX_DT(5) = 0.005   ! ROP_s
+  SPX_DT(6) = 0.005   ! T_g, T_s
+  SPX_DT(7) = 0.005   ! X_g, X_s
+  SPX_DT(8) = 0.005   ! theta
+  SPX_DT(9) = 0.005   ! Scalar
+
+   CALL_USR = .T.
+   USR_DT(1) = 0.005
+   USR_TYPE(1) = 'ASCII'
+
+
+  GROUP_RESID = .F.  ! Group residuals by equation
+
+  PRINT_DES_DATA = .T.  ! write DES vtk files
+
+   DT_DRAG_PRINT = 50 							  ! Number of time-step in a drag file
+
+   DT_CONTACT_PRINT = 50 						  ! Number of time-step in a contact force file
+
+   DT_VEL_PRINT = 50							  ! Number of time-step in a velocity file
+
+#_______________________________________________________________________
+# DMP SETUP
+
+  NODESI = 1   NODESJ = 1  NODESK =  1
+
+  ENABLE_DMP_LOG = .F.
+  CHK_BATCHQ_END = .T.
+  BATCH_WALLCLOCK = 8.55d4
+  TERM_BUFFER = 2.0d3
