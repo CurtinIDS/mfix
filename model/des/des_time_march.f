@@ -237,8 +237,9 @@
                CALL WRITE_CUST(NSTEP+1,DT_VEL_PRINT,&
                         &'VELOCITY',PART_INFO,PART_VEL,&
                         & SIZE(PART_VEL),TIMESTEP_CUST)
-               IF TIMESTEP_CUST.EQ.0 THEN
-                  TIMESTEP_CUST=1
+               IF (TIMESTEP_CUST.EQ.0) THEN
+                        TIMESTEP_CUST=1
+               END IF
         END IF
       ENDDO ! end do NN = 1, FACTOR
 
