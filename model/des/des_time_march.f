@@ -229,13 +229,16 @@
 ! Used for testing
 !              PRINT *,SIZE(DRG_FC),DT_DRAG_PRINT,DT_VEL_PRINT
                CALL WRITE_CUST(NSTEP+1,DT_DRAG_PRINT,'DRAG',& 
-                        &PART_INFO,DRG_FC,SIZE(DRG_FC))
+                        &PART_INFO,DRG_FC,SIZE(DRG_FC),&
+                        &TIMESTEP_CUST)
                CALL WRITE_CUST(NSTEP+1,DT_CONTACT_PRINT,&
                         &'CONTACT',PART_INFO,CONTACT_FC,&
-                        &SIZE(CONTACT_FC))
+                        &SIZE(CONTACT_FC),TIMESTEP_CUST)
                CALL WRITE_CUST(NSTEP+1,DT_VEL_PRINT,&
                         &'VELOCITY',PART_INFO,PART_VEL,&
-                        & SIZE(PART_VEL))
+                        & SIZE(PART_VEL),TIMESTEP_CUST)
+               IF TIMESTEP_CUST.EQ.0 THEN
+                  TIMESTEP_CUST=1
         END IF
       ENDDO ! end do NN = 1, FACTOR
 

@@ -389,7 +389,7 @@
       INTEGER, DIMENSION(:,:),ALLOCATABLE :: PART_INFO
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: CONTACT_FC,&
                 &DRG_FC,PART_VEL
-!      INTEGER :: TIMESTEP_CUST=0
+      INTEGER :: TIMESTEP_CUST=0
 
 
 !     particle can collide with at most COLLISION_ARRAY_MAX facets simultaneously
