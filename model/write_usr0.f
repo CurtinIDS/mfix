@@ -30,16 +30,18 @@
       END SUBROUTINE WRITE_USR0
 
       SUBROUTINE WRITE_CUST(TIMESTEP,DT_PRINT,field,particle_info,&
-                                &mydat,mydat_size)
+                                &mydat,mydat_size,write_first)
               IMPLICIT NONE
               DOUBLE PRECISION, DIMENSION(mydat_size/3,3) :: mydat
-              INTEGER, DIMENSION(mydat_size/3,5) :: particle_info
+              INTEGER, DIMENSION(mydat_size/3,5) :: particle_info,&
+                                        &write_first
               CHARACTER(LEN=10) :: field
               CHARACTER(LEN=100) :: FILENAME
               INTEGER :: TIMESTEP,mydat_size,I,DT_PRINT
               WRITE (FILENAME,'(I100)') &
                       &(int((TIMESTEP-1)/DT_PRINT))
-              IF ((MOD(TIMESTEP-1,DT_PRINT).EQ.0).OR.(TIMESTEP.EQ.1)) THEN
+              IF ((MOD(TIMESTEP-1,DT_PRINT).EQ.0).OR.(TIMESTEP.EQ.1)&
+                                &.OR.(write_first.EQ.0)) THEN
                       OPEN(unit=1, file=&
                                 &trim(field(1:3))//'.'//&
                                 &adjustl(trim(FILENAME)))
