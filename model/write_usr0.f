@@ -3,7 +3,7 @@
 !  Module name: WRITE_USR0                                             C
 !  Purpose: Write initial part of user-defined output                  C
 !                                                                      C
-!  Author:                                            Date: dd-mmm-yy  C
+!  Author: Shiv Meka                                  Date: dd-mmm-yy  C
 !  Reviewer:                                          Date: dd-mmm-yy  C
 !                                                                      C
 !  Revision Number:                                                    C
@@ -30,27 +30,54 @@
       END SUBROUTINE WRITE_USR0
 
       SUBROUTINE WRITE_CUST(TIMESTEP,DT_PRINT,field,particle_info,&
-                                &mydat,mydat_size,write_first)
+                                &mydat,mydat_size)
+              use run,only: RUN_TYPE
               IMPLICIT NONE
               DOUBLE PRECISION, DIMENSION(mydat_size/3,3) :: mydat
               INTEGER, DIMENSION(mydat_size/3,5) :: particle_info
               CHARACTER(LEN=10) :: field
               CHARACTER(LEN=100) :: FILENAME
-              INTEGER :: TIMESTEP,mydat_size,I,DT_PRINT,write_first
+              INTEGER :: TIMESTEP,mydat_size,I,DT_PRINT
+              LOGICAL :: is_restart=1,is_file=0
+              IF (RUN_TYPE.EQ.'NEW') THEN
+                is_restart=0
+              END IF
               WRITE (FILENAME,'(I100)') &
                       &(int((TIMESTEP-1)/DT_PRINT))
+
+!Timestep resets to 0 after every run
+              INQUIRE(FILE=trim(field(1:3))//'.'//&
+                                 &adjustl(trim(FILENAME)),&
+                                 &EXIST=is_file)
+!Check if whether to create a new file 
               IF ((MOD(TIMESTEP-1,DT_PRINT).EQ.0&
-                                &).OR.(TIMESTEP.EQ.1).OR.&
-                                &(write_first.EQ.0)) THEN
+                                &).OR.(TIMESTEP.EQ.1)) THEN
+!Opens new file for writing if
+!Logic: if restart and file_exists: create  _r file
+!       else create_file
+                IF ((is_restart).AND.(is_file)) THEN
+                    OPEN(unit=1, file=&
+                           &trim(field(1:3))//'.'//&
+                           &adjustl(trim(FILENAME))//"_r")
+                ELSE
+                    OPEN(unit=1, file=&
+                           &trim(field(1:3))//'.'//&
+                           &adjustl(trim(FILENAME)))
+                END IF
+              ELSE
+!Logic: if restart and file_exists, append to _r file
+!       else append to file
+                IF ((is_restart).AND.(is_file)) THEN
                       OPEN(unit=1, file=&
                                 &trim(field(1:3))//'.'//&
-                                &adjustl(trim(FILENAME)))
-              ELSE
+                                &adjustl(trim(FILENAME))//"_r",&
+                                &position='append')
+                ELSE
                       OPEN(unit=1, file=&
                                 &trim(field(1:3))//'.'//&
                                 &adjustl(trim(FILENAME)),&
                                 &position='append')
-
+                END IF
               END IF
               WRITE (1,*)'Timestep: ', TIMESTEP
               WRITE (1,*)'PARTICLE #  X,Y,Z, CELL_X,CELL_Y,CELL_Z,PHASE'
