@@ -27,6 +27,7 @@
       use run, only: ENERGY_EQ
       use run, only: NSTEP
       use run, only: TIME, TSTOP, DT
+      use run, only: RUN_TYPE
       use sendrecv
 ! Include mfix.dat input vars that set printing frequency
       use particle_filter, only: DT_DRAG_PRINT, &
@@ -229,6 +230,13 @@
 ! Used for testing
 !              PRINT *,SIZE(DRG_FC),DT_DRAG_PRINT,DT_VEL_PRINT
 ! TIMESTEP_CUST determines if the run is restarted from a checkpoint
+               IF (.NOT.RUN_TYPE.EQ.'NEW') THEN
+                IF (is_restart.EQ.0) THEN
+                        is_restart=1
+                ELSEIF (is_restart.EQ.1) THEN
+                        is_restart=2
+                END IF
+               END IF
                CALL WRITE_CUST(NSTEP+1,DT_DRAG_PRINT,'DRAG',& 
                         &PART_INFO,DRG_FC,SIZE(DRG_FC))
                CALL WRITE_CUST(NSTEP+1,DT_CONTACT_PRINT,&

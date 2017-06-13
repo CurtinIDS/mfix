@@ -466,7 +466,7 @@
 
 ! stencil for interpolation of solids velocity
       DOUBLE PRECISION, DIMENSION(:,:,:,:,:), ALLOCATABLE::  VEL_SOL_STENCIL
-
+      INTEGER :: is_restart=0
 
 ! quantities are set in subroutine set_interpolation_scheme
 ! order = order of the interpolation method, ob2l = (order+1)/2,

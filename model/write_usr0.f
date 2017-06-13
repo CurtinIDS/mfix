@@ -32,17 +32,15 @@
       SUBROUTINE WRITE_CUST(TIMESTEP,DT_PRINT,field,particle_info,&
                                 &mydat,mydat_size)
               use run,only: RUN_TYPE
+              use discretelement, only: is_restart
               IMPLICIT NONE
               DOUBLE PRECISION, DIMENSION(mydat_size/3,3) :: mydat
               INTEGER, DIMENSION(mydat_size/3,5) :: particle_info
               CHARACTER(LEN=10) :: field
               CHARACTER(LEN=100) :: FILENAME
               INTEGER :: TIMESTEP,mydat_size,I,DT_PRINT
-              LOGICAL :: is_restart=1,is_file=0
-              IF (RUN_TYPE.EQ.'NEW') THEN
-                is_restart=0
-              END IF
-              WRITE (FILENAME,'(I100)') &
+              LOGICAL :: is_file=0
+              WRITE (FILENAME,'(I5.5)') &
                       &(int((TIMESTEP-1)/DT_PRINT))
 
 !Timestep resets to 0 after every run
@@ -55,40 +53,29 @@
 !Opens new file for writing if
 !Logic: if restart and file_exists: create  _r file
 !       else create_file
-                IF ((is_restart).AND.(is_file)) THEN
+
+!        CHARACTER(LEN=100)::V
+!        INTEGER :: J=100
+!        WRITE (V,"(I6.6)") J
+!        PRINT *,trim(V)
+
+!The logic behind formatting integer to 5.5 is lifted from:
+!http://computer-programming-forum.com/49-fortran/c5f91cf2ac9dab68.htm
                     OPEN(unit=1, file=&
-                           &trim(field(1:3))//'.'//&
-                           &adjustl(trim(FILENAME))//"_r")
-                ELSE
-                    OPEN(unit=1, file=&
-                           &trim(field(1:3))//'.'//&
+                           &trim("Z_"//field(1:3))//'.'//&
                            &adjustl(trim(FILENAME)))
-                END IF
-              ELSE
-!Logic: if restart and file_exists, append to _r file
-!       else append to file
-                IF ((is_restart).AND.(is_file)) THEN
-                      OPEN(unit=1, file=&
-                                &trim(field(1:3))//'.'//&
-                                &adjustl(trim(FILENAME))//"_r",&
-                                &position='append')
-                ELSE
-                      OPEN(unit=1, file=&
-                                &trim(field(1:3))//'.'//&
-                                &adjustl(trim(FILENAME)),&
-                                &position='append')
-                END IF
-              END IF
-              WRITE (1,*)'Timestep: ', TIMESTEP
-              WRITE (1,*)'PARTICLE #  X,Y,Z, CELL_X,CELL_Y,CELL_Z,PHASE'
-              DO I=1,mydat_size/3
-              IF (.NOT.particle_info(I,1).EQ.0) THEN
-              WRITE (1,*),particle_info(I,1),mydat(I,:),&
-                         & particle_info(I,2:4), &
-                         & particle_info(I,5)
-              END IF
-              ENDDO
-              WRITE (1,*),''
-              CLOSE(1)
+                    WRITE (1,*)'Timestep: ', TIMESTEP
+                    WRITE (1,*)'PARTICLE #  X,Y,Z,',&
+                                    &'CELL_X,CELL_Y,CELL_Z,PHASE'
+                    DO I=1,mydat_size/3
+                       IF (.NOT.particle_info(I,1).EQ.0) THEN
+                       WRITE (1,*),particle_info(I,1),mydat(I,:),&
+                                & particle_info(I,2:4), &
+                                & particle_info(I,5)
+                       END IF
+                    ENDDO
+                    WRITE (1,*),''
+                    CLOSE(1)
+              ENDIF
       END
 
