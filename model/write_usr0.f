@@ -44,26 +44,23 @@
                       &(int((TIMESTEP-1)/DT_PRINT))
 
 !Timestep resets to 0 after every run
-              INQUIRE(FILE=trim(field(1:3))//'.'//&
+              INQUIRE(FILE=trim("Z_"//field(1:3))//'.'//&
                                  &adjustl(trim(FILENAME)),&
                                  &EXIST=is_file)
 !Check if whether to create a new file 
               IF ((MOD(TIMESTEP-1,DT_PRINT).EQ.0&
                                 &).OR.(TIMESTEP.EQ.1)) THEN
-!Opens new file for writing if
-!Logic: if restart and file_exists: create  _r file
-!       else create_file
-
-!        CHARACTER(LEN=100)::V
-!        INTEGER :: J=100
-!        WRITE (V,"(I6.6)") J
-!        PRINT *,trim(V)
-
 !The logic behind formatting integer to 5.5 is lifted from:
 !http://computer-programming-forum.com/49-fortran/c5f91cf2ac9dab68.htm
-                    OPEN(unit=1, file=&
-                           &trim("Z_"//field(1:3))//'.'//&
-                           &adjustl(trim(FILENAME)))
+                    IF (is_file) THEN
+                        OPEN(unit=1, file=&
+                                   &trim("Z_"//field(1:3))//'.'//&
+                                   &adjustl(trim(FILENAME)//"_r"))
+                    ELSE
+                        OPEN(unit=1, file=&
+                                   &trim("Z_"//field(1:3))//'.'//&
+                                   &adjustl(trim(FILENAME)))
+                    ENDIF
                     WRITE (1,*)'Timestep: ', TIMESTEP
                     WRITE (1,*)'PARTICLE #  X,Y,Z,',&
                                     &'CELL_X,CELL_Y,CELL_Z,PHASE'
