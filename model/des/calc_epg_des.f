@@ -161,7 +161,7 @@
  1104 FORMAT('This is a fatal error. A particle output file (vtp) ',   &
          'will be written',/'to aid debugging.')
 
-      CALL WRITE_DES_DATA
+!      CALL WRITE_DES_DATA
       CALL MFIX_EXIT(myPE)
 
       END SUBROUTINE CALC_EPG_DES

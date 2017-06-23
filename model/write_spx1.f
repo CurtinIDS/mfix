@@ -147,10 +147,10 @@
 ! The call made in make_arrays captures the initial state of the system
 ! as the input and RES files for DES runs are read afte the the first
 ! call to this routine.
-         IF(DISCRETE_ELEMENT.AND.PRINT_DES_DATA) THEN
-            IF(TIME /= ZERO .OR. TRIM(RUN_TYPE)=='RESTART_1') &
-               CALL WRITE_DES_DATA
-         ENDIF
+!         IF(DISCRETE_ELEMENT.AND.PRINT_DES_DATA) THEN
+!            IF(TIME /= ZERO .OR. TRIM(RUN_TYPE)=='RESTART_1') &
+!               CALL WRITE_DES_DATA
+!         ENDIF
 
 !        call MPI_Barrier(MPI_COMM_WORLD,mpierr)  !//PAR_I/O enforce barrier here
 !

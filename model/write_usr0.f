@@ -73,6 +73,9 @@
                     ENDDO
                     WRITE (1,*),''
                     CLOSE(1)
+                    IF (field(1:3)=='VEL') THEN
+                        CALL WRITE_DES_VTP
+                    ENDIF
               ENDIF
       END
 

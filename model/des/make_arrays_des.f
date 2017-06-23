@@ -186,7 +186,7 @@
 
       IF(RUN_TYPE /= 'RESTART_1' .AND. PRINT_DES_DATA) THEN
          S_TIME = TIME
-         CALL WRITE_DES_DATA
+!         CALL WRITE_DES_DATA
       ENDIF
 
       CALL FINL_ERR_MSG

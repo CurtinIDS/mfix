@@ -42,11 +42,11 @@
 
 !-----------------------------------------------
 
-      IF (TRIM(DES_OUTPUT_TYPE) .EQ. 'TECPLOT') THEN
-         CALL WRITE_DES_TECPLOT
-      ELSE
-         CALL WRITE_DES_VTP
-      ENDIF
+!      IF (TRIM(DES_OUTPUT_TYPE) .EQ. 'TECPLOT') THEN
+!         CALL WRITE_DES_TECPLOT
+!      ELSE
+!         CALL WRITE_DES_VTP
+!      ENDIF
 
 ! Invoke at own risk
 

@@ -166,7 +166,7 @@
          'will be written',/'to aid debugging.')
 
 
-      CALL WRITE_DES_DATA
+!      CALL WRITE_DES_DATA
       CALL MFIX_EXIT(myPE)
 
       END SUBROUTINE CHECK_CELL_MOVEMENT_DEM
