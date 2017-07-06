@@ -186,7 +186,8 @@
             PART_INFO(MYCNT,1)=NP
             PART_INFO(MYCNT,2:)=PCELL
             PART_INFO(MYCNT,5)=M
-            PART_VEL(MYCNT,:3)=VEL_NEW
+            PART_VEL(MYCNT,1:3)=VEL_NEW
+            PART_VEL(MYCNT,4:6)=VELFP
 
 ! Update the contact forces (FC) on the particle to include gas
 ! pressure and gas-solids drag

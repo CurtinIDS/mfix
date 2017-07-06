@@ -30,13 +30,16 @@
       END SUBROUTINE WRITE_USR0
 
       SUBROUTINE WRITE_CUST(TIMESTEP,DT_PRINT,field,particle_info,&
-                                &mydat,mydat_size)
+                                &mydat,mydat_size,fields)
               use run,only: RUN_TYPE
               use discretelement, only: is_restart
               IMPLICIT NONE
-              DOUBLE PRECISION, DIMENSION(mydat_size/3,3) :: mydat
-              INTEGER, DIMENSION(mydat_size/3,5) :: particle_info
+!The field - 'fields' determine array's shape of mydat
+              INTEGER :: fields
               CHARACTER(LEN=10) :: field
+              DOUBLE PRECISION, DIMENSION(mydat_size/fields,&
+                                &fields) :: mydat
+              INTEGER, DIMENSION(mydat_size/fields,5) :: particle_info
               CHARACTER(LEN=100) :: FILENAME
               INTEGER :: TIMESTEP,mydat_size,I,DT_PRINT
               LOGICAL :: is_file=0
@@ -61,10 +64,14 @@
                                    &trim("Z_"//field(1:3))//'.'//&
                                    &adjustl(trim(FILENAME)))
                     ENDIF
+                    IF (field(1:3)=='VEL') THEN
+                        CALL WRITE_DES_VTP
+                    ENDIF
+
                     WRITE (1,*)'Timestep: ', TIMESTEP
                     WRITE (1,*)'PARTICLE #  X,Y,Z,',&
                                     &'CELL_X,CELL_Y,CELL_Z,PHASE'
-                    DO I=1,mydat_size/3
+                    DO I=1,mydat_size/fields
                        IF (.NOT.particle_info(I,1).EQ.0) THEN
                        WRITE (1,*),particle_info(I,1),mydat(I,:),&
                                 & particle_info(I,2:4), &
@@ -73,9 +80,6 @@
                     ENDDO
                     WRITE (1,*),''
                     CLOSE(1)
-                    IF (field(1:3)=='VEL') THEN
-                        CALL WRITE_DES_VTP
-                    ENDIF
               ENDIF
       END
 

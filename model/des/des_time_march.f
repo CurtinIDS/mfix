@@ -238,13 +238,13 @@
                 END IF
                END IF
                CALL WRITE_CUST(NSTEP+1,DT_DRAG_PRINT,'DRAG',& 
-                        &PART_INFO,DRG_FC,SIZE(DRG_FC))
+                        &PART_INFO,DRG_FC,SIZE(DRG_FC),3)
                CALL WRITE_CUST(NSTEP+1,DT_CONTACT_PRINT,&
                         &'CONTACT',PART_INFO,CONTACT_FC,&
-                        &SIZE(CONTACT_FC))
+                        &SIZE(CONTACT_FC),3)
                CALL WRITE_CUST(NSTEP+1,DT_VEL_PRINT,&
                         &'VELOCITY',PART_INFO,PART_VEL,&
-                        & SIZE(PART_VEL))
+                        & SIZE(PART_VEL),6)
         END IF
       ENDDO ! end do NN = 1, FACTOR
 
