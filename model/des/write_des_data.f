@@ -94,7 +94,8 @@
       use des_rxns, only: DES_X_s
       use des_thermo, only: DES_T_s
       use discretelement, only: DES_POS_NEW, DES_VEL_NEW, DES_USR_VAR
-      use discretelement, only: DES_RADIUS
+!-RO_Sol is needed for density
+      use discretelement, only: DES_RADIUS,RO_Sol
       use discretelement, only: DES_USR_VAR, DES_USR_VAR_SIZE
       use discretelement, only: S_TIME
       use discretelement, only: USE_COHESION, PostCohesive
@@ -108,7 +109,7 @@
 
       IMPLICIT NONE
 
-      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: TMP_PAR
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: TMP_PAR,TMP_DENS
       CHARACTER(len=10) :: lNoP
       CHARACTER(len=24) :: sTIMEc
       INTEGER :: NN
@@ -141,11 +142,17 @@
 !----------------------------------------------------------------------/
       ALLOCATE(TMP_PAR(SIZE(DES_RADIUS)))
 
+!---Dynamically allocate struct for density calculation
+      ALLOCATE(TMP_DENS(SIZE(RO_Sol)))  
+
       CALL VTP_WRITE_ELEMENT('<PointData Scalars="Diameter" &
          &Vectors="Velocity">')
 
       CALL GET_DIAMETER(TMP_PAR)
       CALL VTP_WRITE_DATA('Diameter', TMP_PAR)
+
+!---Write density to VTP file
+      CALL VTP_WRITE_DATA('Density',RO_Sol) 
 
       CALL VTP_WRITE_DATA('Velocity', DES_VEL_NEW)
 
